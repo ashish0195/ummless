@@ -70,6 +70,8 @@ jobs:
             --cellularMode active --cellularBars 4 --batteryState charged --batteryLevel 100
           APP=$(find ios/build/DerivedData -name "Comlogue.app" -path "*iphonesimulator*" | head -1)
           xcrun simctl install "$DEVICE" "$APP"
+          # Grant the microphone up front so the permission alert doesn't cover the conversation screens.
+          xcrun simctl privacy "$DEVICE" grant microphone com.comlogue.app || true
           mkdir -p docs/screenshots
           capture() {
             xcrun simctl launch --terminate-running-process "$DEVICE" com.comlogue.app -ComlogueScreenshotScene "$1"

@@ -14,18 +14,18 @@ jobs:
   backend:
     name: Backend tests
     runs-on: ubuntu-latest
+    # Same base image as backend/Dockerfile; its Debian mirrors install ffmpeg in seconds.
+    container: python:3.13-slim
+    timeout-minutes: 20
+    env:
+      PIP_ROOT_USER_ACTION: ignore
     steps:
       - uses: actions/checkout@v5
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.13"
-          cache: pip
-          cache-dependency-path: backend/requirements.txt
       - name: Install ffmpeg
-        run: sudo apt-get update -q && sudo apt-get install -y -q ffmpeg
+        run: apt-get update -q && apt-get install -y -q --no-install-recommends ffmpeg
       - name: Install dependencies
         working-directory: backend
-        run: pip install -r requirements.txt
+        run: pip install -q -r requirements.txt
       - name: Run tests
         working-directory: backend
         run: pytest -q

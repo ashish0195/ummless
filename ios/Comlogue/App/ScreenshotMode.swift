@@ -28,7 +28,8 @@ extension AppModel {
             phase = .onboarding
             return
         }
-        let seed = try? await api.seedDemo(pro: scene == .mission)
+        // The mission and the Brutal sparring partner are Pro content; every other scene shows the free tier.
+        let seed = try? await api.seedDemo(pro: scene == .mission || scene == .spar)
         me = try? await api.me()
         phase = .ready
         await refreshAll()
