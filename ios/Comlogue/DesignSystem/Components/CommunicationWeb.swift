@@ -21,7 +21,7 @@ struct CommunicationWeb: View {
     var body: some View {
         GeometryReader { proxy in
             let size = min(proxy.size.width, proxy.size.height)
-            let labelInset: CGFloat = showLabels ? 44 : 6
+            let labelInset: CGFloat = showLabels ? 58 : 6
             let radius = size / 2 - labelInset
             let center = CGPoint(x: proxy.size.width / 2, y: proxy.size.height / 2)
             ZStack {
@@ -30,7 +30,7 @@ struct CommunicationWeb: View {
                 ForEach(Array(ordered.enumerated()), id: \.element.dimension) { index, result in
                     marker(for: result, index: index, radius: radius, center: center)
                     if showLabels {
-                        label(for: result, index: index, radius: radius + 26, center: center)
+                        label(for: result, index: index, radius: radius + 12, center: center)
                     }
                 }
             }
@@ -82,7 +82,8 @@ struct CommunicationWeb: View {
     private func label(for result: DimensionResult, index: Int, radius: CGFloat, center: CGPoint) -> some View {
         let point = Self.point(index: index, count: ordered.count, distance: radius, center: center)
         let assessed = result.status.hasLevel
-        return VStack(spacing: 1) {
+        let anchor = Self.labelAnchor(index: index, count: ordered.count)
+        return VStack(alignment: anchor.horizontal, spacing: 1) {
             Text(DimensionCatalog.title(result.dimension))
                 .font(.caption2.weight(.bold))
                 .foregroundStyle(assessed ? Theme.color(for: result.dimension) : Theme.inkTertiary)
@@ -91,7 +92,18 @@ struct CommunicationWeb: View {
             }
         }
         .fixedSize()
+        // A zero-size frame pinned just outside the vertex, so the label grows away from the web and never
+        // covers the vertex marker (the "?" for missing evidence, or a level-5 point).
+        .frame(width: 0, height: 0, alignment: anchor)
         .position(point)
+    }
+
+    /// Which edge of a label touches its anchor point: the edge facing the centre of the web.
+    static func labelAnchor(index: Int, count: Int) -> Alignment {
+        let angle = -Double.pi / 2 + Double(index) / Double(max(count, 1)) * 2 * .pi
+        let horizontal: HorizontalAlignment = cos(angle) > 0.6 ? .leading : (cos(angle) < -0.6 ? .trailing : .center)
+        let vertical: VerticalAlignment = sin(angle) > 0.6 ? .top : (sin(angle) < -0.6 ? .bottom : .center)
+        return Alignment(horizontal: horizontal, vertical: vertical)
     }
 
     private var accessibilitySummary: String {

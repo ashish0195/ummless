@@ -38,11 +38,13 @@ struct PaywallView: View {
                         feature("quote.bubble.fill", "Every talk to shadow", "Steal the style of great speakers")
                         feature("gift.fill", "Weekly reveal", "Before-and-after moments and your next focus")
                     }
-                    planPicker
                 }
                 .padding(Theme.gutter)
             }
+            // Both plans and their prices stay on screen next to the button, whatever the screen size.
             VStack(spacing: 10) {
+                planPicker
+                    .padding(.top, 10)
                 Button {
                     Task { await purchase() }
                 } label: {
@@ -92,7 +94,7 @@ struct PaywallView: View {
                 title: "Yearly",
                 price: store.yearly?.displayPrice ?? pricing.map { "$\(String(format: "%.2f", $0.yearlyUsd))" } ?? "",
                 detail: "\(pricing?.trialDays ?? 7)-day free trial · best value",
-                badge: "Save ~45%"
+                badge: yearlySavingPercent.map { "Save \($0)%" }
             ) { yearlySelected = true }
             planRow(
                 selected: !yearlySelected,
@@ -102,6 +104,19 @@ struct PaywallView: View {
                 badge: nil
             ) { yearlySelected = false }
         }
+    }
+
+    /// Yearly against twelve months of monthly, from the App Store prices when loaded, else the server's pricing.
+    private var yearlySavingPercent: Int? {
+        var monthlyPrice = pricing?.monthlyUsd
+        var yearlyPrice = pricing?.yearlyUsd
+        if let monthlyProduct = store.monthly, let yearlyProduct = store.yearly {
+            monthlyPrice = NSDecimalNumber(decimal: monthlyProduct.price).doubleValue
+            yearlyPrice = NSDecimalNumber(decimal: yearlyProduct.price).doubleValue
+        }
+        guard let monthly = monthlyPrice, let yearly = yearlyPrice, monthly > 0 else { return nil }
+        let percent = Int(((1 - yearly / (monthly * 12)) * 100).rounded(.down))
+        return percent > 0 ? percent : nil
     }
 
     private func planRow(selected: Bool, title: String, price: String, detail: String, badge: String?, action: @escaping () -> Void) -> some View {
@@ -123,7 +138,8 @@ struct PaywallView: View {
                 Spacer()
                 Text(price).font(.headline).foregroundStyle(.white)
             }
-            .padding(16)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
             .background(Color.white.opacity(selected ? 0.22 : 0.1), in: RoundedRectangle(cornerRadius: 18, style: .continuous))
             .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).strokeBorder(Color.white.opacity(selected ? 0.9 : 0.25), lineWidth: 1.5))
         }

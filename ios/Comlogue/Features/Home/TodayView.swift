@@ -166,9 +166,14 @@ struct TodayView: View {
         return HStack(spacing: 16) {
             ZStack {
                 ProgressRing(value: Double(sessions) / Double(target), lineWidth: 9)
-                Text("\(sessions)/\(target)").font(.headline.monospacedDigit()).foregroundStyle(Theme.ink)
+                VStack(spacing: 0) {
+                    Text("\(sessions)").font(.title3.weight(.bold).monospacedDigit()).foregroundStyle(Theme.ink)
+                    Text("of \(target)").font(.caption2.weight(.semibold)).foregroundStyle(Theme.inkSecondary)
+                }
             }
             .frame(width: 70, height: 70)
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel("\(sessions) of \(target) practice sessions this week")
             VStack(alignment: .leading, spacing: 4) {
                 Text("This week").font(.headlineRounded).foregroundStyle(Theme.ink)
                 Text(weeklyMessage(sessions: sessions, target: target))

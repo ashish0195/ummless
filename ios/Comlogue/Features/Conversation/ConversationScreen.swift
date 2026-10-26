@@ -81,10 +81,15 @@ struct ConversationScreen: View {
             }
             VStack(alignment: .leading, spacing: 2) {
                 if let progressLabel { Eyebrow(progressLabel, color: Theme.indigo) }
-                Text(model.conversation.setup.title).font(.headlineRounded).foregroundStyle(Theme.ink).lineLimit(1)
+                Text(model.conversation.setup.title)
+                    .font(.headlineRounded)
+                    .foregroundStyle(Theme.ink)
+                    .lineLimit(2)
+                    .minimumScaleFactor(0.85)
             }
-            Spacer()
-            if model.conversation.demoMode { DemoBadge() }
+            .layoutPriority(1)
+            Spacer(minLength: 0)
+            if model.conversation.demoMode { DemoBadge(compact: true) }
             CircleIconButton(systemName: "text.bubble") { model.showTranscript = true }
                 .accessibilityLabel("Show transcript")
         }

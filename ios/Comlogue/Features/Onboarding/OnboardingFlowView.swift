@@ -117,11 +117,13 @@ private struct WelcomeStep: View {
                 if app.isDemo { DemoBadge() }
             }
             .padding(.top, 12)
-            Spacer(minLength: 12)
+            // The copy below never compresses; the orb is the only flexible piece (up to 220 pt), so on
+            // small phones it shrinks instead of the text getting truncated.
             VoiceOrb(level: 0.25)
-                .frame(width: 220, height: 220)
+                .frame(maxWidth: 220, maxHeight: 220)
+                .aspectRatio(1, contentMode: .fit)
                 .frame(maxWidth: .infinity)
-            Spacer(minLength: 12)
+                .padding(.vertical, 16)
             Text("Say what you mean.\nBe understood.")
                 .font(.system(size: 40, weight: .heavy, design: .rounded))
                 .foregroundStyle(Theme.ink)
@@ -129,6 +131,7 @@ private struct WelcomeStep: View {
             Text("An AI coach that listens to how you really talk, shows you what's working — with evidence — and helps you practise one small change at a time.")
                 .font(.body)
                 .foregroundStyle(Theme.inkSecondary)
+                .fixedSize(horizontal: false, vertical: true)
                 .padding(.top, 12)
             VStack(alignment: .leading, spacing: 12) {
                 welcomeRow("waveform.circle.fill", "Talk with an AI partner, upload a conversation, or record one")
@@ -136,7 +139,7 @@ private struct WelcomeStep: View {
                 welcomeRow("figure.walk.motion", "Missions that fit the moments you care about")
             }
             .padding(.top, 22)
-            Spacer(minLength: 20)
+            Spacer(minLength: 20).layoutPriority(-1)
             Button("Get started") { model.next() }
                 .buttonStyle(.primaryPill)
             Text("About 2 minutes of questions first.")
@@ -152,7 +155,7 @@ private struct WelcomeStep: View {
     private func welcomeRow(_ icon: String, _ text: String) -> some View {
         HStack(alignment: .top, spacing: 12) {
             Image(systemName: icon).font(.title3).foregroundStyle(Theme.indigo).frame(width: 28)
-            Text(text).font(.subheadline).foregroundStyle(Theme.ink)
+            Text(text).font(.subheadline).foregroundStyle(Theme.ink).fixedSize(horizontal: false, vertical: true)
         }
     }
 }

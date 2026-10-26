@@ -1,13 +1,13 @@
 {
   "items": [
     {
-      "id": "rec_1a0f0e4d721242239952",
+      "id": "rec_5b55cfcab5e047848da0",
       "title": "Team sync",
       "source": "upload",
       "status": "complete",
       "stage": null,
       "duration_seconds": 48.2,
-      "created_at": "2026-10-26T22:20:06Z",
+      "created_at": "2026-10-26T22:48:05Z",
       "quality": {
         "usable": "yes",
         "issues": [],
@@ -20,7 +20,7 @@
           "display_name": "Speaker 1",
           "speech_seconds": 20.6,
           "turns": 7,
-          "sample_url": "/v1/media/med_81878fa0e0604a2685a1?exp=1793074808&sig=D2nrBDiGcZQQOU93cUjVjkORKMJvlmW-",
+          "sample_url": "/v1/media/med_95b3e06908034cc3bc61?exp=1793076486&sig=H3CftpoSCFJVNnR_Q3bUo0EBo8vfG_7-",
           "sample_text": "So, to recap, we launch on the fifteenth, Ravi owns the rollback plan, and I'll update the timeline.",
           "is_proposed_user": true,
           "match": "reference",
@@ -31,7 +31,7 @@
           "display_name": "Speaker 2",
           "speech_seconds": 16.9,
           "turns": 6,
-          "sample_url": "/v1/media/med_50fa738aff1849e9add0?exp=1793074808&sig=mAPFE2Inz_E3AFbBpWmxX2r4kRwmNgLc",
+          "sample_url": "/v1/media/med_3bb62edb50874c40ab16?exp=1793076486&sig=UJzPiP_TSAS-x4kcArDvyABBMJOYi3CS",
           "sample_text": "If we fix that first, I'm comfortable launching on the fifteenth.",
           "is_proposed_user": false,
           "match": "none",
@@ -130,26 +130,26 @@
                 "quote": "So, to recap, we launch on the fifteenth, Ravi owns the rollback plan, and I'll update the timeline.",
                 "note": "You showed interest in the other person.",
                 "source_type": "recording",
-                "source_id": "rec_1a0f0e4d721242239952",
+                "source_id": "rec_5b55cfcab5e047848da0",
                 "turn_index": null,
                 "start_seconds": 32.8,
                 "end_seconds": 38.08,
-                "audio_url": "/v1/media/med_81878fa0e0604a2685a1?exp=1793074808&sig=D2nrBDiGcZQQOU93cUjVjkORKMJvlmW-"
+                "audio_url": "/v1/media/med_95b3e06908034cc3bc61?exp=1793076486&sig=H3CftpoSCFJVNnR_Q3bUo0EBo8vfG_7-"
               },
               {
                 "quote": "So I think the main question today is whether we launch the new onboarding before the holidays.",
                 "note": "You showed interest in the other person.",
                 "source_type": "recording",
-                "source_id": "rec_1a0f0e4d721242239952",
+                "source_id": "rec_5b55cfcab5e047848da0",
                 "turn_index": null,
                 "start_seconds": 0.0,
                 "end_seconds": 1.04,
-                "audio_url": "/v1/media/med_8c6c9a97d50a4cf886e1?exp=1793074808&sig=_vgnJeHykNUiawVXDqxuF0KzW0znZ4YX"
+                "audio_url": "/v1/media/med_0ec8adccd9f94f9db067?exp=1793076486&sig=WsI9C-A5-HRMpu9dafjsGCwLExzLIzX0"
               }
             ],
             "missing_reason": null,
             "next_step": null,
-            "assessed_at": "2026-10-26T22:20:07Z",
+            "assessed_at": "2026-10-26T22:48:06Z",
             "context_label": "Team sync · Oct 26"
           },
           {
@@ -169,26 +169,26 @@
                 "quote": "My recommendation is to launch on the fifteenth, behind a flag, for ten percent of new users.",
                 "note": "Your case and how you adapted.",
                 "source_type": "recording",
-                "source_id": "rec_1a0f0e4d721242239952",
+                "source_id": "rec_5b55cfcab5e047848da0",
                 "turn_index": null,
                 "start_seconds": 1.72,
                 "end_seconds": 5.74,
-                "audio_url": "/v1/media/med_c9483ccc195d46999957?exp=1793074808&sig=exeWbxe0cIP9tjXK-3-gMpc6t8K4rnu2"
+                "audio_url": "/v1/media/med_d7df3f0fe7a940b48c72?exp=1793076486&sig=Q81UnYPcwTemwpA70N_TrQBN1j4m3zZq"
               },
               {
                 "quote": "Okay, that's a good point.",
                 "note": "Your case and how you adapted.",
                 "source_type": "recording",
-                "source_id": "rec_1a0f0e4d721242239952",
+                "source_id": "rec_5b55cfcab5e047848da0",
                 "turn_index": null,
                 "start_seconds": 21.48,
                 "end_seconds": 23.8,
-                "audio_url": "/v1/media/med_444960ca40344719980f?exp=1793074808&sig=PSmdAyQ8HyETGAA7Liinjrosmx0yIpwz"
+                "audio_url": "/v1/media/med_a198aefaa2364ba5979a?exp=1793076486&sig=x0uS01WOthas7zk4g411QoAvQYJtMoKd"
               }
             ],
             "missing_reason": null,
             "next_step": null,
-            "assessed_at": "2026-10-26T22:20:07Z",
+            "assessed_at": "2026-10-26T22:48:06Z",
             "context_label": "Team sync · Oct 26"
           },
           {
@@ -208,26 +208,26 @@
                 "quote": "So, to recap, we launch on the fifteenth, Ravi owns the rollback plan, and I'll update the timeline.",
                 "note": "How quickly you got to the point.",
                 "source_type": "recording",
-                "source_id": "rec_1a0f0e4d721242239952",
+                "source_id": "rec_5b55cfcab5e047848da0",
                 "turn_index": null,
                 "start_seconds": 32.8,
                 "end_seconds": 38.08,
-                "audio_url": "/v1/media/med_81878fa0e0604a2685a1?exp=1793074808&sig=D2nrBDiGcZQQOU93cUjVjkORKMJvlmW-"
+                "audio_url": "/v1/media/med_95b3e06908034cc3bc61?exp=1793076486&sig=H3CftpoSCFJVNnR_Q3bUo0EBo8vfG_7-"
               },
               {
                 "quote": "So I think the main question today is whether we launch the new onboarding before the holidays.",
                 "note": "How quickly you got to the point.",
                 "source_type": "recording",
-                "source_id": "rec_1a0f0e4d721242239952",
+                "source_id": "rec_5b55cfcab5e047848da0",
                 "turn_index": null,
                 "start_seconds": 0.0,
                 "end_seconds": 1.04,
-                "audio_url": "/v1/media/med_8c6c9a97d50a4cf886e1?exp=1793074808&sig=_vgnJeHykNUiawVXDqxuF0KzW0znZ4YX"
+                "audio_url": "/v1/media/med_0ec8adccd9f94f9db067?exp=1793076486&sig=WsI9C-A5-HRMpu9dafjsGCwLExzLIzX0"
               }
             ],
             "missing_reason": null,
             "next_step": null,
-            "assessed_at": "2026-10-26T22:20:07Z",
+            "assessed_at": "2026-10-26T22:48:06Z",
             "context_label": "Team sync · Oct 26"
           },
           {
@@ -269,11 +269,11 @@
           "try_instead": "So the main question today is whether we launch the new onboarding before the holidays.",
           "why": "Without the warm-up words, your point lands first and sounds more certain.",
           "source_type": "recording",
-          "source_id": "rec_1a0f0e4d721242239952",
+          "source_id": "rec_5b55cfcab5e047848da0",
           "turn_index": null,
           "start_seconds": 0.0,
           "end_seconds": 1.04,
-          "audio_url": "/v1/media/med_8c6c9a97d50a4cf886e1?exp=1793074808&sig=_vgnJeHykNUiawVXDqxuF0KzW0znZ4YX"
+          "audio_url": "/v1/media/med_0ec8adccd9f94f9db067?exp=1793076486&sig=WsI9C-A5-HRMpu9dafjsGCwLExzLIzX0"
         },
         "style": {
           "status": "not_ready",
@@ -311,7 +311,7 @@
           "extra_minutes": 6
         },
         "context_label": "Team sync · Oct 26",
-        "created_at": "2026-10-26T22:20:07Z"
+        "created_at": "2026-10-26T22:48:06Z"
       },
       "debrief": {
         "talk_share": [
@@ -332,11 +332,11 @@
           "quote": "So, to recap, we launch on the fifteenth, Ravi owns the rollback plan, and I'll update the timeline.",
           "note": "You made a clear recommendation with reasons.",
           "source_type": "recording",
-          "source_id": "rec_1a0f0e4d721242239952",
+          "source_id": "rec_5b55cfcab5e047848da0",
           "turn_index": null,
           "start_seconds": 32.8,
           "end_seconds": 38.08,
-          "audio_url": "/v1/media/med_81878fa0e0604a2685a1?exp=1793074808&sig=D2nrBDiGcZQQOU93cUjVjkORKMJvlmW-"
+          "audio_url": "/v1/media/med_95b3e06908034cc3bc61?exp=1793076486&sig=H3CftpoSCFJVNnR_Q3bUo0EBo8vfG_7-"
         },
         "decisions": [
           "So I think the main question today is whether we launch the new onboarding before the holidays.",

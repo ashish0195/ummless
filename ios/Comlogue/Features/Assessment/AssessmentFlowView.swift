@@ -450,7 +450,7 @@ private struct AssessmentResultScreen: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 18) {
                     if let result = model.assessment?.result {
-                        AnalysisResultView(result: result) { action in
+                        AnalysisResultView(result: result, kind: model.purpose.isGapFill ? "Short scenario" : "Initial assessment") { action in
                             if case .recovery(let recovery) = action, recovery.type == .retry, model.failedOnOurSide {
                                 Task { await model.finalize() }
                             } else {

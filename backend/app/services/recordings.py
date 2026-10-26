@@ -387,13 +387,13 @@ def _attribute(db: Session, user: User, recording: Recording, reference: VoiceRe
             if ranked and ranked[0][0] >= voiceprint.WEAK_MATCH:
                 proposed, match, strength = ranked[0][1], "acoustic", "weak"
         if proposed is None:
-            reason, message = "uncertain_match", "We couldn't confidently find your voice. Which voice is yours?"
+            reason, message = "uncertain_match", "We couldn't confidently find your voice in this recording. Play the clips and pick yours."
         elif strength == "conflict":
-            reason, message = "conflict", "The voice we matched doesn't sound quite like your voice sample. Is this you?"
+            reason, message = "conflict", "The voice we matched doesn't sound quite like your voice sample, so we're checking with you."
         elif strength != "strong":
-            reason, message = "uncertain_match", "We think this is you, but we're not sure. Is this you?"
+            reason, message = "uncertain_match", "We think this is you, but we're not sure. Play the clip to check."
         elif first_conversation:
-            reason, message = "first_conversation", "Is this you? We confirm on your first conversation."
+            reason, message = "first_conversation", "We always check with you on your first conversation."
         else:
             reason = None
         requires = first_conversation or proposed is None or strength != "strong"
@@ -401,9 +401,9 @@ def _attribute(db: Session, user: User, recording: Recording, reference: VoiceRe
         if recording.source == "live" and levels:
             proposed = max(levels, key=lambda label: levels[label])
             match, strength = "loudest", "weak"
-            message = "The loudest voice is usually the person holding the phone. Is this you?"
+            message = "The loudest voice is usually the person holding the phone, but we check before giving feedback."
         else:
-            message = "Which voice is yours? Play the clips and pick yours."
+            message = "Play the clips and pick yours."
         reason = "no_reference" if not first_conversation else "first_conversation"
         requires = True
     for speaker in speakers:

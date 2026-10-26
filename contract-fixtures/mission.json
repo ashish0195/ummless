@@ -10,7 +10,7 @@
   "target_behavior": "State your recommendation first, give two relevant reasons, then invite a response.",
   "why_it_matters": "Attention drops fast in meetings. Leading with the recommendation means people hear it even if they tune out halfway.",
   "example": {
-    "text": "\"I'd go with the Lisbon vendor. They're 20% cheaper, and they've already passed our security review. What would you want covered before we sign?\"",
+    "text": "I'd go with the Lisbon vendor. They're 20% cheaper, and they've already passed our security review. What would you want covered before we sign?",
     "audio_url": null,
     "explanation": "Recommendation in the first sentence, two reasons that matter to the decision, then an invitation to respond."
   },
@@ -24,8 +24,8 @@
   "real_life": null,
   "attempts": [
     {
-      "id": "att_dd4fb14096fa42a5a050",
-      "conversation_id": "cnv_bd00c63cc88c495f9230",
+      "id": "att_62a4c31c02744d0f9c85",
+      "conversation_id": "cnv_72012cc13e794f40b800",
       "attempt_number": 1,
       "quick": false,
       "status": "complete",
@@ -37,11 +37,11 @@
           "quote": "So I think maybe we should, um, look at both options first.",
           "note": "Where your recommendation appears.",
           "source_type": "conversation",
-          "source_id": "cnv_bd00c63cc88c495f9230",
+          "source_id": "cnv_72012cc13e794f40b800",
           "turn_index": 1,
           "start_seconds": 0.0,
           "end_seconds": 9.56,
-          "audio_url": "/v1/media/med_ef40dc7d83f24f0d8171?exp=1793074812&sig=wEvToboZM-LYY0FSl3EO-u9vtmxwXiHA"
+          "audio_url": "/v1/media/med_4309cbbfa0e141a3b15a?exp=1793076490&sig=2gbZiU3AgtOtuYf5Og9BFFXRuB3db56i"
         },
         "what_worked": [
           "You gave a concrete reason the listener cares about."
@@ -51,11 +51,11 @@
         "comparison": null,
         "issues": []
       },
-      "created_at": "2026-10-26T22:20:09Z"
+      "created_at": "2026-10-26T22:48:08Z"
     },
     {
-      "id": "att_75b7204feecc4635ba15",
-      "conversation_id": "cnv_510c92c933ce4714ab12",
+      "id": "att_2f4c09d291d54efeb94d",
+      "conversation_id": "cnv_010ff24e98554f6182db",
       "attempt_number": 2,
       "quick": false,
       "status": "complete",
@@ -67,11 +67,11 @@
           "quote": "I'd go with the second vendor.",
           "note": "Where your recommendation appears.",
           "source_type": "conversation",
-          "source_id": "cnv_510c92c933ce4714ab12",
+          "source_id": "cnv_010ff24e98554f6182db",
           "turn_index": 1,
           "start_seconds": 0.0,
           "end_seconds": 9.56,
-          "audio_url": "/v1/media/med_8850fec6acf14c21a7d5?exp=1793074812&sig=DKY6pzcDduPYlOsS-jJCRqldrCLnxReI"
+          "audio_url": "/v1/media/med_0605779d5a2c48bd8efc?exp=1793076490&sig=TtdSWKWB-zhcW-ANw_YDciF7B_fqxH0P"
         },
         "what_worked": [
           "You gave a concrete reason the listener cares about."
@@ -79,7 +79,7 @@
         "one_change": "Name the second reason before you invite a response.",
         "missing_evidence": null,
         "comparison": {
-          "previous_attempt_id": "att_dd4fb14096fa42a5a050",
+          "previous_attempt_id": "att_62a4c31c02744d0f9c85",
           "summary": "This time your first answer was 16 words (before: 12). You stated your recommendation earlier and kept both reasons.",
           "changes": [
             "Recommendation moved into the first sentence",
@@ -89,16 +89,16 @@
         },
         "issues": []
       },
-      "created_at": "2026-10-26T22:20:11Z"
+      "created_at": "2026-10-26T22:48:10Z"
     }
   ],
   "reflections": [
     {
-      "id": "rfl_9e134e9adc244f228ef0",
+      "id": "rfl_481ad09b612243d79a10",
       "text": "I led with my recommendation in standup and people responded faster.",
       "went": "well",
       "coach_reply": "That's great — trying it in a real conversation is the hardest part. Next time, aim for just the first part of the target: state your recommendation first.",
-      "created_at": "2026-10-26T22:20:12Z"
+      "created_at": "2026-10-26T22:48:10Z"
     }
   ],
   "status": "available",

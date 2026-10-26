@@ -6,6 +6,8 @@ import SwiftUI
 struct AnalysisResultView: View {
     @Environment(AppModel.self) private var app
     let result: AnalysisResult
+    /// What this result is, shown before its context: the first baseline is an "Initial assessment".
+    var kind = "Initial assessment"
     var onAction: (ResultAction) -> Void
 
     var body: some View {
@@ -55,7 +57,7 @@ struct AnalysisResultView: View {
     private var header: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
-                Eyebrow("Initial assessment · \(result.contextLabel)", color: Theme.indigo)
+                Eyebrow("\(kind) · \(result.contextLabel)", color: Theme.indigo)
                 Spacer()
                 if app.isDemo { DemoBadge() }
             }

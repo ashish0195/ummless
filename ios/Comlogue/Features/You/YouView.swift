@@ -55,7 +55,7 @@ struct YouView: View {
     @ViewBuilder
     private func profileSection(_ profile: Profile) -> some View {
         VStack(alignment: .leading, spacing: 8) {
-            Eyebrow(basisLabel(profile.basis), color: Theme.indigo)
+            Eyebrow(basisLabel(profile), color: Theme.indigo)
             Text(profile.headline).font(.titleRounded).foregroundStyle(Theme.ink).fixedSize(horizontal: false, vertical: true)
             if let summary = profile.summary {
                 Text(summary).font(.subheadline).foregroundStyle(Theme.inkSecondary)
@@ -103,12 +103,13 @@ struct YouView: View {
         TwinCard(twin: profile.twin) { step in app.present(.gapFill(activityId: step.activityId)) }
     }
 
-    private func basisLabel(_ basis: String) -> String {
-        switch basis {
-        case "assessment": return "Your communication profile"
-        case "partial": return "Partial communication profile"
+    /// What the profile rests on. The headline below already names the profile, so this adds the evidence count.
+    private func basisLabel(_ profile: Profile) -> String {
+        let assessed = profile.dimensions.filter { $0.status.hasLevel }.count
+        switch profile.basis {
         case "goal_only": return "Based on your goal so far"
-        default: return "Your communication profile"
+        case "partial": return "\(assessed) of \(profile.dimensions.count) skills assessed so far"
+        default: return "From your conversations"
         }
     }
 

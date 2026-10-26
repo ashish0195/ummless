@@ -192,7 +192,7 @@ struct RecordingDetailView: View {
                 }
             }
             if let result = recording.result {
-                AnalysisResultView(result: result) { action in app.handle(action) }
+                AnalysisResultView(result: result, kind: "Conversation feedback") { action in app.handle(action) }
             }
             if let debrief = recording.debrief {
                 MeetingDebriefCard(debrief: debrief)
@@ -221,7 +221,7 @@ struct RecordingDetailView: View {
                     RecoveryCard(recovery: recovery) { action in app.handle(.recovery(action)) }
                 }
                 if let result = recording.result, result.status != .noneAssessed {
-                    AnalysisResultView(result: result) { action in app.handle(action) }
+                    AnalysisResultView(result: result, kind: "Conversation feedback") { action in app.handle(action) }
                 }
             }
         case .noUser:

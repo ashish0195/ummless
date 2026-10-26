@@ -1,11 +1,11 @@
 {
-  "id": "rec_1a0f0e4d721242239952",
+  "id": "rec_5b55cfcab5e047848da0",
   "title": "Team sync",
   "source": "upload",
   "status": "needs_speaker_confirmation",
   "stage": null,
   "duration_seconds": 48.2,
-  "created_at": "2026-10-26T22:20:06Z",
+  "created_at": "2026-10-26T22:48:05Z",
   "quality": {
     "usable": "yes",
     "issues": [],
@@ -18,7 +18,7 @@
       "display_name": "Speaker 1",
       "speech_seconds": 20.6,
       "turns": 7,
-      "sample_url": "/v1/media/med_81878fa0e0604a2685a1?exp=1793074807&sig=9kgYCB_iYWlKmUqkXoMCY4rZ7mQafrwm",
+      "sample_url": "/v1/media/med_95b3e06908034cc3bc61?exp=1793076486&sig=H3CftpoSCFJVNnR_Q3bUo0EBo8vfG_7-",
       "sample_text": "So, to recap, we launch on the fifteenth, Ravi owns the rollback plan, and I'll update the timeline.",
       "is_proposed_user": true,
       "match": "reference",
@@ -29,7 +29,7 @@
       "display_name": "Speaker 2",
       "speech_seconds": 16.9,
       "turns": 6,
-      "sample_url": "/v1/media/med_50fa738aff1849e9add0?exp=1793074807&sig=rtqHj4BU3Spn5uCmlDwZ5eJfthLK9bIV",
+      "sample_url": "/v1/media/med_3bb62edb50874c40ab16?exp=1793076486&sig=UJzPiP_TSAS-x4kcArDvyABBMJOYi3CS",
       "sample_text": "If we fix that first, I'm comfortable launching on the fifteenth.",
       "is_proposed_user": false,
       "match": "none",
@@ -41,7 +41,7 @@
     "user_speaker_label": null,
     "requires_confirmation": true,
     "reason": "first_conversation",
-    "message": "Is this you? We confirm on your first conversation."
+    "message": "We always check with you on your first conversation."
   },
   "result": null,
   "debrief": null,

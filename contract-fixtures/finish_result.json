@@ -1,6 +1,6 @@
 {
   "conversation": {
-    "id": "cnv_510c92c933ce4714ab12",
+    "id": "cnv_010ff24e98554f6182db",
     "kind": "mission",
     "status": "finished",
     "partner": {
@@ -31,7 +31,7 @@
         "speaker": "partner",
         "text": "So, we need to pick a vendor by Friday. Which one do you think we should go with?",
         "audio_url": null,
-        "created_at": "2026-10-26T22:20:10Z",
+        "created_at": "2026-10-26T22:48:08Z",
         "quality": null,
         "coach_whisper": null,
         "excluded": false
@@ -40,8 +40,8 @@
         "index": 1,
         "speaker": "user",
         "text": "I'd go with the second vendor. It's cheaper and passed security. What concerns do you have?",
-        "audio_url": "/v1/media/med_8eb5c974e6bb4b09ad93?exp=1793074812&sig=RyM-J3yIYWSbJB6O_wRfb_uGNUAYDWLC",
-        "created_at": "2026-10-26T22:20:11Z",
+        "audio_url": "/v1/media/med_fee74b75c9db4d399ee8?exp=1793076490&sig=XE6SLC-V1wisiS3iQ88afuK2lha0hOQk",
+        "created_at": "2026-10-26T22:48:09Z",
         "quality": {
           "usable": "yes",
           "issues": [],
@@ -56,7 +56,7 @@
         "speaker": "partner",
         "text": "I hear you, but switching vendors mid-quarter feels risky. What if onboarding takes longer than we think?",
         "audio_url": null,
-        "created_at": "2026-10-26T22:20:11Z",
+        "created_at": "2026-10-26T22:48:09Z",
         "quality": null,
         "coach_whisper": null,
         "excluded": false
@@ -65,8 +65,8 @@
         "index": 3,
         "speaker": "user",
         "text": "Fair. They've done three migrations like ours, so I'd still choose them. Two-week trial?",
-        "audio_url": "/v1/media/med_70169711495441a192e0?exp=1793074812&sig=TamAgrj-gJ9sAib4QMfRUtsLYmxhZfM7",
-        "created_at": "2026-10-26T22:20:11Z",
+        "audio_url": "/v1/media/med_fcbf6e1943614d9fb287?exp=1793076490&sig=kB3Zg_pF0pvrOWssP3TTTWSBSi0CeFvr",
+        "created_at": "2026-10-26T22:48:10Z",
         "quality": {
           "usable": "yes",
           "issues": [],
@@ -81,7 +81,7 @@
         "speaker": "partner",
         "text": "Okay, that's helpful. Thanks.",
         "audio_url": null,
-        "created_at": "2026-10-26T22:20:11Z",
+        "created_at": "2026-10-26T22:48:10Z",
         "quality": null,
         "coach_whisper": null,
         "excluded": false
@@ -93,10 +93,10 @@
     "assessment_id": null,
     "mission_id": "business.m1.learn",
     "demo_mode": true,
-    "created_at": "2026-10-26T22:20:10Z"
+    "created_at": "2026-10-26T22:48:08Z"
   },
   "result_ref": {
     "type": "mission_attempt",
-    "id": "att_75b7204feecc4635ba15"
+    "id": "att_2f4c09d291d54efeb94d"
   }
 }

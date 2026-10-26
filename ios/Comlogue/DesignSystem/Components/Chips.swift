@@ -65,14 +65,24 @@ struct DimensionTag: View {
 
 /// Visible whenever the backend runs without an AI key, so demo output is never mistaken for real analysis.
 struct DemoBadge: View {
+    /// Icon only, for crowded headers.
+    var compact = false
+
     var body: some View {
-        Label("Demo mode", systemImage: "theatermasks.fill")
-            .font(.caption2.weight(.bold))
-            .padding(.vertical, 4)
-            .padding(.horizontal, 8)
-            .foregroundStyle(Theme.amber)
-            .background(Theme.amber.opacity(0.14), in: Capsule())
-            .accessibilityLabel("Demo mode: results are simulated, not real analysis")
+        Group {
+            if compact {
+                Image(systemName: "theatermasks.fill")
+            } else {
+                Label("Demo mode", systemImage: "theatermasks.fill")
+            }
+        }
+        .font(.caption2.weight(.bold))
+        .padding(.vertical, 4)
+        .padding(.horizontal, compact ? 6 : 8)
+        .foregroundStyle(Theme.amber)
+        .background(Theme.amber.opacity(0.14), in: Capsule())
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Demo mode: results are simulated, not real analysis")
     }
 }
 

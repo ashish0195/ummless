@@ -242,7 +242,8 @@ def mission_out(svc: AppServices, db: Session, user: User, mission_id: str) -> M
         MissionAttempt.user_id == user.id, MissionAttempt.mission_id == mission_id).order_by(MissionAttempt.attempt_number)))
     reflections = list(db.scalars(select(Reflection).where(
         Reflection.user_id == user.id, Reflection.mission_id == mission_id).order_by(Reflection.created_at)))
-    example_media = tts.speak(svc, db, module.example_text.strip('"“”'), "marin",
+    example_text = module.example_text.strip('"“”')  # the app adds its own quotation marks
+    example_media = tts.speak(svc, db, example_text, "marin",
                               "Voice: warm, natural, confident colleague. Pace: relaxed.")
     real_life = None
     if mission.type == "real_life":
@@ -254,7 +255,7 @@ def mission_out(svc: AppServices, db: Session, user: User, mission_id: str) -> M
         id=mission.id, module_id=module.id, track_id=module.track_id, type=mission.type, title=mission.title,
         dimension=module.dimension, minutes=mission.minutes, context=mission.context,
         target_behavior=module.target_behavior, why_it_matters=module.why_it_matters,
-        example=MissionExample(text=module.example_text, audio_url=media_service.url_for(svc, example_media),
+        example=MissionExample(text=example_text, audio_url=media_service.url_for(svc, example_media),
                                explanation=module.example_explanation),
         steps=list(mission.steps), suggested_seconds=mission.suggested_seconds, real_life=real_life,
         attempts=[_feedback_out(svc, a) for a in attempts],

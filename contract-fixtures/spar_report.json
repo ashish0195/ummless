@@ -1,5 +1,5 @@
 {
-  "conversation_id": "cnv_6d8c11710bfb44c8a29f",
+  "conversation_id": "cnv_db1757f464ab4b9399a1",
   "status": "complete",
   "title": "Pitch a budget increase",
   "outcome": {
@@ -35,11 +35,11 @@
       "try_instead": "It's, going to pay back fast, because the team is really stretched right now.",
       "why": "A direct claim sounds more credible.",
       "source_type": "conversation",
-      "source_id": "cnv_6d8c11710bfb44c8a29f",
+      "source_id": "cnv_db1757f464ab4b9399a1",
       "turn_index": 1,
       "start_seconds": 0.0,
       "end_seconds": 8.0,
-      "audio_url": "/v1/media/med_c4281da05f09407886f0?exp=1793074814&sig=BpiGoOBPtRh75eJcMrd4h6f5CWBafQUx"
+      "audio_url": "/v1/media/med_f96cdf7f771642c4a406?exp=1793076493&sig=pyHc0kI0cPUsQssNSE9sfWDcL_RT62uS"
     }
   ],
   "observations": [

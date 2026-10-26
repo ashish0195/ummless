@@ -1,7 +1,7 @@
 {
   "items": [
     {
-      "id": "asm_d6c8a261f50e4af587af",
+      "id": "asm_dbda2b7abd2c4046b5a4",
       "route": "roleplay",
       "purpose": "baseline",
       "status": "complete",
@@ -20,7 +20,7 @@
             "concision"
           ],
           "status": "done",
-          "conversation_id": "cnv_cc762a89321d41e5b444"
+          "conversation_id": "cnv_498ed8ff76fc4e91977b"
         },
         {
           "id": "explain_interest",
@@ -34,7 +34,7 @@
             "concision"
           ],
           "status": "done",
-          "conversation_id": "cnv_6fb4f8e15aad49cd8d9f"
+          "conversation_id": "cnv_93df1baacadb418bbef9"
         },
         {
           "id": "respond_to_someone",
@@ -47,7 +47,7 @@
             "warmth"
           ],
           "status": "done",
-          "conversation_id": "cnv_355ebcdbaf6944e1a18f"
+          "conversation_id": "cnv_337b3ded0f93401ead0a"
         },
         {
           "id": "make_a_case",
@@ -62,7 +62,7 @@
             "concision"
           ],
           "status": "done",
-          "conversation_id": "cnv_f6e88d7f0e9f4cf88ae7"
+          "conversation_id": "cnv_0dbcbafbe96d4716b07f"
         },
         {
           "id": "tell_a_story",
@@ -76,7 +76,7 @@
             "clarity"
           ],
           "status": "done",
-          "conversation_id": "cnv_9f9f3f4c84ca49ea9364"
+          "conversation_id": "cnv_3fd8013300b546cc8f80"
         }
       ],
       "estimate_minutes": [
@@ -106,26 +106,26 @@
                 "quote": "So last spring I planned this big surprise picnic for my partner's birthday.",
                 "note": "Your main point is easy to find here.",
                 "source_type": "conversation",
-                "source_id": "cnv_9f9f3f4c84ca49ea9364",
+                "source_id": "cnv_3fd8013300b546cc8f80",
                 "turn_index": 1,
                 "start_seconds": 0.0,
                 "end_seconds": 12.0,
-                "audio_url": "/v1/media/med_055cf8835a7148bba6df?exp=1793074805&sig=T2G7JGCmnAZ30osocjGHsnddWRUVI_dU"
+                "audio_url": "/v1/media/med_bcd8a46fe0844b12b868?exp=1793076483&sig=AMuVNEXNU0gSfOfBMZG7r4yauJNG2w-Z"
               },
               {
                 "quote": "Sure, so I play chess.",
                 "note": "Your main point is easy to find here.",
                 "source_type": "conversation",
-                "source_id": "cnv_6fb4f8e15aad49cd8d9f",
+                "source_id": "cnv_93df1baacadb418bbef9",
                 "turn_index": 1,
                 "start_seconds": 0.0,
                 "end_seconds": 12.0,
-                "audio_url": "/v1/media/med_e1d0559bd58e4952a41f?exp=1793074805&sig=APG6TWXaGSk5EAhCRjkMTvpqSXEp-Ri1"
+                "audio_url": "/v1/media/med_ffc2c901391d4980818f?exp=1793076483&sig=V_L1N0niI3S4OTc2d6yUUzoMq1blyMO1"
               }
             ],
             "missing_reason": null,
             "next_step": null,
-            "assessed_at": "2026-10-26T22:20:02Z",
+            "assessed_at": "2026-10-26T22:48:01Z",
             "context_label": "AI roleplay · Oct 26"
           },
           {
@@ -145,26 +145,26 @@
                 "quote": "So last spring I planned this big surprise picnic for my partner's birthday.",
                 "note": "A recognizable shape you can build on.",
                 "source_type": "conversation",
-                "source_id": "cnv_9f9f3f4c84ca49ea9364",
+                "source_id": "cnv_3fd8013300b546cc8f80",
                 "turn_index": 1,
                 "start_seconds": 0.0,
                 "end_seconds": 12.0,
-                "audio_url": "/v1/media/med_055cf8835a7148bba6df?exp=1793074805&sig=T2G7JGCmnAZ30osocjGHsnddWRUVI_dU"
+                "audio_url": "/v1/media/med_bcd8a46fe0844b12b868?exp=1793076483&sig=AMuVNEXNU0gSfOfBMZG7r4yauJNG2w-Z"
               },
               {
                 "quote": "Sure, so I play chess.",
                 "note": "A recognizable shape you can build on.",
                 "source_type": "conversation",
-                "source_id": "cnv_6fb4f8e15aad49cd8d9f",
+                "source_id": "cnv_93df1baacadb418bbef9",
                 "turn_index": 1,
                 "start_seconds": 0.0,
                 "end_seconds": 12.0,
-                "audio_url": "/v1/media/med_e1d0559bd58e4952a41f?exp=1793074805&sig=APG6TWXaGSk5EAhCRjkMTvpqSXEp-Ri1"
+                "audio_url": "/v1/media/med_ffc2c901391d4980818f?exp=1793076483&sig=V_L1N0niI3S4OTc2d6yUUzoMq1blyMO1"
               }
             ],
             "missing_reason": null,
             "next_step": null,
-            "assessed_at": "2026-10-26T22:20:02Z",
+            "assessed_at": "2026-10-26T22:48:01Z",
             "context_label": "AI roleplay · Oct 26"
           },
           {
@@ -184,26 +184,26 @@
                 "quote": "That makes sense.",
                 "note": "You responded to what was said.",
                 "source_type": "conversation",
-                "source_id": "cnv_355ebcdbaf6944e1a18f",
+                "source_id": "cnv_337b3ded0f93401ead0a",
                 "turn_index": 3,
                 "start_seconds": 0.0,
                 "end_seconds": 11.54,
-                "audio_url": "/v1/media/med_e4c6edd02d5548dca8dc?exp=1793074805&sig=UzYw_W0cj_XNA7VOKZN4mGzgdpBTsY6k"
+                "audio_url": "/v1/media/med_753ad8873c7f42e19dde?exp=1793076483&sig=Ue5SY4XrEvf5hHSDJgx4xQ89oxz3arJ9"
               },
               {
                 "quote": "Bouldering, wow.",
                 "note": "You responded to what was said.",
                 "source_type": "conversation",
-                "source_id": "cnv_cc762a89321d41e5b444",
+                "source_id": "cnv_498ed8ff76fc4e91977b",
                 "turn_index": 5,
                 "start_seconds": 0.0,
                 "end_seconds": 10.0,
-                "audio_url": "/v1/media/med_638e429ff5304b00a623?exp=1793074805&sig=Ry5O16ATbX4viMDxp-RNAkM4dDvPhWqe"
+                "audio_url": "/v1/media/med_a1c2850c87464b0ba39a?exp=1793076483&sig=k7wa3hDCBwYs0lv_ZNDxFdVWmHSmgjVj"
               }
             ],
             "missing_reason": null,
             "next_step": null,
-            "assessed_at": "2026-10-26T22:20:02Z",
+            "assessed_at": "2026-10-26T22:48:01Z",
             "context_label": "AI roleplay · Oct 26"
           },
           {
@@ -223,26 +223,26 @@
                 "quote": "That makes sense.",
                 "note": "You showed interest in the other person.",
                 "source_type": "conversation",
-                "source_id": "cnv_355ebcdbaf6944e1a18f",
+                "source_id": "cnv_337b3ded0f93401ead0a",
                 "turn_index": 3,
                 "start_seconds": 0.0,
                 "end_seconds": 11.54,
-                "audio_url": "/v1/media/med_e4c6edd02d5548dca8dc?exp=1793074805&sig=UzYw_W0cj_XNA7VOKZN4mGzgdpBTsY6k"
+                "audio_url": "/v1/media/med_753ad8873c7f42e19dde?exp=1793076483&sig=Ue5SY4XrEvf5hHSDJgx4xQ89oxz3arJ9"
               },
               {
                 "quote": "Oh, that sounds hard.",
                 "note": "You showed interest in the other person.",
                 "source_type": "conversation",
-                "source_id": "cnv_355ebcdbaf6944e1a18f",
+                "source_id": "cnv_337b3ded0f93401ead0a",
                 "turn_index": 1,
                 "start_seconds": 0.0,
                 "end_seconds": 11.9,
-                "audio_url": "/v1/media/med_f4c720a461994e359054?exp=1793074805&sig=25xKB9rG4wMvH_NrMdz_nfVcmSRlyC4C"
+                "audio_url": "/v1/media/med_a29729c4ce4c4027b074?exp=1793076483&sig=0djr4UUC54W6DFE_NZM6H8cNXZU5AEwk"
               }
             ],
             "missing_reason": null,
             "next_step": null,
-            "assessed_at": "2026-10-26T22:20:02Z",
+            "assessed_at": "2026-10-26T22:48:01Z",
             "context_label": "AI roleplay · Oct 26"
           },
           {
@@ -262,26 +262,26 @@
                 "quote": "Oh, okay, that's fair.",
                 "note": "Your case and how you adapted.",
                 "source_type": "conversation",
-                "source_id": "cnv_f6e88d7f0e9f4cf88ae7",
+                "source_id": "cnv_0dbcbafbe96d4716b07f",
                 "turn_index": 3,
                 "start_seconds": 0.0,
                 "end_seconds": 11.54,
-                "audio_url": "/v1/media/med_2334f660ef22462a8439?exp=1793074805&sig=7KSPTP2KEWXvaxisnUmkQtrEX_kVaDRX"
+                "audio_url": "/v1/media/med_e92d221410e84b228143?exp=1793076483&sig=-k4yey3EBYCmwThTlSTxD6AEV1dIakd5"
               },
               {
                 "quote": "We should go to the night market by the river on Saturday.",
                 "note": "Your case and how you adapted.",
                 "source_type": "conversation",
-                "source_id": "cnv_f6e88d7f0e9f4cf88ae7",
+                "source_id": "cnv_0dbcbafbe96d4716b07f",
                 "turn_index": 1,
                 "start_seconds": 0.0,
                 "end_seconds": 13.46,
-                "audio_url": "/v1/media/med_0d23bc3135004bcb8cc3?exp=1793074805&sig=ISr8ou7JO1evBKY9I8DhcDwpkJxPVf3f"
+                "audio_url": "/v1/media/med_1d74325546704871bbd7?exp=1793076483&sig=0Ko5U_uOyYNTyPu9PkIesW79H4q27Lo0"
               }
             ],
             "missing_reason": null,
             "next_step": null,
-            "assessed_at": "2026-10-26T22:20:02Z",
+            "assessed_at": "2026-10-26T22:48:01Z",
             "context_label": "AI roleplay · Oct 26"
           },
           {
@@ -301,26 +301,26 @@
                 "quote": "So last spring I planned this big surprise picnic for my partner's birthday.",
                 "note": "How quickly you got to the point.",
                 "source_type": "conversation",
-                "source_id": "cnv_9f9f3f4c84ca49ea9364",
+                "source_id": "cnv_3fd8013300b546cc8f80",
                 "turn_index": 1,
                 "start_seconds": 0.0,
                 "end_seconds": 12.0,
-                "audio_url": "/v1/media/med_055cf8835a7148bba6df?exp=1793074805&sig=T2G7JGCmnAZ30osocjGHsnddWRUVI_dU"
+                "audio_url": "/v1/media/med_bcd8a46fe0844b12b868?exp=1793076483&sig=AMuVNEXNU0gSfOfBMZG7r4yauJNG2w-Z"
               },
               {
                 "quote": "Sure, so I play chess.",
                 "note": "How quickly you got to the point.",
                 "source_type": "conversation",
-                "source_id": "cnv_6fb4f8e15aad49cd8d9f",
+                "source_id": "cnv_93df1baacadb418bbef9",
                 "turn_index": 1,
                 "start_seconds": 0.0,
                 "end_seconds": 12.0,
-                "audio_url": "/v1/media/med_e1d0559bd58e4952a41f?exp=1793074805&sig=APG6TWXaGSk5EAhCRjkMTvpqSXEp-Ri1"
+                "audio_url": "/v1/media/med_ffc2c901391d4980818f?exp=1793076483&sig=V_L1N0niI3S4OTc2d6yUUzoMq1blyMO1"
               }
             ],
             "missing_reason": null,
             "next_step": null,
-            "assessed_at": "2026-10-26T22:20:02Z",
+            "assessed_at": "2026-10-26T22:48:01Z",
             "context_label": "AI roleplay · Oct 26"
           },
           {
@@ -340,26 +340,26 @@
                 "quote": "So last spring I planned this big surprise picnic for my partner's birthday.",
                 "note": "Where your story came to life.",
                 "source_type": "conversation",
-                "source_id": "cnv_9f9f3f4c84ca49ea9364",
+                "source_id": "cnv_3fd8013300b546cc8f80",
                 "turn_index": 1,
                 "start_seconds": 0.0,
                 "end_seconds": 12.0,
-                "audio_url": "/v1/media/med_055cf8835a7148bba6df?exp=1793074805&sig=T2G7JGCmnAZ30osocjGHsnddWRUVI_dU"
+                "audio_url": "/v1/media/med_bcd8a46fe0844b12b868?exp=1793076483&sig=AMuVNEXNU0gSfOfBMZG7r4yauJNG2w-Z"
               },
               {
                 "quote": "Sure, so I play chess.",
                 "note": "Where your story came to life.",
                 "source_type": "conversation",
-                "source_id": "cnv_6fb4f8e15aad49cd8d9f",
+                "source_id": "cnv_93df1baacadb418bbef9",
                 "turn_index": 1,
                 "start_seconds": 0.0,
                 "end_seconds": 12.0,
-                "audio_url": "/v1/media/med_e1d0559bd58e4952a41f?exp=1793074805&sig=APG6TWXaGSk5EAhCRjkMTvpqSXEp-Ri1"
+                "audio_url": "/v1/media/med_ffc2c901391d4980818f?exp=1793076483&sig=V_L1N0niI3S4OTc2d6yUUzoMq1blyMO1"
               }
             ],
             "missing_reason": null,
             "next_step": null,
-            "assessed_at": "2026-10-26T22:20:02Z",
+            "assessed_at": "2026-10-26T22:48:01Z",
             "context_label": "AI roleplay · Oct 26"
           }
         ],
@@ -382,11 +382,11 @@
           "try_instead": "I started during a long winter and now I'm obsessed, I bake every weekend and give most of it away to neighbors.",
           "why": "Without the warm-up words, your point lands first and sounds more certain.",
           "source_type": "conversation",
-          "source_id": "cnv_cc762a89321d41e5b444",
+          "source_id": "cnv_498ed8ff76fc4e91977b",
           "turn_index": 1,
           "start_seconds": 0.0,
           "end_seconds": 11.9,
-          "audio_url": "/v1/media/med_d9209da30b034df79e97?exp=1793074805&sig=OhdTm2dCr3R5BvlnJ6yp5UTyW8FzDMIN"
+          "audio_url": "/v1/media/med_cca0c9f91fe04078a78e?exp=1793076483&sig=9clceQmKWwMAn2bCSbygvy01L1eLfE38"
         },
         "style": {
           "status": "provisional",
@@ -400,13 +400,13 @@
         },
         "recovery": null,
         "context_label": "AI roleplay · Oct 26",
-        "created_at": "2026-10-26T22:20:02Z"
+        "created_at": "2026-10-26T22:48:01Z"
       },
-      "created_at": "2026-10-26T22:19:49Z",
-      "completed_at": "2026-10-26T22:20:05Z"
+      "created_at": "2026-10-26T22:47:48Z",
+      "completed_at": "2026-10-26T22:48:03Z"
     },
     {
-      "id": "asm_0f54b67b66af41398e8a",
+      "id": "asm_8ed91aed25a24ea68318",
       "route": "roleplay",
       "purpose": "baseline",
       "status": "in_progress",
@@ -425,7 +425,7 @@
             "concision"
           ],
           "status": "in_progress",
-          "conversation_id": "cnv_d92fb0547bcf4862bed2"
+          "conversation_id": "cnv_33ee953248004da48259"
         },
         {
           "id": "explain_interest",
@@ -490,7 +490,7 @@
       ],
       "target_dimensions": [],
       "result": null,
-      "created_at": "2026-10-26T22:19:48Z",
+      "created_at": "2026-10-26T22:47:47Z",
       "completed_at": null
     }
   ]
