@@ -61,12 +61,16 @@ struct AnalysisResultView: View {
             }
             Text(result.headline).font(.display).foregroundStyle(Theme.ink).fixedSize(horizontal: false, vertical: true)
             Text(result.summary).font(.body).foregroundStyle(Theme.inkSecondary).fixedSize(horizontal: false, vertical: true)
-            if result.status == .partial {
-                Label("\(result.assessedDimensions.count) of \(result.dimensions.count) skills assessed so far", systemImage: "circle.lefthalf.filled")
-                    .font(.footnote.weight(.semibold))
-                    .foregroundStyle(Theme.indigo)
-                    .padding(.top, 2)
+            HStack {
+                if result.status == .partial {
+                    Label("\(result.assessedDimensions.count) of \(result.dimensions.count) skills assessed so far", systemImage: "circle.lefthalf.filled")
+                        .font(.footnote.weight(.semibold))
+                        .foregroundStyle(Theme.indigo)
+                }
+                Spacer()
+                HowItWorksLink()
             }
+            .padding(.top, 2)
         }
     }
 }

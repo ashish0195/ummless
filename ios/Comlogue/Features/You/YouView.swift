@@ -73,6 +73,7 @@ struct YouView: View {
             Text("No overall score — each skill stands on its own evidence.")
                 .font(.caption)
                 .foregroundStyle(Theme.inkTertiary)
+            HowItWorksLink()
         }
         .card()
 
