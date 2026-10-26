@@ -60,6 +60,8 @@ final class ContractTests: XCTestCase {
         _ = try decode(WeeklyReview.self, "weekly_review.json")
         _ = try decode(Entitlement.self, "entitlement.json")
         _ = try decode(APIErrorEnvelope.self, "error.json")
+        _ = try decode(DemoSeed.self, "seed_demo.json")
+        _ = try decode(FeedbackReportResponse.self, "feedback_report.json")
     }
 
     func testProfileNeverHasAnOverallScoreAndMissingEvidenceHasNoLevel() throws {

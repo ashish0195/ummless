@@ -6,9 +6,9 @@ What's needed to take Comlogue from this repository to the App Store, and what s
 
 - [ ] Deploy `backend/` (Docker image; see `backend/README.md`) behind HTTPS, e.g. Render, Fly.io or Railway.
 - [ ] Use Postgres (`DATABASE_URL`) and S3-compatible storage for media. SQLite and local disk are for development only.
-- [ ] Set `OPENAI_API_KEY`, a long random `SECRET_KEY`, and `ALLOW_DEV_ENTITLEMENTS=false`.
-- [ ] Confirm which OpenAI models your account can use and set the `OPENAI_*_MODELS` lists. The backend falls back automatically, but the first choice should be the model you want.
-- [ ] Turn on App Store transaction verification (Apple root certificates). See the billing section in `backend/README.md`.
+- [ ] Set `ENVIRONMENT=production`, `OPENAI_API_KEY`, a long random `SECRET_KEY`, and `ALLOW_DEV_ENTITLEMENTS=false`.
+- [ ] Confirm which OpenAI models your account can use and set `ASSESSMENT_MODELS`, `CONVERSATION_MODELS`, `TRANSCRIPTION_MODELS`, `DIARIZATION_MODELS` and `TTS_MODELS`. The backend falls back automatically, but the first choice should be the model you want.
+- [ ] Turn on App Store transaction verification (`APP_STORE_REQUIRE_VERIFICATION=true` once Apple root-certificate checks are wired in). See the billing section in `backend/README.md`.
 - [ ] Point the Release build at it: the `API_BASE_URL` build setting (currently the placeholder `https://api.comlogue.app`).
 
 ## 2. App Store Connect
@@ -56,7 +56,7 @@ What's needed to take Comlogue from this repository to the App Store, and what s
 
 ## 3. Needs legal review before launch
 
-- **Voice reference (biometric-adjacent).** Illinois BIPA, Texas CUBI and Washington's biometric law may apply to voiceprints. Confirm the consent text (`consents.voice_reference` in the backend), the written retention schedule (currently "until you delete it, or 18 months of inactivity") and the published policy.
+- **Voice reference (biometric-adjacent).** Illinois BIPA, Texas CUBI and Washington's biometric law may apply to voiceprints. Confirm the consent text (`backend/app/domain/consents.py`), the written retention schedule (currently "until you delete it, or 18 months of inactivity") and the published policy.
 - **Recording others.** The product requires everyone's agreement everywhere. Have counsel review the regional guidance text in `backend/app/domain/recording_rules.py`.
 - **Third-party processing.** Audio is processed by OpenAI. Check your data processing terms and whether you need zero data retention.
 - **Conversational twin references.** The shipped references are illustrative archetypes. Adding real people (even public-domain speeches) needs sign-off.
