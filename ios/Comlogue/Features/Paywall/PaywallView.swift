@@ -17,14 +17,11 @@ struct PaywallView: View {
     var body: some View {
         VStack(spacing: 0) {
             ScrollView {
-                VStack(alignment: .leading, spacing: 20) {
-                    HStack {
-                        Spacer()
-                        CircleIconButton(systemName: "xmark", tint: .white, background: .white.opacity(0.2), action: onClose)
-                    }
+                VStack(alignment: .leading, spacing: 18) {
                     VoiceOrb(level: 0.25, colors: [Color.white, Color(rgb: 0xC9C3FF), Color(rgb: 0xFFB4A8)])
-                        .frame(width: 110, height: 110)
+                        .frame(width: 88, height: 88)
                         .frame(maxWidth: .infinity)
+                        .padding(.top, 8)
                     VStack(alignment: .leading, spacing: 8) {
                         Text("Keep the momentum").font(.display).foregroundStyle(.white)
                         Text("Your profile and first win are yours to keep. Pro turns them into steady, real-world progress.")
@@ -40,6 +37,13 @@ struct PaywallView: View {
                     }
                 }
                 .padding(Theme.gutter)
+                .padding(.bottom, 24)
+            }
+            // Features that scroll under the plans fade out instead of being cut off mid-line.
+            .mask {
+                LinearGradient(stops: [.init(color: .black, location: 0), .init(color: .black, location: 0.9),
+                                       .init(color: .clear, location: 1)],
+                               startPoint: .top, endPoint: .bottom)
             }
             // Both plans and their prices stay on screen next to the button, whatever the screen size.
             VStack(spacing: 10) {
@@ -74,6 +78,11 @@ struct PaywallView: View {
             }
             .padding(.horizontal, Theme.gutter)
             .padding(.bottom, 12)
+        }
+        .overlay(alignment: .topTrailing) {
+            CircleIconButton(systemName: "xmark", tint: .white, background: .white.opacity(0.2), action: onClose)
+                .padding(.trailing, Theme.gutter)
+                .padding(.top, 8)
         }
         .background(
             LinearGradient(colors: [Color(rgb: 0x2A2470), Color(rgb: 0x5146E6), Color(rgb: 0x8B5CF6)],

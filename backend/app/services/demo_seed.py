@@ -433,7 +433,7 @@ def _seed_pending_recording(db: Session, user: User, clock: _Clock) -> Recording
              "match": "none", "match_strength": None},
         ],
         attribution={"status": "pending", "user_speaker_label": None, "requires_confirmation": True,
-                     "reason": "uncertain_match", "message": "We think this is you, but we're not sure. Play the clip to check."},
+                     "reason": "uncertain_match", "message": "We think this is you, but we're not sure. Check the line we heard from them."},
         created_at=when,
     )
     db.add(recording)
