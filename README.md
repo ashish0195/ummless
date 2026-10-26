@@ -36,6 +36,9 @@ only where there's real evidence. Then it coaches you one small change at a time
   - Get a debrief of a recorded meeting.
 - **Privacy built in:** just-in-time recording consent with regional rules, and deletion of each recording,
   the voice sample, or everything.
+- **Siri and Shortcuts:** "Start today's mission", "Quick practice" and "Record a conversation".
+- **Honest when things go wrong:** unclear audio, an uncertain speaker or a server-side failure leads to a
+  specific next step ("Try again", "Choose another speaker", a short gap-filling scenario), never a low score.
 
 ## Quick start
 
@@ -76,8 +79,9 @@ cd ios && swift test               # app core: models, API client, audio math, c
 `backend/scripts/export_contract_fixtures.py` captures real API responses into `contract-fixtures/`. The
 Swift contract tests decode them with the app's own models, so the app and backend can't drift apart.
 
-CI (`.github/workflows/ci.yml`) runs the backend tests, the Swift core tests on Linux, and a full Xcode
-build of the app for the iOS Simulator on macOS.
+CI (`.github/workflows/ci.yml`) runs the backend tests, then the Swift core and contract tests on Linux
+against fixtures that backend just exported. It also builds and smoke-tests the backend Docker image, and
+does a full Xcode build of the app for the iOS Simulator on macOS.
 
 ## Repository layout
 

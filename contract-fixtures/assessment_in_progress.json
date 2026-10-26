@@ -1,0 +1,88 @@
+{
+  "id": "asm_0f54b67b66af41398e8a",
+  "route": "roleplay",
+  "purpose": "baseline",
+  "status": "in_progress",
+  "stage": null,
+  "activities": [
+    {
+      "id": "meet_someone_new",
+      "title": "Meet someone new",
+      "prompt": "We've just met at a friend's gathering. What's something you've been spending time on lately?",
+      "duration_label": "1–2 min",
+      "suggested_seconds": 60,
+      "dimensions": [
+        "clarity",
+        "warmth",
+        "listening",
+        "concision"
+      ],
+      "status": "in_progress",
+      "conversation_id": "cnv_d92fb0547bcf4862bed2"
+    },
+    {
+      "id": "explain_interest",
+      "title": "Explain an interest",
+      "prompt": "Pick something you know or enjoy. Explain it to me as someone completely new to it.",
+      "duration_label": "2 min",
+      "suggested_seconds": 90,
+      "dimensions": [
+        "clarity",
+        "structure",
+        "concision"
+      ],
+      "status": "pending",
+      "conversation_id": null
+    },
+    {
+      "id": "respond_to_someone",
+      "title": "Respond to someone",
+      "prompt": "I joined a new team a month ago. Everyone's friendly, but I still feel outside the group. Yesterday I had an idea and didn't say anything.",
+      "duration_label": "2–3 min",
+      "suggested_seconds": 90,
+      "dimensions": [
+        "listening",
+        "warmth"
+      ],
+      "status": "pending",
+      "conversation_id": null
+    },
+    {
+      "id": "make_a_case",
+      "title": "Make a case",
+      "prompt": "Suggest an activity we could do together this weekend and try to get me interested.",
+      "duration_label": "2–3 min",
+      "suggested_seconds": 75,
+      "dimensions": [
+        "persuasion",
+        "listening",
+        "structure",
+        "concision"
+      ],
+      "status": "pending",
+      "conversation_id": null
+    },
+    {
+      "id": "tell_a_story",
+      "title": "Tell a story",
+      "prompt": "Tell me about a time something didn't go as planned. It can be funny, ordinary, or meaningful.",
+      "duration_label": "2–3 min",
+      "suggested_seconds": 120,
+      "dimensions": [
+        "storytelling",
+        "structure",
+        "clarity"
+      ],
+      "status": "pending",
+      "conversation_id": null
+    }
+  ],
+  "estimate_minutes": [
+    10,
+    15
+  ],
+  "target_dimensions": [],
+  "result": null,
+  "created_at": "2026-10-26T22:19:48Z",
+  "completed_at": null
+}

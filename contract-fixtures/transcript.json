@@ -1,0 +1,121 @@
+{
+  "segments": [
+    {
+      "speaker": "Speaker 1",
+      "is_user": true,
+      "start": 0.0,
+      "end": 1.04,
+      "text": "So I think the main question today is whether we launch the new onboarding before the holidays.",
+      "excluded": false,
+      "exclusion_reason": null
+    },
+    {
+      "speaker": "Speaker 1",
+      "is_user": true,
+      "start": 1.72,
+      "end": 5.74,
+      "text": "My recommendation is to launch on the fifteenth, behind a flag, for ten percent of new users.",
+      "excluded": false,
+      "exclusion_reason": null
+    },
+    {
+      "speaker": "Speaker 1",
+      "is_user": true,
+      "start": 6.3,
+      "end": 8.0,
+      "text": "Two reasons: support is ready, and the flag means we can roll back in minutes.",
+      "excluded": false,
+      "exclusion_reason": null
+    },
+    {
+      "speaker": "Speaker 2",
+      "is_user": false,
+      "start": 8.7,
+      "end": 11.9,
+      "text": "Sounds good. Where are we on the onboarding numbers?",
+      "excluded": false,
+      "exclusion_reason": null
+    },
+    {
+      "speaker": "Speaker 2",
+      "is_user": false,
+      "start": 12.44,
+      "end": 15.7,
+      "text": "Honestly I'm worried about the export step. A lot of people drop off there.",
+      "excluded": false,
+      "exclusion_reason": null
+    },
+    {
+      "speaker": "Speaker 1",
+      "is_user": true,
+      "start": 16.4,
+      "end": 20.72,
+      "text": "Lin, you've looked at the drop-off data — what are we missing?",
+      "excluded": false,
+      "exclusion_reason": null
+    },
+    {
+      "speaker": "Speaker 1",
+      "is_user": true,
+      "start": 21.48,
+      "end": 23.8,
+      "text": "Okay, that's a good point. Let's fix the export step first, then launch.",
+      "excluded": false,
+      "exclusion_reason": null
+    },
+    {
+      "speaker": "Speaker 2",
+      "is_user": false,
+      "start": 25.1,
+      "end": 26.94,
+      "text": "From the data, about a third of new users never finish the export.",
+      "excluded": false,
+      "exclusion_reason": null
+    },
+    {
+      "speaker": "Speaker 2",
+      "is_user": false,
+      "start": 27.5,
+      "end": 30.86,
+      "text": "If we fix that first, I'm comfortable launching on the fifteenth.",
+      "excluded": false,
+      "exclusion_reason": null
+    },
+    {
+      "speaker": "Speaker 1",
+      "is_user": true,
+      "start": 32.8,
+      "end": 38.08,
+      "text": "So, to recap, we launch on the fifteenth, Ravi owns the rollback plan, and I'll update the timeline.",
+      "excluded": false,
+      "exclusion_reason": null
+    },
+    {
+      "speaker": "Speaker 1",
+      "is_user": true,
+      "start": 38.78,
+      "end": 40.72,
+      "text": "So I think the main question today is whether we launch the new onboarding before the holidays.",
+      "excluded": false,
+      "exclusion_reason": null
+    },
+    {
+      "speaker": "Speaker 2",
+      "is_user": false,
+      "start": 41.5,
+      "end": 44.56,
+      "text": "I can own the rollback plan.",
+      "excluded": false,
+      "exclusion_reason": null
+    },
+    {
+      "speaker": "Speaker 2",
+      "is_user": false,
+      "start": 45.1,
+      "end": 47.26,
+      "text": "Works for me. Let's do it.",
+      "excluded": false,
+      "exclusion_reason": null
+    }
+  ]
+}

@@ -1,0 +1,280 @@
+{
+  "region": "US-CA",
+  "region_name": "California, US",
+  "rule": "all_party",
+  "headline": "Everyone must agree in California",
+  "detail": "California is an all-party consent state: everyone in a private conversation must agree before it's recorded.",
+  "policy": "Comlogue requires everyone in the conversation to agree to be recorded, wherever you are.",
+  "how_to_ask": "\"Mind if I record this? I'm using an app to get feedback on how I communicate. It's just for me, and I can delete it anytime.\"",
+  "disclaimer": "This is general information, not legal advice. Rules can differ for phone calls, workplaces and public places, and they change over time.",
+  "regions": [
+    {
+      "code": "US-AL",
+      "name": "Alabama, US"
+    },
+    {
+      "code": "US-AK",
+      "name": "Alaska, US"
+    },
+    {
+      "code": "US-AZ",
+      "name": "Arizona, US"
+    },
+    {
+      "code": "US-AR",
+      "name": "Arkansas, US"
+    },
+    {
+      "code": "US-CA",
+      "name": "California, US"
+    },
+    {
+      "code": "US-CO",
+      "name": "Colorado, US"
+    },
+    {
+      "code": "US-CT",
+      "name": "Connecticut, US"
+    },
+    {
+      "code": "US-DE",
+      "name": "Delaware, US"
+    },
+    {
+      "code": "US-DC",
+      "name": "District of Columbia, US"
+    },
+    {
+      "code": "US-FL",
+      "name": "Florida, US"
+    },
+    {
+      "code": "US-GA",
+      "name": "Georgia, US"
+    },
+    {
+      "code": "US-HI",
+      "name": "Hawaii, US"
+    },
+    {
+      "code": "US-ID",
+      "name": "Idaho, US"
+    },
+    {
+      "code": "US-IL",
+      "name": "Illinois, US"
+    },
+    {
+      "code": "US-IN",
+      "name": "Indiana, US"
+    },
+    {
+      "code": "US-IA",
+      "name": "Iowa, US"
+    },
+    {
+      "code": "US-KS",
+      "name": "Kansas, US"
+    },
+    {
+      "code": "US-KY",
+      "name": "Kentucky, US"
+    },
+    {
+      "code": "US-LA",
+      "name": "Louisiana, US"
+    },
+    {
+      "code": "US-ME",
+      "name": "Maine, US"
+    },
+    {
+      "code": "US-MD",
+      "name": "Maryland, US"
+    },
+    {
+      "code": "US-MA",
+      "name": "Massachusetts, US"
+    },
+    {
+      "code": "US-MI",
+      "name": "Michigan, US"
+    },
+    {
+      "code": "US-MN",
+      "name": "Minnesota, US"
+    },
+    {
+      "code": "US-MS",
+      "name": "Mississippi, US"
+    },
+    {
+      "code": "US-MO",
+      "name": "Missouri, US"
+    },
+    {
+      "code": "US-MT",
+      "name": "Montana, US"
+    },
+    {
+      "code": "US-NE",
+      "name": "Nebraska, US"
+    },
+    {
+      "code": "US-NV",
+      "name": "Nevada, US"
+    },
+    {
+      "code": "US-NH",
+      "name": "New Hampshire, US"
+    },
+    {
+      "code": "US-NJ",
+      "name": "New Jersey, US"
+    },
+    {
+      "code": "US-NM",
+      "name": "New Mexico, US"
+    },
+    {
+      "code": "US-NY",
+      "name": "New York, US"
+    },
+    {
+      "code": "US-NC",
+      "name": "North Carolina, US"
+    },
+    {
+      "code": "US-ND",
+      "name": "North Dakota, US"
+    },
+    {
+      "code": "US-OH",
+      "name": "Ohio, US"
+    },
+    {
+      "code": "US-OK",
+      "name": "Oklahoma, US"
+    },
+    {
+      "code": "US-OR",
+      "name": "Oregon, US"
+    },
+    {
+      "code": "US-PA",
+      "name": "Pennsylvania, US"
+    },
+    {
+      "code": "US-RI",
+      "name": "Rhode Island, US"
+    },
+    {
+      "code": "US-SC",
+      "name": "South Carolina, US"
+    },
+    {
+      "code": "US-SD",
+      "name": "South Dakota, US"
+    },
+    {
+      "code": "US-TN",
+      "name": "Tennessee, US"
+    },
+    {
+      "code": "US-TX",
+      "name": "Texas, US"
+    },
+    {
+      "code": "US-UT",
+      "name": "Utah, US"
+    },
+    {
+      "code": "US-VT",
+      "name": "Vermont, US"
+    },
+    {
+      "code": "US-VA",
+      "name": "Virginia, US"
+    },
+    {
+      "code": "US-WA",
+      "name": "Washington, US"
+    },
+    {
+      "code": "US-WV",
+      "name": "West Virginia, US"
+    },
+    {
+      "code": "US-WI",
+      "name": "Wisconsin, US"
+    },
+    {
+      "code": "US-WY",
+      "name": "Wyoming, US"
+    },
+    {
+      "code": "AU",
+      "name": "Australia"
+    },
+    {
+      "code": "BR",
+      "name": "Brazil"
+    },
+    {
+      "code": "CA",
+      "name": "Canada"
+    },
+    {
+      "code": "FR",
+      "name": "France"
+    },
+    {
+      "code": "DE",
+      "name": "Germany"
+    },
+    {
+      "code": "IN",
+      "name": "India"
+    },
+    {
+      "code": "IE",
+      "name": "Ireland"
+    },
+    {
+      "code": "IT",
+      "name": "Italy"
+    },
+    {
+      "code": "JP",
+      "name": "Japan"
+    },
+    {
+      "code": "MX",
+      "name": "Mexico"
+    },
+    {
+      "code": "NL",
+      "name": "Netherlands"
+    },
+    {
+      "code": "NZ",
+      "name": "New Zealand"
+    },
+    {
+      "code": "SG",
+      "name": "Singapore"
+    },
+    {
+      "code": "ES",
+      "name": "Spain"
+    },
+    {
+      "code": "GB",
+      "name": "United Kingdom"
+    },
+    {
+      "code": "OTHER",
+      "name": "Somewhere else"
+    }
+  ]
+}

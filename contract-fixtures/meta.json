@@ -1,0 +1,294 @@
+{
+  "demo_mode": true,
+  "api_version": "1",
+  "languages": [
+    {
+      "code": "en",
+      "name": "English"
+    },
+    {
+      "code": "es",
+      "name": "Español"
+    },
+    {
+      "code": "fr",
+      "name": "Français"
+    },
+    {
+      "code": "de",
+      "name": "Deutsch"
+    },
+    {
+      "code": "pt",
+      "name": "Português"
+    },
+    {
+      "code": "it",
+      "name": "Italiano"
+    },
+    {
+      "code": "nl",
+      "name": "Nederlands"
+    },
+    {
+      "code": "hi",
+      "name": "हिन्दी"
+    },
+    {
+      "code": "ja",
+      "name": "日本語"
+    },
+    {
+      "code": "ko",
+      "name": "한국어"
+    },
+    {
+      "code": "zh",
+      "name": "中文"
+    },
+    {
+      "code": "ar",
+      "name": "العربية"
+    }
+  ],
+  "tracks": [
+    {
+      "id": "business",
+      "title": "Business communication",
+      "subtitle": "Make your point land in meetings and updates.",
+      "symbol": "briefcase"
+    },
+    {
+      "id": "negotiation",
+      "title": "Negotiation",
+      "subtitle": "Ask for what you want and handle pushback.",
+      "symbol": "scalemass"
+    },
+    {
+      "id": "conversational",
+      "title": "Conversational communication",
+      "subtitle": "Easier, warmer everyday conversations.",
+      "symbol": "bubble.left.and.bubble.right"
+    },
+    {
+      "id": "storytelling",
+      "title": "Storytelling",
+      "subtitle": "Turn experiences into stories people remember.",
+      "symbol": "book"
+    },
+    {
+      "id": "public_speaking",
+      "title": "Public communication",
+      "subtitle": "Speak to a room with clarity and calm.",
+      "symbol": "megaphone"
+    }
+  ],
+  "contexts": [
+    {
+      "id": "social",
+      "title": "Friends & social situations"
+    },
+    {
+      "id": "networking",
+      "title": "Networking"
+    },
+    {
+      "id": "meetings",
+      "title": "Meetings"
+    },
+    {
+      "id": "interviews",
+      "title": "Interviews"
+    }
+  ],
+  "ease_targets": [
+    {
+      "id": "explaining",
+      "title": "Explaining myself"
+    },
+    {
+      "id": "contributing",
+      "title": "Contributing"
+    },
+    {
+      "id": "connecting",
+      "title": "Connecting"
+    },
+    {
+      "id": "persuading",
+      "title": "Persuading"
+    },
+    {
+      "id": "concise",
+      "title": "Being concise"
+    }
+  ],
+  "dimensions": [
+    {
+      "id": "clarity",
+      "title": "Clarity",
+      "description": "Making your point easy to understand.",
+      "symbol": "sun.max",
+      "color_hex": "#2F9BFF"
+    },
+    {
+      "id": "structure",
+      "title": "Structure",
+      "description": "Organizing ideas so others can follow.",
+      "symbol": "square.stack.3d.up",
+      "color_hex": "#6366F1"
+    },
+    {
+      "id": "listening",
+      "title": "Listening",
+      "description": "Showing you heard and understood the other person.",
+      "symbol": "ear",
+      "color_hex": "#10B3A3"
+    },
+    {
+      "id": "warmth",
+      "title": "Warmth",
+      "description": "Making the other person feel welcome and respected.",
+      "symbol": "heart",
+      "color_hex": "#FF8A3D"
+    },
+    {
+      "id": "persuasion",
+      "title": "Persuasion",
+      "description": "Making a case others want to agree with.",
+      "symbol": "arrow.up.forward.circle",
+      "color_hex": "#E64980"
+    },
+    {
+      "id": "concision",
+      "title": "Concision",
+      "description": "Saying what matters without extra words.",
+      "symbol": "scissors",
+      "color_hex": "#7CB518"
+    },
+    {
+      "id": "storytelling",
+      "title": "Storytelling",
+      "description": "Bringing experiences to life for a listener.",
+      "symbol": "text.book.closed",
+      "color_hex": "#9B5DE5"
+    }
+  ],
+  "activities": [
+    {
+      "id": "meet_someone_new",
+      "title": "Meet someone new",
+      "prompt": "We've just met at a friend's gathering. What's something you've been spending time on lately?",
+      "duration_label": "1–2 min",
+      "suggested_seconds": 60,
+      "dimensions": [
+        "clarity",
+        "warmth",
+        "listening",
+        "concision"
+      ]
+    },
+    {
+      "id": "explain_interest",
+      "title": "Explain an interest",
+      "prompt": "Pick something you know or enjoy. Explain it to me as someone completely new to it.",
+      "duration_label": "2 min",
+      "suggested_seconds": 90,
+      "dimensions": [
+        "clarity",
+        "structure",
+        "concision"
+      ]
+    },
+    {
+      "id": "respond_to_someone",
+      "title": "Respond to someone",
+      "prompt": "I joined a new team a month ago. Everyone's friendly, but I still feel outside the group. Yesterday I had an idea and didn't say anything.",
+      "duration_label": "2–3 min",
+      "suggested_seconds": 90,
+      "dimensions": [
+        "listening",
+        "warmth"
+      ]
+    },
+    {
+      "id": "make_a_case",
+      "title": "Make a case",
+      "prompt": "Suggest an activity we could do together this weekend and try to get me interested.",
+      "duration_label": "2–3 min",
+      "suggested_seconds": 75,
+      "dimensions": [
+        "persuasion",
+        "listening",
+        "structure",
+        "concision"
+      ]
+    },
+    {
+      "id": "tell_a_story",
+      "title": "Tell a story",
+      "prompt": "Tell me about a time something didn't go as planned. It can be funny, ordinary, or meaningful.",
+      "duration_label": "2–3 min",
+      "suggested_seconds": 120,
+      "dimensions": [
+        "storytelling",
+        "structure",
+        "clarity"
+      ]
+    }
+  ],
+  "assessment_estimate_minutes": [
+    10,
+    15
+  ],
+  "voice_setup_estimate_minutes": 1,
+  "pricing": {
+    "monthly_usd": 14.99,
+    "yearly_usd": 95.99,
+    "trial_days": 7,
+    "monthly_product_id": "comlogue.pro.monthly",
+    "yearly_product_id": "comlogue.pro.yearly",
+    "note": "Introductory pricing for our pilot. You'll always see the price and terms before you buy."
+  },
+  "consents": {
+    "analysis": {
+      "version": "analysis-2026-10",
+      "title": "How Comlogue uses your voice",
+      "body": "To give you feedback, Comlogue records what you say during practice and analyzes it with AI.",
+      "bullets": [
+        "Your audio is transcribed and analyzed by our AI provider (OpenAI) to produce your feedback. OpenAI does not use it to train models.",
+        "We only assess what you say and how you structure it — never your accent or pronunciation.",
+        "If audio is unclear, we tell you and skip it. Unclear audio never lowers your results.",
+        "Recordings and results stay in your account until you delete them. You can delete any recording, or everything, at any time in Settings."
+      ]
+    },
+    "voice_reference": {
+      "version": "voice-2026-10",
+      "title": "Save a voice reference?",
+      "body": "We'll keep a short sample of your voice so we can find your speaking turns in recordings you add.",
+      "bullets": [
+        "Used only to tell which voice is yours in your own recordings — not to identify you anywhere else, and not as a password.",
+        "We store an 8-second clip and a few voice measurements. During analysis the clip is sent to our AI provider (OpenAI) as a reference for that recording only.",
+        "The setup recording is never scored.",
+        "Replace or delete it anytime in Settings. We also delete it after 18 months without use.",
+        "Prefer not to? You can pick your voice manually in each recording instead."
+      ]
+    },
+    "recording": {
+      "version": "recording-2026-10",
+      "title": "Before you record a conversation",
+      "body": "Everyone in the conversation must know it's being recorded and agree to it.",
+      "bullets": [
+        "We analyze the recording to give you feedback. Only your own speaking turns are assessed.",
+        "Other people's voices are used only as context. They are never added to your profile.",
+        "You can delete the recording and everything derived from it at any time."
+      ]
+    }
+  },
+  "limits": {
+    "free_spar_per_week": 1,
+    "free_talks": 1,
+    "max_upload_mb": 100,
+    "max_recording_minutes": 60
+  }
+}

@@ -1,0 +1,134 @@
+{
+  "week_start": "2026-10-26",
+  "week_end": "2026-11-01",
+  "practice": {
+    "sessions": 5,
+    "missions_completed": 0,
+    "attempts": 2,
+    "retries": 1,
+    "real_life_attempts": 0,
+    "minutes": 7,
+    "target": 3,
+    "met_target": true
+  },
+  "highlights": [
+    "5 practice session(s) this week; weekly target 3.",
+    "2 mission attempt(s), 1 retry.",
+    "Retried 'Make your point land' against the same target."
+  ],
+  "before_after": {
+    "mission_title": "Make your point land",
+    "before_quote": "So I think maybe we should, um, look at both options first.",
+    "after_quote": "I'd go with the second vendor.",
+    "note": "A shorter answer isn't automatically a better one — we compared both attempts against the same target."
+  },
+  "skill_updates": [
+    {
+      "dimension": "clarity",
+      "change": "new_estimate",
+      "note": "New assessed estimate from AI roleplay · Oct 26."
+    },
+    {
+      "dimension": "concision",
+      "change": "new_estimate",
+      "note": "New assessed estimate from AI roleplay · Oct 26."
+    },
+    {
+      "dimension": "concision",
+      "change": "new_estimate",
+      "note": "New provisional estimate from Team sync · Oct 26."
+    },
+    {
+      "dimension": "listening",
+      "change": "new_estimate",
+      "note": "New assessed estimate from AI roleplay · Oct 26."
+    },
+    {
+      "dimension": "persuasion",
+      "change": "new_estimate",
+      "note": "New assessed estimate from AI roleplay · Oct 26."
+    },
+    {
+      "dimension": "persuasion",
+      "change": "new_estimate",
+      "note": "New provisional estimate from Team sync · Oct 26."
+    },
+    {
+      "dimension": "storytelling",
+      "change": "new_estimate",
+      "note": "New assessed estimate from AI roleplay · Oct 26."
+    },
+    {
+      "dimension": "structure",
+      "change": "new_estimate",
+      "note": "New assessed estimate from AI roleplay · Oct 26."
+    },
+    {
+      "dimension": "warmth",
+      "change": "new_estimate",
+      "note": "New assessed estimate from AI roleplay · Oct 26."
+    },
+    {
+      "dimension": "warmth",
+      "change": "new_estimate",
+      "note": "New provisional estimate from Team sync · Oct 26."
+    }
+  ],
+  "evidence_note": "Skill estimates below changed only where a new conversation gave us evidence.",
+  "next_focus_options": [
+    {
+      "module_id": "business.m2",
+      "title": "Give an update people can follow",
+      "reason": "Practice structure: Give a three-part update: where things stand, what's at risk, and what you need."
+    },
+    {
+      "module_id": "business.m3",
+      "title": "Handle pushback calmly",
+      "reason": "Practice persuasion: When challenged, acknowledge the concern, answer it with one specific fact, then restate your ask."
+    },
+    {
+      "module_id": "business.m4",
+      "title": "Bring others in",
+      "reason": "Practice listening: After you speak, ask one specific question and build on the answer before adding your view."
+    }
+  ],
+  "milestones": [
+    {
+      "id": "first_spar",
+      "title": "First spar",
+      "detail": "You held your ground with an AI sparring partner.",
+      "achieved_at": "2026-10-26T22:20:14Z"
+    },
+    {
+      "id": "first_retry",
+      "title": "Tried it again",
+      "detail": "You retried a mission — that's how skills stick.",
+      "achieved_at": "2026-10-26T22:20:12Z"
+    },
+    {
+      "id": "weekly_target:2026-10-26",
+      "title": "Weekly target met",
+      "detail": "You hit your practice target this week.",
+      "achieved_at": "2026-10-26T22:20:09Z"
+    },
+    {
+      "id": "first_upload",
+      "title": "First real conversation",
+      "detail": "You added a real conversation for feedback.",
+      "achieved_at": "2026-10-26T22:20:08Z"
+    },
+    {
+      "id": "first_conversation",
+      "title": "First conversation",
+      "detail": "You finished your first AI conversation.",
+      "achieved_at": "2026-10-26T22:20:05Z"
+    },
+    {
+      "id": "first_profile",
+      "title": "First insight",
+      "detail": "Your communication web has its first evidence-backed point.",
+      "achieved_at": "2026-10-26T22:20:05Z"
+    }
+  ],
+  "message": "Next up: Make your point land. One short session is enough to keep going."
+}

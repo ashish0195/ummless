@@ -62,6 +62,19 @@ final class RecordingDetailModel {
         }
     }
 
+    /// "Try again" after a failure on our side: the server processes the saved audio again.
+    func retryProcessing() async {
+        isSubmitting = true
+        defer { isSubmitting = false }
+        do {
+            recording = try await app.api.retryRecording(recordingId)
+            error = nil
+            startPolling()
+        } catch {
+            self.error = error.userMessage
+        }
+    }
+
     func delete() async -> Bool {
         do {
             try await app.api.deleteRecording(recordingId)
@@ -195,7 +208,14 @@ struct RecordingDetailView: View {
                 }
                 if let recovery = recording.recovery {
                     RecoveryCard(recovery: recovery) { action in
-                        if action.type == .identifySpeaker { model.isCorrecting = true } else { app.handle(.recovery(action)) }
+                        switch action.type {
+                        case .identifySpeaker:
+                            model.isCorrecting = true
+                        case .retry where recovery.problem == "processing_failed":
+                            Task { await model.retryProcessing() }
+                        default:
+                            app.handle(.recovery(action))
+                        }
                     }
                 } else if let recovery = recording.result?.recovery {
                     RecoveryCard(recovery: recovery) { action in app.handle(.recovery(action)) }

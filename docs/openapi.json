@@ -1,0 +1,7467 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Comlogue API",
+    "description": "Backend for Comlogue, an AI communication coach. Evidence-based, partial profiles; no overall score. See docs/API.md for the contract.",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/v1/health": {
+      "get": {
+        "tags": [
+          "meta"
+        ],
+        "summary": "Health",
+        "operationId": "health_v1_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Health"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/meta": {
+      "get": {
+        "tags": [
+          "meta"
+        ],
+        "summary": "Meta",
+        "operationId": "meta_v1_meta_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Meta"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/meta/recording-rules": {
+      "get": {
+        "tags": [
+          "meta"
+        ],
+        "summary": "Recording Rules",
+        "operationId": "recording_rules_v1_meta_recording_rules_get",
+        "parameters": [
+          {
+            "name": "region",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Region"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecordingRules"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/auth/device": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Auth Device",
+        "operationId": "auth_device_v1_auth_device_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeviceAuthRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeviceAuthResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/me": {
+      "get": {
+        "tags": [
+          "me"
+        ],
+        "summary": "Get Me",
+        "operationId": "get_me_v1_me_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Me"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "me"
+        ],
+        "summary": "Delete Me",
+        "operationId": "delete_me_v1_me_delete",
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "me"
+        ],
+        "summary": "Patch Me",
+        "operationId": "patch_me_v1_me_patch",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MePatch"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Me"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/voice-reference": {
+      "get": {
+        "tags": [
+          "voice"
+        ],
+        "summary": "Get Voice Reference",
+        "operationId": "get_voice_reference_v1_voice_reference_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VoiceReferenceStatus"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "voice"
+        ],
+        "summary": "Post Voice Reference",
+        "operationId": "post_voice_reference_v1_voice_reference_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_post_voice_reference_v1_voice_reference_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VoiceEnrollmentResult"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "voice"
+        ],
+        "summary": "Delete Voice Reference",
+        "operationId": "delete_voice_reference_v1_voice_reference_delete",
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          }
+        }
+      }
+    },
+    "/v1/conversations": {
+      "post": {
+        "tags": [
+          "conversations"
+        ],
+        "summary": "Create Conversation",
+        "operationId": "create_conversation_v1_conversations_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConversationCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/conversations/{conversation_id}": {
+      "get": {
+        "tags": [
+          "conversations"
+        ],
+        "summary": "Get Conversation",
+        "operationId": "get_conversation_v1_conversations__conversation_id__get",
+        "parameters": [
+          {
+            "name": "conversation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Conversation Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/conversations/{conversation_id}/turns": {
+      "post": {
+        "tags": [
+          "conversations"
+        ],
+        "summary": "Post Turn",
+        "operationId": "post_turn_v1_conversations__conversation_id__turns_post",
+        "parameters": [
+          {
+            "name": "conversation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Conversation Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_post_turn_v1_conversations__conversation_id__turns_post"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TurnResult"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/conversations/{conversation_id}/finish": {
+      "post": {
+        "tags": [
+          "conversations"
+        ],
+        "summary": "Finish Conversation",
+        "operationId": "finish_conversation_v1_conversations__conversation_id__finish_post",
+        "parameters": [
+          {
+            "name": "conversation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Conversation Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FinishResult"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/assessments": {
+      "get": {
+        "tags": [
+          "assessments"
+        ],
+        "summary": "List Assessments",
+        "operationId": "list_assessments_v1_assessments_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssessmentList"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "assessments"
+        ],
+        "summary": "Create Assessment",
+        "operationId": "create_assessment_v1_assessments_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssessmentCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssessmentOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/assessments/{assessment_id}": {
+      "get": {
+        "tags": [
+          "assessments"
+        ],
+        "summary": "Get Assessment",
+        "operationId": "get_assessment_v1_assessments__assessment_id__get",
+        "parameters": [
+          {
+            "name": "assessment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Assessment Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssessmentOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/assessments/{assessment_id}/activities/{activity_id}/start": {
+      "post": {
+        "tags": [
+          "assessments"
+        ],
+        "summary": "Start Activity",
+        "operationId": "start_activity_v1_assessments__assessment_id__activities__activity_id__start_post",
+        "parameters": [
+          {
+            "name": "assessment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Assessment Id"
+            }
+          },
+          {
+            "name": "activity_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Activity Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/assessments/{assessment_id}/activities/{activity_id}/skip": {
+      "post": {
+        "tags": [
+          "assessments"
+        ],
+        "summary": "Skip Activity",
+        "operationId": "skip_activity_v1_assessments__assessment_id__activities__activity_id__skip_post",
+        "parameters": [
+          {
+            "name": "assessment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Assessment Id"
+            }
+          },
+          {
+            "name": "activity_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Activity Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssessmentOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/assessments/{assessment_id}/finalize": {
+      "post": {
+        "tags": [
+          "assessments"
+        ],
+        "summary": "Finalize Assessment",
+        "operationId": "finalize_assessment_v1_assessments__assessment_id__finalize_post",
+        "parameters": [
+          {
+            "name": "assessment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Assessment Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssessmentOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/recordings": {
+      "get": {
+        "tags": [
+          "recordings"
+        ],
+        "summary": "List Recordings",
+        "operationId": "list_recordings_v1_recordings_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecordingList"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "recordings"
+        ],
+        "summary": "Create Recording",
+        "operationId": "create_recording_v1_recordings_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_create_recording_v1_recordings_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecordingOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/recordings/{recording_id}": {
+      "get": {
+        "tags": [
+          "recordings"
+        ],
+        "summary": "Get Recording",
+        "operationId": "get_recording_v1_recordings__recording_id__get",
+        "parameters": [
+          {
+            "name": "recording_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Recording Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecordingOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "recordings"
+        ],
+        "summary": "Delete Recording",
+        "operationId": "delete_recording_v1_recordings__recording_id__delete",
+        "parameters": [
+          {
+            "name": "recording_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Recording Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/recordings/{recording_id}/speaker-confirmation": {
+      "post": {
+        "tags": [
+          "recordings"
+        ],
+        "summary": "Confirm Speaker",
+        "operationId": "confirm_speaker_v1_recordings__recording_id__speaker_confirmation_post",
+        "parameters": [
+          {
+            "name": "recording_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Recording Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SpeakerConfirmation"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecordingOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/recordings/{recording_id}/retry": {
+      "post": {
+        "tags": [
+          "recordings"
+        ],
+        "summary": "Retry Recording",
+        "operationId": "retry_recording_v1_recordings__recording_id__retry_post",
+        "parameters": [
+          {
+            "name": "recording_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Recording Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecordingOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/recordings/{recording_id}/transcript": {
+      "get": {
+        "tags": [
+          "recordings"
+        ],
+        "summary": "Recording Transcript",
+        "operationId": "recording_transcript_v1_recordings__recording_id__transcript_get",
+        "parameters": [
+          {
+            "name": "recording_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Recording Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Transcript"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/profile": {
+      "get": {
+        "tags": [
+          "profile"
+        ],
+        "summary": "Get Profile",
+        "operationId": "get_profile_v1_profile_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Profile"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/course": {
+      "get": {
+        "tags": [
+          "course"
+        ],
+        "summary": "Get Course",
+        "operationId": "get_course_v1_course_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Course"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/course/track": {
+      "post": {
+        "tags": [
+          "course"
+        ],
+        "summary": "Change Track",
+        "operationId": "change_track_v1_course_track_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TrackChange"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Course"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/course/focus": {
+      "post": {
+        "tags": [
+          "course"
+        ],
+        "summary": "Change Focus",
+        "operationId": "change_focus_v1_course_focus_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FocusChange"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Course"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/missions/{mission_id}": {
+      "get": {
+        "tags": [
+          "course"
+        ],
+        "summary": "Get Mission",
+        "operationId": "get_mission_v1_missions__mission_id__get",
+        "parameters": [
+          {
+            "name": "mission_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Mission Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MissionOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/missions/{mission_id}/complete": {
+      "post": {
+        "tags": [
+          "course"
+        ],
+        "summary": "Complete Mission",
+        "operationId": "complete_mission_v1_missions__mission_id__complete_post",
+        "parameters": [
+          {
+            "name": "mission_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Mission Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MissionComplete"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MissionOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/missions/{mission_id}/reflections": {
+      "post": {
+        "tags": [
+          "course"
+        ],
+        "summary": "Add Reflection",
+        "operationId": "add_reflection_v1_missions__mission_id__reflections_post",
+        "parameters": [
+          {
+            "name": "mission_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Mission Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReflectionCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReflectionOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/spar/personas": {
+      "get": {
+        "tags": [
+          "spar"
+        ],
+        "summary": "Get Personas",
+        "operationId": "get_personas_v1_spar_personas_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PersonaList"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/spar/sessions": {
+      "get": {
+        "tags": [
+          "spar"
+        ],
+        "summary": "Get Spar Sessions",
+        "operationId": "get_spar_sessions_v1_spar_sessions_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SparSessionList"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/spar/reports/{conversation_id}": {
+      "get": {
+        "tags": [
+          "spar"
+        ],
+        "summary": "Get Spar Report",
+        "operationId": "get_spar_report_v1_spar_reports__conversation_id__get",
+        "parameters": [
+          {
+            "name": "conversation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Conversation Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SparReportOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/talks": {
+      "get": {
+        "tags": [
+          "talks"
+        ],
+        "summary": "List Talks",
+        "operationId": "list_talks_v1_talks_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TalkList"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/talks/{talk_id}": {
+      "get": {
+        "tags": [
+          "talks"
+        ],
+        "summary": "Get Talk",
+        "operationId": "get_talk_v1_talks__talk_id__get",
+        "parameters": [
+          {
+            "name": "talk_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Talk Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Talk"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/talks/{talk_id}/lines/{index}/audio": {
+      "get": {
+        "tags": [
+          "talks"
+        ],
+        "summary": "Talk Line Audio",
+        "operationId": "talk_line_audio_v1_talks__talk_id__lines__index__audio_get",
+        "parameters": [
+          {
+            "name": "talk_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Talk Id"
+            }
+          },
+          {
+            "name": "index",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Index"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/events": {
+      "get": {
+        "tags": [
+          "events"
+        ],
+        "summary": "List Events",
+        "operationId": "list_events_v1_events_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EventList"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "events"
+        ],
+        "summary": "Create Event",
+        "operationId": "create_event_v1_events_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EventCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpcomingEventOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/events/{event_id}": {
+      "delete": {
+        "tags": [
+          "events"
+        ],
+        "summary": "Delete Event",
+        "operationId": "delete_event_v1_events__event_id__delete",
+        "parameters": [
+          {
+            "name": "event_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Event Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/progress": {
+      "get": {
+        "tags": [
+          "progress"
+        ],
+        "summary": "Get Progress",
+        "operationId": "get_progress_v1_progress_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Progress"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/review/weekly": {
+      "get": {
+        "tags": [
+          "progress"
+        ],
+        "summary": "Get Weekly Review",
+        "operationId": "get_weekly_review_v1_review_weekly_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WeeklyReview"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/billing/app-store": {
+      "post": {
+        "tags": [
+          "billing"
+        ],
+        "summary": "App Store",
+        "operationId": "app_store_v1_billing_app_store_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AppStoreTransaction"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Entitlement"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/billing/dev-grant": {
+      "post": {
+        "tags": [
+          "billing"
+        ],
+        "summary": "Dev Grant",
+        "operationId": "dev_grant_v1_billing_dev_grant_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DevGrant"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Entitlement"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/media/{media_id}": {
+      "get": {
+        "tags": [
+          "media"
+        ],
+        "summary": "Get Media",
+        "operationId": "get_media_v1_media__media_id__get",
+        "parameters": [
+          {
+            "name": "media_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Media Id"
+            }
+          },
+          {
+            "name": "exp",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Exp"
+            }
+          },
+          {
+            "name": "sig",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Sig"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/feedback-reports": {
+      "post": {
+        "tags": [
+          "feedback"
+        ],
+        "summary": "Create Feedback Report",
+        "description": "\"This looks wrong\" reports. Stored for review; they never change results.",
+        "operationId": "create_feedback_report_v1_feedback_reports_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FeedbackReportCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FeedbackReportOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/dev/seed-demo": {
+      "post": {
+        "tags": [
+          "dev"
+        ],
+        "summary": "Seed Demo",
+        "description": "Seed a rich demo state for the calling user (development and screenshots only).",
+        "operationId": "seed_demo_v1_dev_seed_demo_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DemoSeedRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DemoSeedResult"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ActivityInfo": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "enum": [
+              "meet_someone_new",
+              "explain_interest",
+              "respond_to_someone",
+              "make_a_case",
+              "tell_a_story"
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "prompt": {
+            "type": "string",
+            "title": "Prompt"
+          },
+          "duration_label": {
+            "type": "string",
+            "title": "Duration Label"
+          },
+          "suggested_seconds": {
+            "type": "integer",
+            "title": "Suggested Seconds"
+          },
+          "dimensions": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "clarity",
+                "structure",
+                "listening",
+                "warmth",
+                "persuasion",
+                "concision",
+                "storytelling"
+              ]
+            },
+            "type": "array",
+            "title": "Dimensions"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "prompt",
+          "duration_label",
+          "suggested_seconds",
+          "dimensions"
+        ],
+        "title": "ActivityInfo"
+      },
+      "AnalysisResult": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "complete",
+              "partial",
+              "none"
+            ],
+            "title": "Status"
+          },
+          "headline": {
+            "type": "string",
+            "title": "Headline"
+          },
+          "summary": {
+            "type": "string",
+            "title": "Summary"
+          },
+          "dimensions": {
+            "items": {
+              "$ref": "#/components/schemas/DimensionResult"
+            },
+            "type": "array",
+            "title": "Dimensions"
+          },
+          "speech_patterns": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SpeechPatterns"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "first_win": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RewriteMoment"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "style": {
+            "$ref": "#/components/schemas/StyleResult"
+          },
+          "recovery": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Recovery"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "context_label": {
+            "type": "string",
+            "title": "Context Label"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "headline",
+          "summary",
+          "dimensions",
+          "speech_patterns",
+          "first_win",
+          "style",
+          "recovery",
+          "context_label",
+          "created_at"
+        ],
+        "title": "AnalysisResult"
+      },
+      "AppStoreTransaction": {
+        "properties": {
+          "signed_transaction": {
+            "type": "string",
+            "minLength": 10,
+            "title": "Signed Transaction"
+          }
+        },
+        "type": "object",
+        "required": [
+          "signed_transaction"
+        ],
+        "title": "AppStoreTransaction"
+      },
+      "AssessmentActivity": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "enum": [
+              "meet_someone_new",
+              "explain_interest",
+              "respond_to_someone",
+              "make_a_case",
+              "tell_a_story"
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "prompt": {
+            "type": "string",
+            "title": "Prompt"
+          },
+          "duration_label": {
+            "type": "string",
+            "title": "Duration Label"
+          },
+          "suggested_seconds": {
+            "type": "integer",
+            "title": "Suggested Seconds"
+          },
+          "dimensions": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "clarity",
+                "structure",
+                "listening",
+                "warmth",
+                "persuasion",
+                "concision",
+                "storytelling"
+              ]
+            },
+            "type": "array",
+            "title": "Dimensions"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "in_progress",
+              "done",
+              "skipped"
+            ],
+            "title": "Status"
+          },
+          "conversation_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Conversation Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "prompt",
+          "duration_label",
+          "suggested_seconds",
+          "dimensions",
+          "status",
+          "conversation_id"
+        ],
+        "title": "AssessmentActivity"
+      },
+      "AssessmentCreate": {
+        "properties": {
+          "purpose": {
+            "type": "string",
+            "enum": [
+              "baseline",
+              "gap_fill"
+            ],
+            "title": "Purpose",
+            "default": "baseline"
+          },
+          "activity_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "meet_someone_new",
+                    "explain_interest",
+                    "respond_to_someone",
+                    "make_a_case",
+                    "tell_a_story"
+                  ]
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Activity Ids"
+          },
+          "target_dimensions": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "clarity",
+                    "structure",
+                    "listening",
+                    "warmth",
+                    "persuasion",
+                    "concision",
+                    "storytelling"
+                  ]
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Dimensions"
+          }
+        },
+        "type": "object",
+        "title": "AssessmentCreate"
+      },
+      "AssessmentList": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/AssessmentOut"
+            },
+            "type": "array",
+            "title": "Items"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items"
+        ],
+        "title": "AssessmentList"
+      },
+      "AssessmentOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "route": {
+            "type": "string",
+            "const": "roleplay",
+            "title": "Route"
+          },
+          "purpose": {
+            "type": "string",
+            "enum": [
+              "baseline",
+              "gap_fill"
+            ],
+            "title": "Purpose"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "in_progress",
+              "processing",
+              "complete",
+              "needs_recovery"
+            ],
+            "title": "Status"
+          },
+          "stage": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stage"
+          },
+          "activities": {
+            "items": {
+              "$ref": "#/components/schemas/AssessmentActivity"
+            },
+            "type": "array",
+            "title": "Activities"
+          },
+          "estimate_minutes": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "title": "Estimate Minutes"
+          },
+          "target_dimensions": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "clarity",
+                "structure",
+                "listening",
+                "warmth",
+                "persuasion",
+                "concision",
+                "storytelling"
+              ]
+            },
+            "type": "array",
+            "title": "Target Dimensions"
+          },
+          "result": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AnalysisResult"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          },
+          "completed_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Completed At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "route",
+          "purpose",
+          "status",
+          "stage",
+          "activities",
+          "estimate_minutes",
+          "target_dimensions",
+          "result",
+          "created_at",
+          "completed_at"
+        ],
+        "title": "AssessmentOut"
+      },
+      "AttemptFeedback": {
+        "properties": {
+          "assessable": {
+            "type": "string",
+            "enum": [
+              "yes",
+              "partly",
+              "no"
+            ],
+            "title": "Assessable"
+          },
+          "target_met": {
+            "type": "string",
+            "enum": [
+              "yes",
+              "partly",
+              "no",
+              "unclear"
+            ],
+            "title": "Target Met"
+          },
+          "headline": {
+            "type": "string",
+            "title": "Headline"
+          },
+          "where": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EvidenceMoment"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "what_worked": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "What Worked"
+          },
+          "one_change": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "One Change"
+          },
+          "missing_evidence": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Missing Evidence"
+          },
+          "comparison": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Comparison"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "issues": {
+            "items": {
+              "$ref": "#/components/schemas/Issue"
+            },
+            "type": "array",
+            "title": "Issues"
+          }
+        },
+        "type": "object",
+        "required": [
+          "assessable",
+          "target_met",
+          "headline",
+          "where",
+          "what_worked",
+          "one_change",
+          "missing_evidence",
+          "comparison",
+          "issues"
+        ],
+        "title": "AttemptFeedback"
+      },
+      "Attribution": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "confirmed",
+              "auto",
+              "not_present"
+            ],
+            "title": "Status"
+          },
+          "user_speaker_label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "User Speaker Label"
+          },
+          "requires_confirmation": {
+            "type": "boolean",
+            "title": "Requires Confirmation"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "first_conversation",
+                  "uncertain_match",
+                  "no_reference",
+                  "conflict"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "user_speaker_label",
+          "requires_confirmation",
+          "reason",
+          "message"
+        ],
+        "title": "Attribution"
+      },
+      "BeforeAfter": {
+        "properties": {
+          "mission_title": {
+            "type": "string",
+            "title": "Mission Title"
+          },
+          "before_quote": {
+            "type": "string",
+            "title": "Before Quote"
+          },
+          "after_quote": {
+            "type": "string",
+            "title": "After Quote"
+          },
+          "note": {
+            "type": "string",
+            "title": "Note"
+          }
+        },
+        "type": "object",
+        "required": [
+          "mission_title",
+          "before_quote",
+          "after_quote",
+          "note"
+        ],
+        "title": "BeforeAfter"
+      },
+      "Body_create_recording_v1_recordings_post": {
+        "properties": {
+          "audio": {
+            "type": "string",
+            "contentMediaType": "application/octet-stream",
+            "title": "Audio"
+          },
+          "source": {
+            "type": "string",
+            "title": "Source",
+            "default": "upload"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          },
+          "consent": {
+            "type": "string",
+            "title": "Consent"
+          }
+        },
+        "type": "object",
+        "required": [
+          "audio",
+          "consent"
+        ],
+        "title": "Body_create_recording_v1_recordings_post"
+      },
+      "Body_post_turn_v1_conversations__conversation_id__turns_post": {
+        "properties": {
+          "audio": {
+            "type": "string",
+            "contentMediaType": "application/octet-stream",
+            "title": "Audio"
+          },
+          "elapsed_seconds": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Elapsed Seconds"
+          },
+          "client_metrics": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Client Metrics"
+          }
+        },
+        "type": "object",
+        "required": [
+          "audio"
+        ],
+        "title": "Body_post_turn_v1_conversations__conversation_id__turns_post"
+      },
+      "Body_post_voice_reference_v1_voice_reference_post": {
+        "properties": {
+          "audio": {
+            "type": "string",
+            "contentMediaType": "application/octet-stream",
+            "title": "Audio"
+          },
+          "consent_version": {
+            "type": "string",
+            "title": "Consent Version"
+          },
+          "consent_accepted": {
+            "type": "boolean",
+            "title": "Consent Accepted"
+          }
+        },
+        "type": "object",
+        "required": [
+          "audio",
+          "consent_version",
+          "consent_accepted"
+        ],
+        "title": "Body_post_voice_reference_v1_voice_reference_post"
+      },
+      "CodeName": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "code",
+          "name"
+        ],
+        "title": "CodeName"
+      },
+      "Comparison": {
+        "properties": {
+          "previous_attempt_id": {
+            "type": "string",
+            "title": "Previous Attempt Id"
+          },
+          "summary": {
+            "type": "string",
+            "title": "Summary"
+          },
+          "changes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Changes"
+          },
+          "note": {
+            "type": "string",
+            "title": "Note"
+          }
+        },
+        "type": "object",
+        "required": [
+          "previous_attempt_id",
+          "summary",
+          "changes",
+          "note"
+        ],
+        "title": "Comparison"
+      },
+      "ConsentText": {
+        "properties": {
+          "version": {
+            "type": "string",
+            "title": "Version"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "body": {
+            "type": "string",
+            "title": "Body"
+          },
+          "bullets": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Bullets"
+          }
+        },
+        "type": "object",
+        "required": [
+          "version",
+          "title",
+          "body",
+          "bullets"
+        ],
+        "title": "ConsentText"
+      },
+      "Consents": {
+        "properties": {
+          "analysis": {
+            "$ref": "#/components/schemas/ConsentText"
+          },
+          "voice_reference": {
+            "$ref": "#/components/schemas/ConsentText"
+          },
+          "recording": {
+            "$ref": "#/components/schemas/ConsentText"
+          }
+        },
+        "type": "object",
+        "required": [
+          "analysis",
+          "voice_reference",
+          "recording"
+        ],
+        "title": "Consents"
+      },
+      "ConversationCreate": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "mission",
+              "spar"
+            ],
+            "title": "Kind"
+          },
+          "mission_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mission Id"
+          },
+          "quick": {
+            "type": "boolean",
+            "title": "Quick",
+            "default": false
+          },
+          "persona_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Persona Id"
+          },
+          "custom_scenario": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 600
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Custom Scenario"
+          },
+          "difficulty": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "kind",
+                  "real",
+                  "brutal"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Difficulty"
+          },
+          "event_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Event Id"
+          },
+          "prep_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Prep Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "kind"
+        ],
+        "title": "ConversationCreate"
+      },
+      "ConversationOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "assessment_activity",
+              "mission",
+              "spar"
+            ],
+            "title": "Kind"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "finished"
+            ],
+            "title": "Status"
+          },
+          "partner": {
+            "$ref": "#/components/schemas/Partner"
+          },
+          "setup": {
+            "$ref": "#/components/schemas/ConversationSetup"
+          },
+          "turns": {
+            "items": {
+              "$ref": "#/components/schemas/Turn"
+            },
+            "type": "array",
+            "title": "Turns"
+          },
+          "awaiting": {
+            "type": "string",
+            "enum": [
+              "user",
+              "none"
+            ],
+            "title": "Awaiting"
+          },
+          "user_turns": {
+            "type": "integer",
+            "title": "User Turns"
+          },
+          "max_user_turns": {
+            "type": "integer",
+            "title": "Max User Turns"
+          },
+          "assessment_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Assessment Id"
+          },
+          "mission_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mission Id"
+          },
+          "demo_mode": {
+            "type": "boolean",
+            "title": "Demo Mode"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "kind",
+          "status",
+          "partner",
+          "setup",
+          "turns",
+          "awaiting",
+          "user_turns",
+          "max_user_turns",
+          "assessment_id",
+          "mission_id",
+          "demo_mode",
+          "created_at"
+        ],
+        "title": "ConversationOut"
+      },
+      "ConversationSetup": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "context": {
+            "type": "string",
+            "title": "Context"
+          },
+          "target_behavior": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Behavior"
+          },
+          "suggested_seconds": {
+            "type": "integer",
+            "title": "Suggested Seconds"
+          },
+          "tips": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Tips"
+          },
+          "activity_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "meet_someone_new",
+                  "explain_interest",
+                  "respond_to_someone",
+                  "make_a_case",
+                  "tell_a_story"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Activity Id"
+          },
+          "mission_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mission Id"
+          },
+          "persona_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Persona Id"
+          },
+          "difficulty": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "kind",
+                  "real",
+                  "brutal"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Difficulty"
+          },
+          "quick": {
+            "type": "boolean",
+            "title": "Quick"
+          }
+        },
+        "type": "object",
+        "required": [
+          "title",
+          "context",
+          "target_behavior",
+          "suggested_seconds",
+          "tips",
+          "activity_id",
+          "mission_id",
+          "persona_id",
+          "difficulty",
+          "quick"
+        ],
+        "title": "ConversationSetup"
+      },
+      "Course": {
+        "properties": {
+          "track": {
+            "$ref": "#/components/schemas/TrackInfo"
+          },
+          "basis": {
+            "type": "string",
+            "enum": [
+              "profile",
+              "goal"
+            ],
+            "title": "Basis"
+          },
+          "basis_label": {
+            "type": "string",
+            "title": "Basis Label"
+          },
+          "basis_explainer": {
+            "type": "string",
+            "title": "Basis Explainer"
+          },
+          "focus_module_id": {
+            "type": "string",
+            "title": "Focus Module Id"
+          },
+          "modules": {
+            "items": {
+              "$ref": "#/components/schemas/CourseModule"
+            },
+            "type": "array",
+            "title": "Modules"
+          },
+          "gap_tasks": {
+            "items": {
+              "$ref": "#/components/schemas/GapTask"
+            },
+            "type": "array",
+            "title": "Gap Tasks"
+          },
+          "today": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TodayPlan"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "is_pro": {
+            "type": "boolean",
+            "title": "Is Pro"
+          },
+          "free_mission_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Free Mission Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "track",
+          "basis",
+          "basis_label",
+          "basis_explainer",
+          "focus_module_id",
+          "modules",
+          "gap_tasks",
+          "today",
+          "is_pro",
+          "free_mission_id"
+        ],
+        "title": "Course"
+      },
+      "CourseModule": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "index": {
+            "type": "integer",
+            "title": "Index"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "dimension": {
+            "type": "string",
+            "enum": [
+              "clarity",
+              "structure",
+              "listening",
+              "warmth",
+              "persuasion",
+              "concision",
+              "storytelling"
+            ],
+            "title": "Dimension"
+          },
+          "target_behavior": {
+            "type": "string",
+            "title": "Target Behavior"
+          },
+          "summary": {
+            "type": "string",
+            "title": "Summary"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "current",
+              "available",
+              "completed"
+            ],
+            "title": "Status"
+          },
+          "completed_missions": {
+            "type": "integer",
+            "title": "Completed Missions"
+          },
+          "missions": {
+            "items": {
+              "$ref": "#/components/schemas/MissionSummary"
+            },
+            "type": "array",
+            "title": "Missions"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "index",
+          "title",
+          "dimension",
+          "target_behavior",
+          "summary",
+          "status",
+          "completed_missions",
+          "missions"
+        ],
+        "title": "CourseModule"
+      },
+      "DemoSeedRequest": {
+        "properties": {
+          "pro": {
+            "type": "boolean",
+            "title": "Pro",
+            "default": false
+          }
+        },
+        "type": "object",
+        "title": "DemoSeedRequest"
+      },
+      "DemoSeedResult": {
+        "properties": {
+          "assessment_id": {
+            "type": "string",
+            "title": "Assessment Id"
+          },
+          "recording_needs_confirmation_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Recording Needs Confirmation Id"
+          },
+          "recording_complete_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Recording Complete Id"
+          },
+          "mission_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mission Id"
+          },
+          "spar_conversation_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Spar Conversation Id"
+          },
+          "event_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Event Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "assessment_id",
+          "recording_needs_confirmation_id",
+          "recording_complete_id",
+          "mission_id",
+          "spar_conversation_id",
+          "event_id"
+        ],
+        "title": "DemoSeedResult"
+      },
+      "DevGrant": {
+        "properties": {
+          "tier": {
+            "type": "string",
+            "enum": [
+              "pro",
+              "free"
+            ],
+            "title": "Tier"
+          }
+        },
+        "type": "object",
+        "required": [
+          "tier"
+        ],
+        "title": "DevGrant"
+      },
+      "DeviceAuthRequest": {
+        "properties": {
+          "device_id": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 8,
+            "title": "Device Id"
+          },
+          "platform": {
+            "type": "string",
+            "title": "Platform",
+            "default": "ios"
+          },
+          "app_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "App Version"
+          }
+        },
+        "type": "object",
+        "required": [
+          "device_id"
+        ],
+        "title": "DeviceAuthRequest"
+      },
+      "DeviceAuthResponse": {
+        "properties": {
+          "token": {
+            "type": "string",
+            "title": "Token"
+          },
+          "user_id": {
+            "type": "string",
+            "title": "User Id"
+          },
+          "is_new": {
+            "type": "boolean",
+            "title": "Is New"
+          }
+        },
+        "type": "object",
+        "required": [
+          "token",
+          "user_id",
+          "is_new"
+        ],
+        "title": "DeviceAuthResponse"
+      },
+      "DimensionInfo": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "enum": [
+              "clarity",
+              "structure",
+              "listening",
+              "warmth",
+              "persuasion",
+              "concision",
+              "storytelling"
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "symbol": {
+            "type": "string",
+            "title": "Symbol"
+          },
+          "color_hex": {
+            "type": "string",
+            "title": "Color Hex"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "description",
+          "symbol",
+          "color_hex"
+        ],
+        "title": "DimensionInfo"
+      },
+      "DimensionResult": {
+        "properties": {
+          "dimension": {
+            "type": "string",
+            "enum": [
+              "clarity",
+              "structure",
+              "listening",
+              "warmth",
+              "persuasion",
+              "concision",
+              "storytelling"
+            ],
+            "title": "Dimension"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "assessed",
+              "provisional",
+              "not_enough_evidence",
+              "not_assessed"
+            ],
+            "title": "Status"
+          },
+          "level": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Level"
+          },
+          "level_label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Level Label"
+          },
+          "confidence": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "low",
+                  "moderate",
+                  "high"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confidence"
+          },
+          "summary": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Summary"
+          },
+          "strengths": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Strengths"
+          },
+          "one_change": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "One Change"
+          },
+          "evidence": {
+            "items": {
+              "$ref": "#/components/schemas/EvidenceMoment"
+            },
+            "type": "array",
+            "title": "Evidence"
+          },
+          "missing_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Missing Reason"
+          },
+          "next_step": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/NextStep"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "assessed_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Assessed At"
+          },
+          "context_label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Context Label"
+          }
+        },
+        "type": "object",
+        "required": [
+          "dimension",
+          "title",
+          "status",
+          "level",
+          "level_label",
+          "confidence",
+          "summary",
+          "strengths",
+          "one_change",
+          "evidence",
+          "missing_reason",
+          "next_step",
+          "assessed_at",
+          "context_label"
+        ],
+        "title": "DimensionResult"
+      },
+      "Entitlement": {
+        "properties": {
+          "tier": {
+            "type": "string",
+            "enum": [
+              "free",
+              "pro"
+            ],
+            "title": "Tier"
+          },
+          "expires_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expires At"
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "none",
+              "app_store",
+              "dev"
+            ],
+            "title": "Source"
+          },
+          "product_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Product Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "tier",
+          "expires_at",
+          "source",
+          "product_id"
+        ],
+        "title": "Entitlement"
+      },
+      "EventCreate": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Title"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "interview",
+              "meeting",
+              "presentation",
+              "social",
+              "negotiation",
+              "other"
+            ],
+            "title": "Kind",
+            "default": "other"
+          },
+          "date": {
+            "type": "string",
+            "title": "Date"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 2000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "title",
+          "date"
+        ],
+        "title": "EventCreate"
+      },
+      "EventList": {
+        "properties": {
+          "events": {
+            "items": {
+              "$ref": "#/components/schemas/UpcomingEventOut"
+            },
+            "type": "array",
+            "title": "Events"
+          }
+        },
+        "type": "object",
+        "required": [
+          "events"
+        ],
+        "title": "EventList"
+      },
+      "EvidenceMoment": {
+        "properties": {
+          "quote": {
+            "type": "string",
+            "title": "Quote"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          },
+          "source_type": {
+            "type": "string",
+            "enum": [
+              "conversation",
+              "recording"
+            ],
+            "title": "Source Type"
+          },
+          "source_id": {
+            "type": "string",
+            "title": "Source Id"
+          },
+          "turn_index": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Turn Index"
+          },
+          "start_seconds": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Start Seconds"
+          },
+          "end_seconds": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End Seconds"
+          },
+          "audio_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Audio Url"
+          }
+        },
+        "type": "object",
+        "required": [
+          "quote",
+          "note",
+          "source_type",
+          "source_id",
+          "turn_index",
+          "start_seconds",
+          "end_seconds",
+          "audio_url"
+        ],
+        "title": "EvidenceMoment"
+      },
+      "FeedbackReportCreate": {
+        "properties": {
+          "target_type": {
+            "type": "string",
+            "enum": [
+              "dimension_result",
+              "attempt_feedback",
+              "spar_report",
+              "recording"
+            ],
+            "title": "Target Type"
+          },
+          "target_id": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 1,
+            "title": "Target Id"
+          },
+          "dimension": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "clarity",
+                  "structure",
+                  "listening",
+                  "warmth",
+                  "persuasion",
+                  "concision",
+                  "storytelling"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dimension"
+          },
+          "reason": {
+            "type": "string",
+            "enum": [
+              "inaccurate",
+              "misheard",
+              "wrong_speaker",
+              "unfair",
+              "other"
+            ],
+            "title": "Reason"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 2000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          }
+        },
+        "type": "object",
+        "required": [
+          "target_type",
+          "target_id",
+          "reason"
+        ],
+        "title": "FeedbackReportCreate"
+      },
+      "FeedbackReportOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "message"
+        ],
+        "title": "FeedbackReportOut"
+      },
+      "FinishResult": {
+        "properties": {
+          "conversation": {
+            "$ref": "#/components/schemas/ConversationOut"
+          },
+          "result_ref": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ResultRef"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "conversation",
+          "result_ref"
+        ],
+        "title": "FinishResult"
+      },
+      "FocusChange": {
+        "properties": {
+          "module_id": {
+            "type": "string",
+            "title": "Module Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "module_id"
+        ],
+        "title": "FocusChange"
+      },
+      "FocusOption": {
+        "properties": {
+          "module_id": {
+            "type": "string",
+            "title": "Module Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "module_id",
+          "title",
+          "reason"
+        ],
+        "title": "FocusOption"
+      },
+      "GapTask": {
+        "properties": {
+          "dimension": {
+            "type": "string",
+            "enum": [
+              "clarity",
+              "structure",
+              "listening",
+              "warmth",
+              "persuasion",
+              "concision",
+              "storytelling"
+            ],
+            "title": "Dimension"
+          },
+          "activity_id": {
+            "type": "string",
+            "enum": [
+              "meet_someone_new",
+              "explain_interest",
+              "respond_to_someone",
+              "make_a_case",
+              "tell_a_story"
+            ],
+            "title": "Activity Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "minutes": {
+            "type": "integer",
+            "title": "Minutes"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "dimension",
+          "activity_id",
+          "title",
+          "minutes",
+          "reason"
+        ],
+        "title": "GapTask"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "Health": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "const": "ok",
+            "title": "Status"
+          },
+          "demo_mode": {
+            "type": "boolean",
+            "title": "Demo Mode"
+          },
+          "version": {
+            "type": "string",
+            "title": "Version"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "demo_mode",
+          "version"
+        ],
+        "title": "Health"
+      },
+      "HistoryEntry": {
+        "properties": {
+          "dimension": {
+            "type": "string",
+            "enum": [
+              "clarity",
+              "structure",
+              "listening",
+              "warmth",
+              "persuasion",
+              "concision",
+              "storytelling"
+            ],
+            "title": "Dimension"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "assessed",
+              "provisional",
+              "not_enough_evidence",
+              "not_assessed"
+            ],
+            "title": "Status"
+          },
+          "level": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Level"
+          },
+          "level_label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Level Label"
+          },
+          "assessed_at": {
+            "type": "string",
+            "title": "Assessed At"
+          },
+          "context_label": {
+            "type": "string",
+            "title": "Context Label"
+          },
+          "source_type": {
+            "type": "string",
+            "enum": [
+              "assessment",
+              "recording"
+            ],
+            "title": "Source Type"
+          },
+          "source_id": {
+            "type": "string",
+            "title": "Source Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "dimension",
+          "status",
+          "level",
+          "level_label",
+          "assessed_at",
+          "context_label",
+          "source_type",
+          "source_id"
+        ],
+        "title": "HistoryEntry"
+      },
+      "IdTitle": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "title"
+        ],
+        "title": "IdTitle"
+      },
+      "Issue": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "detail": {
+            "type": "string",
+            "title": "Detail"
+          },
+          "severity": {
+            "type": "string",
+            "enum": [
+              "blocking",
+              "warning"
+            ],
+            "title": "Severity"
+          }
+        },
+        "type": "object",
+        "required": [
+          "code",
+          "title",
+          "detail",
+          "severity"
+        ],
+        "title": "Issue"
+      },
+      "Limits": {
+        "properties": {
+          "free_spar_per_week": {
+            "type": "integer",
+            "title": "Free Spar Per Week"
+          },
+          "free_talks": {
+            "type": "integer",
+            "title": "Free Talks"
+          },
+          "max_upload_mb": {
+            "type": "integer",
+            "title": "Max Upload Mb"
+          },
+          "max_recording_minutes": {
+            "type": "integer",
+            "title": "Max Recording Minutes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "free_spar_per_week",
+          "free_talks",
+          "max_upload_mb",
+          "max_recording_minutes"
+        ],
+        "title": "Limits"
+      },
+      "Me": {
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "title": "User Id"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          },
+          "demo_mode": {
+            "type": "boolean",
+            "title": "Demo Mode"
+          },
+          "onboarding": {
+            "$ref": "#/components/schemas/Onboarding"
+          },
+          "practice_settings": {
+            "$ref": "#/components/schemas/PracticeSettings"
+          },
+          "voice_reference": {
+            "$ref": "#/components/schemas/VoiceReferenceStatus"
+          },
+          "entitlement": {
+            "$ref": "#/components/schemas/Entitlement"
+          },
+          "has_results": {
+            "type": "boolean",
+            "title": "Has Results"
+          },
+          "next_step": {
+            "type": "string",
+            "enum": [
+              "onboarding",
+              "choose_input",
+              "home"
+            ],
+            "title": "Next Step"
+          }
+        },
+        "type": "object",
+        "required": [
+          "user_id",
+          "created_at",
+          "demo_mode",
+          "onboarding",
+          "practice_settings",
+          "voice_reference",
+          "entitlement",
+          "has_results",
+          "next_step"
+        ],
+        "title": "Me"
+      },
+      "MePatch": {
+        "properties": {
+          "onboarding": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/OnboardingPatch"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "practice_settings": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PracticeSettingsPatch"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "title": "MePatch"
+      },
+      "MeetingDebrief": {
+        "properties": {
+          "talk_share": {
+            "items": {
+              "$ref": "#/components/schemas/TalkShare"
+            },
+            "type": "array",
+            "title": "Talk Share"
+          },
+          "best_moment": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EvidenceMoment"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "decisions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Decisions"
+          },
+          "follow_up_summary": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Follow Up Summary"
+          },
+          "one_thing_to_try": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "One Thing To Try"
+          }
+        },
+        "type": "object",
+        "required": [
+          "talk_share",
+          "best_moment",
+          "decisions",
+          "follow_up_summary",
+          "one_thing_to_try"
+        ],
+        "title": "MeetingDebrief"
+      },
+      "Meta": {
+        "properties": {
+          "demo_mode": {
+            "type": "boolean",
+            "title": "Demo Mode"
+          },
+          "api_version": {
+            "type": "string",
+            "title": "Api Version"
+          },
+          "languages": {
+            "items": {
+              "$ref": "#/components/schemas/CodeName"
+            },
+            "type": "array",
+            "title": "Languages"
+          },
+          "tracks": {
+            "items": {
+              "$ref": "#/components/schemas/TrackInfo"
+            },
+            "type": "array",
+            "title": "Tracks"
+          },
+          "contexts": {
+            "items": {
+              "$ref": "#/components/schemas/IdTitle"
+            },
+            "type": "array",
+            "title": "Contexts"
+          },
+          "ease_targets": {
+            "items": {
+              "$ref": "#/components/schemas/IdTitle"
+            },
+            "type": "array",
+            "title": "Ease Targets"
+          },
+          "dimensions": {
+            "items": {
+              "$ref": "#/components/schemas/DimensionInfo"
+            },
+            "type": "array",
+            "title": "Dimensions"
+          },
+          "activities": {
+            "items": {
+              "$ref": "#/components/schemas/ActivityInfo"
+            },
+            "type": "array",
+            "title": "Activities"
+          },
+          "assessment_estimate_minutes": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "title": "Assessment Estimate Minutes"
+          },
+          "voice_setup_estimate_minutes": {
+            "type": "integer",
+            "title": "Voice Setup Estimate Minutes"
+          },
+          "pricing": {
+            "$ref": "#/components/schemas/Pricing"
+          },
+          "consents": {
+            "$ref": "#/components/schemas/Consents"
+          },
+          "limits": {
+            "$ref": "#/components/schemas/Limits"
+          }
+        },
+        "type": "object",
+        "required": [
+          "demo_mode",
+          "api_version",
+          "languages",
+          "tracks",
+          "contexts",
+          "ease_targets",
+          "dimensions",
+          "activities",
+          "assessment_estimate_minutes",
+          "voice_setup_estimate_minutes",
+          "pricing",
+          "consents",
+          "limits"
+        ],
+        "title": "Meta"
+      },
+      "MilestoneOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "detail": {
+            "type": "string",
+            "title": "Detail"
+          },
+          "achieved_at": {
+            "type": "string",
+            "title": "Achieved At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "detail",
+          "achieved_at"
+        ],
+        "title": "MilestoneOut"
+      },
+      "MissionAttemptOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "conversation_id": {
+            "type": "string",
+            "title": "Conversation Id"
+          },
+          "attempt_number": {
+            "type": "integer",
+            "title": "Attempt Number"
+          },
+          "quick": {
+            "type": "boolean",
+            "title": "Quick"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "processing",
+              "complete",
+              "failed"
+            ],
+            "title": "Status"
+          },
+          "feedback": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AttemptFeedback"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "conversation_id",
+          "attempt_number",
+          "quick",
+          "status",
+          "feedback",
+          "created_at"
+        ],
+        "title": "MissionAttemptOut"
+      },
+      "MissionComplete": {
+        "properties": {
+          "takeaway": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 2000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Takeaway"
+          }
+        },
+        "type": "object",
+        "title": "MissionComplete"
+      },
+      "MissionExample": {
+        "properties": {
+          "text": {
+            "type": "string",
+            "title": "Text"
+          },
+          "audio_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Audio Url"
+          },
+          "explanation": {
+            "type": "string",
+            "title": "Explanation"
+          }
+        },
+        "type": "object",
+        "required": [
+          "text",
+          "audio_url",
+          "explanation"
+        ],
+        "title": "MissionExample"
+      },
+      "MissionOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "module_id": {
+            "type": "string",
+            "title": "Module Id"
+          },
+          "track_id": {
+            "type": "string",
+            "enum": [
+              "negotiation",
+              "business",
+              "conversational",
+              "storytelling",
+              "public_speaking"
+            ],
+            "title": "Track Id"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "learn_and_try",
+              "remix",
+              "real_life",
+              "weekly_reveal"
+            ],
+            "title": "Type"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "dimension": {
+            "type": "string",
+            "enum": [
+              "clarity",
+              "structure",
+              "listening",
+              "warmth",
+              "persuasion",
+              "concision",
+              "storytelling"
+            ],
+            "title": "Dimension"
+          },
+          "minutes": {
+            "type": "integer",
+            "title": "Minutes"
+          },
+          "context": {
+            "type": "string",
+            "title": "Context"
+          },
+          "target_behavior": {
+            "type": "string",
+            "title": "Target Behavior"
+          },
+          "why_it_matters": {
+            "type": "string",
+            "title": "Why It Matters"
+          },
+          "example": {
+            "$ref": "#/components/schemas/MissionExample"
+          },
+          "steps": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Steps"
+          },
+          "suggested_seconds": {
+            "type": "integer",
+            "title": "Suggested Seconds"
+          },
+          "real_life": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RealLife"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "attempts": {
+            "items": {
+              "$ref": "#/components/schemas/MissionAttemptOut"
+            },
+            "type": "array",
+            "title": "Attempts"
+          },
+          "reflections": {
+            "items": {
+              "$ref": "#/components/schemas/ReflectionOut"
+            },
+            "type": "array",
+            "title": "Reflections"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "available",
+              "completed",
+              "locked"
+            ],
+            "title": "Status"
+          },
+          "locked_reason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "const": "subscribe"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Locked Reason"
+          },
+          "takeaway": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Takeaway"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "module_id",
+          "track_id",
+          "type",
+          "title",
+          "dimension",
+          "minutes",
+          "context",
+          "target_behavior",
+          "why_it_matters",
+          "example",
+          "steps",
+          "suggested_seconds",
+          "real_life",
+          "attempts",
+          "reflections",
+          "status",
+          "locked_reason",
+          "takeaway"
+        ],
+        "title": "MissionOut"
+      },
+      "MissionSummary": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "learn_and_try",
+              "remix",
+              "real_life",
+              "weekly_reveal"
+            ],
+            "title": "Type"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "minutes": {
+            "type": "integer",
+            "title": "Minutes"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "available",
+              "completed",
+              "locked"
+            ],
+            "title": "Status"
+          },
+          "locked_reason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "const": "subscribe"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Locked Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "type",
+          "title",
+          "minutes",
+          "status",
+          "locked_reason"
+        ],
+        "title": "MissionSummary"
+      },
+      "MomentumPoint": {
+        "properties": {
+          "turn_index": {
+            "type": "integer",
+            "title": "Turn Index"
+          },
+          "value": {
+            "type": "number",
+            "title": "Value"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          }
+        },
+        "type": "object",
+        "required": [
+          "turn_index",
+          "value",
+          "note"
+        ],
+        "title": "MomentumPoint"
+      },
+      "NextStep": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "activity",
+            "title": "Type",
+            "default": "activity"
+          },
+          "activity_id": {
+            "type": "string",
+            "enum": [
+              "meet_someone_new",
+              "explain_interest",
+              "respond_to_someone",
+              "make_a_case",
+              "tell_a_story"
+            ],
+            "title": "Activity Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "minutes": {
+            "type": "integer",
+            "title": "Minutes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "activity_id",
+          "title",
+          "minutes"
+        ],
+        "title": "NextStep"
+      },
+      "Observation": {
+        "properties": {
+          "dimension": {
+            "type": "string",
+            "enum": [
+              "clarity",
+              "structure",
+              "listening",
+              "warmth",
+              "persuasion",
+              "concision",
+              "storytelling"
+            ],
+            "title": "Dimension"
+          },
+          "note": {
+            "type": "string",
+            "title": "Note"
+          }
+        },
+        "type": "object",
+        "required": [
+          "dimension",
+          "note"
+        ],
+        "title": "Observation"
+      },
+      "Onboarding": {
+        "properties": {
+          "completed": {
+            "type": "boolean",
+            "title": "Completed"
+          },
+          "contexts_ranked": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "social",
+                "networking",
+                "meetings",
+                "interviews"
+              ]
+            },
+            "type": "array",
+            "title": "Contexts Ranked"
+          },
+          "ease_targets": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "explaining",
+                "contributing",
+                "connecting",
+                "persuading",
+                "concise"
+              ]
+            },
+            "type": "array",
+            "title": "Ease Targets"
+          },
+          "goal_track": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "negotiation",
+                  "business",
+                  "conversational",
+                  "storytelling",
+                  "public_speaking"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Goal Track"
+          },
+          "language": {
+            "type": "string",
+            "title": "Language"
+          },
+          "region": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Region"
+          },
+          "analysis_consent_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Analysis Consent Version"
+          },
+          "analysis_consented_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Analysis Consented At"
+          },
+          "course_started": {
+            "type": "boolean",
+            "title": "Course Started"
+          }
+        },
+        "type": "object",
+        "required": [
+          "completed",
+          "contexts_ranked",
+          "ease_targets",
+          "goal_track",
+          "language",
+          "region",
+          "analysis_consent_version",
+          "analysis_consented_at",
+          "course_started"
+        ],
+        "title": "Onboarding"
+      },
+      "OnboardingPatch": {
+        "properties": {
+          "completed": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Completed"
+          },
+          "contexts_ranked": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "social",
+                    "networking",
+                    "meetings",
+                    "interviews"
+                  ]
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Contexts Ranked"
+          },
+          "ease_targets": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "explaining",
+                    "contributing",
+                    "connecting",
+                    "persuading",
+                    "concise"
+                  ]
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ease Targets"
+          },
+          "goal_track": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "negotiation",
+                  "business",
+                  "conversational",
+                  "storytelling",
+                  "public_speaking"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Goal Track"
+          },
+          "language": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 10
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Language"
+          },
+          "region": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 12
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Region"
+          },
+          "analysis_consent_version": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 40
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Analysis Consent Version"
+          },
+          "course_started": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Course Started"
+          }
+        },
+        "type": "object",
+        "title": "OnboardingPatch"
+      },
+      "Partner": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "role": {
+            "type": "string",
+            "title": "Role"
+          },
+          "voice": {
+            "type": "string",
+            "title": "Voice"
+          },
+          "symbol": {
+            "type": "string",
+            "title": "Symbol"
+          },
+          "color_hex": {
+            "type": "string",
+            "title": "Color Hex"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "role",
+          "voice",
+          "symbol",
+          "color_hex"
+        ],
+        "title": "Partner"
+      },
+      "Persona": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "scenario": {
+            "type": "string",
+            "title": "Scenario"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "default_difficulty": {
+            "type": "string",
+            "enum": [
+              "kind",
+              "real",
+              "brutal"
+            ],
+            "title": "Default Difficulty"
+          },
+          "symbol": {
+            "type": "string",
+            "title": "Symbol"
+          },
+          "color_hex": {
+            "type": "string",
+            "title": "Color Hex"
+          },
+          "is_free": {
+            "type": "boolean",
+            "title": "Is Free"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "title",
+          "scenario",
+          "description",
+          "default_difficulty",
+          "symbol",
+          "color_hex",
+          "is_free"
+        ],
+        "title": "Persona"
+      },
+      "PersonaList": {
+        "properties": {
+          "personas": {
+            "items": {
+              "$ref": "#/components/schemas/Persona"
+            },
+            "type": "array",
+            "title": "Personas"
+          }
+        },
+        "type": "object",
+        "required": [
+          "personas"
+        ],
+        "title": "PersonaList"
+      },
+      "PracticeSettings": {
+        "properties": {
+          "weekly_target": {
+            "type": "integer",
+            "title": "Weekly Target"
+          },
+          "reminder_time": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reminder Time"
+          },
+          "reminder_days": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "title": "Reminder Days"
+          }
+        },
+        "type": "object",
+        "required": [
+          "weekly_target",
+          "reminder_time",
+          "reminder_days"
+        ],
+        "title": "PracticeSettings"
+      },
+      "PracticeSettingsPatch": {
+        "properties": {
+          "weekly_target": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 14.0,
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Weekly Target"
+          },
+          "reminder_time": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reminder Time"
+          },
+          "reminder_days": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "integer"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reminder Days"
+          }
+        },
+        "type": "object",
+        "title": "PracticeSettingsPatch"
+      },
+      "PracticeTotals": {
+        "properties": {
+          "total_sessions": {
+            "type": "integer",
+            "title": "Total Sessions"
+          },
+          "missions_completed": {
+            "type": "integer",
+            "title": "Missions Completed"
+          },
+          "minutes": {
+            "type": "integer",
+            "title": "Minutes"
+          },
+          "weeks_active": {
+            "type": "integer",
+            "title": "Weeks Active"
+          },
+          "this_week": {
+            "$ref": "#/components/schemas/ThisWeek"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total_sessions",
+          "missions_completed",
+          "minutes",
+          "weeks_active",
+          "this_week"
+        ],
+        "title": "PracticeTotals"
+      },
+      "PrepItem": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "scenario": {
+            "type": "string",
+            "title": "Scenario"
+          },
+          "partner_role": {
+            "type": "string",
+            "title": "Partner Role"
+          },
+          "difficulty": {
+            "type": "string",
+            "enum": [
+              "kind",
+              "real",
+              "brutal"
+            ],
+            "title": "Difficulty"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "scenario",
+          "partner_role",
+          "difficulty"
+        ],
+        "title": "PrepItem"
+      },
+      "Pricing": {
+        "properties": {
+          "monthly_usd": {
+            "type": "number",
+            "title": "Monthly Usd"
+          },
+          "yearly_usd": {
+            "type": "number",
+            "title": "Yearly Usd"
+          },
+          "trial_days": {
+            "type": "integer",
+            "title": "Trial Days"
+          },
+          "monthly_product_id": {
+            "type": "string",
+            "title": "Monthly Product Id"
+          },
+          "yearly_product_id": {
+            "type": "string",
+            "title": "Yearly Product Id"
+          },
+          "note": {
+            "type": "string",
+            "title": "Note"
+          }
+        },
+        "type": "object",
+        "required": [
+          "monthly_usd",
+          "yearly_usd",
+          "trial_days",
+          "monthly_product_id",
+          "yearly_product_id",
+          "note"
+        ],
+        "title": "Pricing"
+      },
+      "Profile": {
+        "properties": {
+          "basis": {
+            "type": "string",
+            "enum": [
+              "assessment",
+              "partial",
+              "goal_only",
+              "none"
+            ],
+            "title": "Basis"
+          },
+          "headline": {
+            "type": "string",
+            "title": "Headline"
+          },
+          "summary": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Summary"
+          },
+          "dimensions": {
+            "items": {
+              "$ref": "#/components/schemas/DimensionResult"
+            },
+            "type": "array",
+            "title": "Dimensions"
+          },
+          "speech_patterns": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SpeechPatterns"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "style": {
+            "$ref": "#/components/schemas/StyleResult"
+          },
+          "twin": {
+            "$ref": "#/components/schemas/TwinResult"
+          },
+          "first_win": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RewriteMoment"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "history": {
+            "items": {
+              "$ref": "#/components/schemas/HistoryEntry"
+            },
+            "type": "array",
+            "title": "History"
+          },
+          "sources": {
+            "items": {
+              "$ref": "#/components/schemas/ProfileSource"
+            },
+            "type": "array",
+            "title": "Sources"
+          },
+          "updated_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "basis",
+          "headline",
+          "summary",
+          "dimensions",
+          "speech_patterns",
+          "style",
+          "twin",
+          "first_win",
+          "history",
+          "sources",
+          "updated_at"
+        ],
+        "title": "Profile"
+      },
+      "ProfileSource": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "assessment",
+              "recording"
+            ],
+            "title": "Type"
+          },
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          }
+        },
+        "type": "object",
+        "required": [
+          "type",
+          "id",
+          "title",
+          "created_at",
+          "status"
+        ],
+        "title": "ProfileSource"
+      },
+      "Progress": {
+        "properties": {
+          "practice": {
+            "$ref": "#/components/schemas/PracticeTotals"
+          },
+          "milestones": {
+            "items": {
+              "$ref": "#/components/schemas/MilestoneOut"
+            },
+            "type": "array",
+            "title": "Milestones"
+          },
+          "recent": {
+            "items": {
+              "$ref": "#/components/schemas/RecentItem"
+            },
+            "type": "array",
+            "title": "Recent"
+          }
+        },
+        "type": "object",
+        "required": [
+          "practice",
+          "milestones",
+          "recent"
+        ],
+        "title": "Progress"
+      },
+      "QuickOption": {
+        "properties": {
+          "mission_id": {
+            "type": "string",
+            "title": "Mission Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "minutes": {
+            "type": "integer",
+            "title": "Minutes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "mission_id",
+          "title",
+          "minutes"
+        ],
+        "title": "QuickOption"
+      },
+      "RealLife": {
+        "properties": {
+          "prompt": {
+            "type": "string",
+            "title": "Prompt"
+          },
+          "ai_alternative_title": {
+            "type": "string",
+            "title": "Ai Alternative Title"
+          },
+          "reflection_questions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Reflection Questions"
+          }
+        },
+        "type": "object",
+        "required": [
+          "prompt",
+          "ai_alternative_title",
+          "reflection_questions"
+        ],
+        "title": "RealLife"
+      },
+      "RecentItem": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "title": "Type"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "type",
+          "title",
+          "created_at"
+        ],
+        "title": "RecentItem"
+      },
+      "RecordingList": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/RecordingOut"
+            },
+            "type": "array",
+            "title": "Items"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items"
+        ],
+        "title": "RecordingList"
+      },
+      "RecordingOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "upload",
+              "live"
+            ],
+            "title": "Source"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "processing",
+              "needs_speaker_confirmation",
+              "assessing",
+              "complete",
+              "needs_recovery",
+              "failed",
+              "no_user"
+            ],
+            "title": "Status"
+          },
+          "stage": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "decoding",
+                  "checking_audio",
+                  "identifying_speakers",
+                  "assessing"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stage"
+          },
+          "duration_seconds": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Duration Seconds"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          },
+          "quality": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RecordingQuality"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "speakers": {
+            "items": {
+              "$ref": "#/components/schemas/SpeakerCandidate"
+            },
+            "type": "array",
+            "title": "Speakers"
+          },
+          "attribution": {
+            "$ref": "#/components/schemas/Attribution"
+          },
+          "result": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AnalysisResult"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "debrief": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MeetingDebrief"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "recovery": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Recovery"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "source",
+          "status",
+          "stage",
+          "duration_seconds",
+          "created_at",
+          "quality",
+          "speakers",
+          "attribution",
+          "result",
+          "debrief",
+          "recovery"
+        ],
+        "title": "RecordingOut"
+      },
+      "RecordingQuality": {
+        "properties": {
+          "usable": {
+            "type": "string",
+            "enum": [
+              "yes",
+              "partly",
+              "no"
+            ],
+            "title": "Usable"
+          },
+          "issues": {
+            "items": {
+              "$ref": "#/components/schemas/Issue"
+            },
+            "type": "array",
+            "title": "Issues"
+          },
+          "usable_seconds": {
+            "type": "number",
+            "title": "Usable Seconds"
+          },
+          "total_seconds": {
+            "type": "number",
+            "title": "Total Seconds"
+          }
+        },
+        "type": "object",
+        "required": [
+          "usable",
+          "issues",
+          "usable_seconds",
+          "total_seconds"
+        ],
+        "title": "RecordingQuality"
+      },
+      "RecordingRules": {
+        "properties": {
+          "region": {
+            "type": "string",
+            "title": "Region"
+          },
+          "region_name": {
+            "type": "string",
+            "title": "Region Name"
+          },
+          "rule": {
+            "type": "string",
+            "enum": [
+              "all_party",
+              "one_party",
+              "mixed",
+              "unknown"
+            ],
+            "title": "Rule"
+          },
+          "headline": {
+            "type": "string",
+            "title": "Headline"
+          },
+          "detail": {
+            "type": "string",
+            "title": "Detail"
+          },
+          "policy": {
+            "type": "string",
+            "title": "Policy"
+          },
+          "how_to_ask": {
+            "type": "string",
+            "title": "How To Ask"
+          },
+          "disclaimer": {
+            "type": "string",
+            "title": "Disclaimer"
+          },
+          "regions": {
+            "items": {
+              "$ref": "#/components/schemas/CodeName"
+            },
+            "type": "array",
+            "title": "Regions"
+          }
+        },
+        "type": "object",
+        "required": [
+          "region",
+          "region_name",
+          "rule",
+          "headline",
+          "detail",
+          "policy",
+          "how_to_ask",
+          "disclaimer",
+          "regions"
+        ],
+        "title": "RecordingRules"
+      },
+      "Recovery": {
+        "properties": {
+          "problem": {
+            "type": "string",
+            "enum": [
+              "file_unreadable",
+              "audio_unclear",
+              "speaker_uncertain",
+              "too_little_evidence",
+              "no_dimensions",
+              "processing_failed"
+            ],
+            "title": "Problem"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "actions": {
+            "items": {
+              "$ref": "#/components/schemas/RecoveryAction"
+            },
+            "type": "array",
+            "title": "Actions"
+          },
+          "extra_minutes": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Extra Minutes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "problem",
+          "title",
+          "message",
+          "actions",
+          "extra_minutes"
+        ],
+        "title": "Recovery"
+      },
+      "RecoveryAction": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "retry",
+              "record_again",
+              "upload_another",
+              "ai_practice",
+              "identify_speaker",
+              "gap_fill",
+              "starter_course",
+              "continue"
+            ],
+            "title": "Type"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "activity_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "meet_someone_new",
+                  "explain_interest",
+                  "respond_to_someone",
+                  "make_a_case",
+                  "tell_a_story"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Activity Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "type",
+          "title",
+          "activity_id"
+        ],
+        "title": "RecoveryAction"
+      },
+      "ReflectionCreate": {
+        "properties": {
+          "text": {
+            "type": "string",
+            "maxLength": 4000,
+            "minLength": 1,
+            "title": "Text"
+          },
+          "went": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "well",
+                  "mixed",
+                  "hard"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Went"
+          }
+        },
+        "type": "object",
+        "required": [
+          "text"
+        ],
+        "title": "ReflectionCreate"
+      },
+      "ReflectionOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text"
+          },
+          "went": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "well",
+                  "mixed",
+                  "hard"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Went"
+          },
+          "coach_reply": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coach Reply"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "text",
+          "went",
+          "coach_reply",
+          "created_at"
+        ],
+        "title": "ReflectionOut"
+      },
+      "ResultRef": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "assessment",
+              "mission_attempt",
+              "spar_report"
+            ],
+            "title": "Type"
+          },
+          "id": {
+            "type": "string",
+            "title": "Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "type",
+          "id"
+        ],
+        "title": "ResultRef"
+      },
+      "RewriteMoment": {
+        "properties": {
+          "dimension": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "clarity",
+                  "structure",
+                  "listening",
+                  "warmth",
+                  "persuasion",
+                  "concision",
+                  "storytelling"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dimension"
+          },
+          "you_said": {
+            "type": "string",
+            "title": "You Said"
+          },
+          "try_instead": {
+            "type": "string",
+            "title": "Try Instead"
+          },
+          "why": {
+            "type": "string",
+            "title": "Why"
+          },
+          "source_type": {
+            "type": "string",
+            "enum": [
+              "conversation",
+              "recording"
+            ],
+            "title": "Source Type"
+          },
+          "source_id": {
+            "type": "string",
+            "title": "Source Id"
+          },
+          "turn_index": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Turn Index"
+          },
+          "start_seconds": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Start Seconds"
+          },
+          "end_seconds": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End Seconds"
+          },
+          "audio_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Audio Url"
+          }
+        },
+        "type": "object",
+        "required": [
+          "dimension",
+          "you_said",
+          "try_instead",
+          "why",
+          "source_type",
+          "source_id",
+          "turn_index",
+          "start_seconds",
+          "end_seconds",
+          "audio_url"
+        ],
+        "title": "RewriteMoment"
+      },
+      "SkillUpdate": {
+        "properties": {
+          "dimension": {
+            "type": "string",
+            "enum": [
+              "clarity",
+              "structure",
+              "listening",
+              "warmth",
+              "persuasion",
+              "concision",
+              "storytelling"
+            ],
+            "title": "Dimension"
+          },
+          "change": {
+            "type": "string",
+            "enum": [
+              "new_estimate",
+              "unchanged"
+            ],
+            "title": "Change"
+          },
+          "note": {
+            "type": "string",
+            "title": "Note"
+          }
+        },
+        "type": "object",
+        "required": [
+          "dimension",
+          "change",
+          "note"
+        ],
+        "title": "SkillUpdate"
+      },
+      "SparOutcome": {
+        "properties": {
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "detail": {
+            "type": "string",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "required": [
+          "label",
+          "detail"
+        ],
+        "title": "SparOutcome"
+      },
+      "SparReportOut": {
+        "properties": {
+          "conversation_id": {
+            "type": "string",
+            "title": "Conversation Id"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "processing",
+              "complete",
+              "failed"
+            ],
+            "title": "Status"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "outcome": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SparOutcome"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "momentum": {
+            "items": {
+              "$ref": "#/components/schemas/MomentumPoint"
+            },
+            "type": "array",
+            "title": "Momentum"
+          },
+          "moments": {
+            "items": {
+              "$ref": "#/components/schemas/RewriteMoment"
+            },
+            "type": "array",
+            "title": "Moments"
+          },
+          "observations": {
+            "items": {
+              "$ref": "#/components/schemas/Observation"
+            },
+            "type": "array",
+            "title": "Observations"
+          },
+          "next_step": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Step"
+          }
+        },
+        "type": "object",
+        "required": [
+          "conversation_id",
+          "status",
+          "title",
+          "outcome",
+          "momentum",
+          "moments",
+          "observations",
+          "next_step"
+        ],
+        "title": "SparReportOut"
+      },
+      "SparSession": {
+        "properties": {
+          "conversation_id": {
+            "type": "string",
+            "title": "Conversation Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "persona_name": {
+            "type": "string",
+            "title": "Persona Name"
+          },
+          "difficulty": {
+            "type": "string",
+            "enum": [
+              "kind",
+              "real",
+              "brutal"
+            ],
+            "title": "Difficulty"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "outcome_label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Outcome Label"
+          }
+        },
+        "type": "object",
+        "required": [
+          "conversation_id",
+          "title",
+          "persona_name",
+          "difficulty",
+          "created_at",
+          "status",
+          "outcome_label"
+        ],
+        "title": "SparSession"
+      },
+      "SparSessionList": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/SparSession"
+            },
+            "type": "array",
+            "title": "Items"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items"
+        ],
+        "title": "SparSessionList"
+      },
+      "SpeakerCandidate": {
+        "properties": {
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "display_name": {
+            "type": "string",
+            "title": "Display Name"
+          },
+          "speech_seconds": {
+            "type": "number",
+            "title": "Speech Seconds"
+          },
+          "turns": {
+            "type": "integer",
+            "title": "Turns"
+          },
+          "sample_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sample Url"
+          },
+          "sample_text": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sample Text"
+          },
+          "is_proposed_user": {
+            "type": "boolean",
+            "title": "Is Proposed User"
+          },
+          "match": {
+            "type": "string",
+            "enum": [
+              "reference",
+              "acoustic",
+              "loudest",
+              "none"
+            ],
+            "title": "Match"
+          },
+          "match_strength": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "strong",
+                  "weak",
+                  "conflict"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Match Strength"
+          }
+        },
+        "type": "object",
+        "required": [
+          "label",
+          "display_name",
+          "speech_seconds",
+          "turns",
+          "sample_url",
+          "sample_text",
+          "is_proposed_user",
+          "match",
+          "match_strength"
+        ],
+        "title": "SpeakerCandidate"
+      },
+      "SpeakerConfirmation": {
+        "properties": {
+          "decision": {
+            "type": "string",
+            "enum": [
+              "confirm",
+              "choose",
+              "not_present"
+            ],
+            "title": "Decision"
+          },
+          "speaker_label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Speaker Label"
+          }
+        },
+        "type": "object",
+        "required": [
+          "decision"
+        ],
+        "title": "SpeakerConfirmation"
+      },
+      "SpeechPatterns": {
+        "properties": {
+          "words_per_minute": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Words Per Minute"
+          },
+          "filler_per_minute": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Filler Per Minute"
+          },
+          "top_fillers": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Top Fillers"
+          },
+          "hedges_per_minute": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Hedges Per Minute"
+          },
+          "avg_pause_seconds": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avg Pause Seconds"
+          },
+          "longest_turn_seconds": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Longest Turn Seconds"
+          },
+          "talk_share": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Talk Share"
+          },
+          "user_speech_seconds": {
+            "type": "number",
+            "title": "User Speech Seconds"
+          },
+          "language_supported": {
+            "type": "boolean",
+            "title": "Language Supported"
+          }
+        },
+        "type": "object",
+        "required": [
+          "words_per_minute",
+          "filler_per_minute",
+          "top_fillers",
+          "hedges_per_minute",
+          "avg_pause_seconds",
+          "longest_turn_seconds",
+          "talk_share",
+          "user_speech_seconds",
+          "language_supported"
+        ],
+        "title": "SpeechPatterns"
+      },
+      "StyleResult": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "ready",
+              "provisional",
+              "not_ready"
+            ],
+            "title": "Status"
+          },
+          "archetype": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Archetype"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "traits": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Traits"
+          },
+          "message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "archetype",
+          "description",
+          "traits",
+          "message"
+        ],
+        "title": "StyleResult"
+      },
+      "Talk": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "speaker": {
+            "type": "string",
+            "title": "Speaker"
+          },
+          "source_note": {
+            "type": "string",
+            "title": "Source Note"
+          },
+          "year": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Year"
+          },
+          "duration_label": {
+            "type": "string",
+            "title": "Duration Label"
+          },
+          "lines_count": {
+            "type": "integer",
+            "title": "Lines Count"
+          },
+          "style": {
+            "$ref": "#/components/schemas/TalkStyle"
+          },
+          "tags": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Tags"
+          },
+          "is_free": {
+            "type": "boolean",
+            "title": "Is Free"
+          },
+          "technique": {
+            "type": "string",
+            "title": "Technique"
+          },
+          "breakdown": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Breakdown"
+          },
+          "lines": {
+            "items": {
+              "$ref": "#/components/schemas/TalkLine"
+            },
+            "type": "array",
+            "title": "Lines"
+          },
+          "locked": {
+            "type": "boolean",
+            "title": "Locked"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "speaker",
+          "source_note",
+          "year",
+          "duration_label",
+          "lines_count",
+          "style",
+          "tags",
+          "is_free",
+          "technique",
+          "breakdown",
+          "lines",
+          "locked"
+        ],
+        "title": "Talk"
+      },
+      "TalkLine": {
+        "properties": {
+          "index": {
+            "type": "integer",
+            "title": "Index"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text"
+          },
+          "display_text": {
+            "type": "string",
+            "title": "Display Text"
+          },
+          "pause_count": {
+            "type": "integer",
+            "title": "Pause Count"
+          },
+          "audio_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Audio Url"
+          }
+        },
+        "type": "object",
+        "required": [
+          "index",
+          "text",
+          "display_text",
+          "pause_count",
+          "audio_url"
+        ],
+        "title": "TalkLine"
+      },
+      "TalkList": {
+        "properties": {
+          "talks": {
+            "items": {
+              "$ref": "#/components/schemas/TalkSummary"
+            },
+            "type": "array",
+            "title": "Talks"
+          }
+        },
+        "type": "object",
+        "required": [
+          "talks"
+        ],
+        "title": "TalkList"
+      },
+      "TalkShare": {
+        "properties": {
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "display_name": {
+            "type": "string",
+            "title": "Display Name"
+          },
+          "is_user": {
+            "type": "boolean",
+            "title": "Is User"
+          },
+          "share": {
+            "type": "number",
+            "title": "Share"
+          }
+        },
+        "type": "object",
+        "required": [
+          "label",
+          "display_name",
+          "is_user",
+          "share"
+        ],
+        "title": "TalkShare"
+      },
+      "TalkStyle": {
+        "properties": {
+          "wpm": {
+            "type": "number",
+            "title": "Wpm"
+          },
+          "avg_pause_seconds": {
+            "type": "number",
+            "title": "Avg Pause Seconds"
+          },
+          "avg_sentence_words": {
+            "type": "number",
+            "title": "Avg Sentence Words"
+          }
+        },
+        "type": "object",
+        "required": [
+          "wpm",
+          "avg_pause_seconds",
+          "avg_sentence_words"
+        ],
+        "title": "TalkStyle"
+      },
+      "TalkSummary": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "speaker": {
+            "type": "string",
+            "title": "Speaker"
+          },
+          "source_note": {
+            "type": "string",
+            "title": "Source Note"
+          },
+          "year": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Year"
+          },
+          "duration_label": {
+            "type": "string",
+            "title": "Duration Label"
+          },
+          "lines_count": {
+            "type": "integer",
+            "title": "Lines Count"
+          },
+          "style": {
+            "$ref": "#/components/schemas/TalkStyle"
+          },
+          "tags": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Tags"
+          },
+          "is_free": {
+            "type": "boolean",
+            "title": "Is Free"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "speaker",
+          "source_note",
+          "year",
+          "duration_label",
+          "lines_count",
+          "style",
+          "tags",
+          "is_free"
+        ],
+        "title": "TalkSummary"
+      },
+      "ThisWeek": {
+        "properties": {
+          "sessions": {
+            "type": "integer",
+            "title": "Sessions"
+          },
+          "target": {
+            "type": "integer",
+            "title": "Target"
+          }
+        },
+        "type": "object",
+        "required": [
+          "sessions",
+          "target"
+        ],
+        "title": "ThisWeek"
+      },
+      "TodayPlan": {
+        "properties": {
+          "mission": {
+            "$ref": "#/components/schemas/MissionSummary"
+          },
+          "module_title": {
+            "type": "string",
+            "title": "Module Title"
+          },
+          "quick": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/QuickOption"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "mission",
+          "module_title",
+          "quick"
+        ],
+        "title": "TodayPlan"
+      },
+      "TrackChange": {
+        "properties": {
+          "track": {
+            "type": "string",
+            "enum": [
+              "negotiation",
+              "business",
+              "conversational",
+              "storytelling",
+              "public_speaking"
+            ],
+            "title": "Track"
+          }
+        },
+        "type": "object",
+        "required": [
+          "track"
+        ],
+        "title": "TrackChange"
+      },
+      "TrackInfo": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "enum": [
+              "negotiation",
+              "business",
+              "conversational",
+              "storytelling",
+              "public_speaking"
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "subtitle": {
+            "type": "string",
+            "title": "Subtitle"
+          },
+          "symbol": {
+            "type": "string",
+            "title": "Symbol"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "subtitle",
+          "symbol"
+        ],
+        "title": "TrackInfo"
+      },
+      "Transcript": {
+        "properties": {
+          "segments": {
+            "items": {
+              "$ref": "#/components/schemas/TranscriptSegment"
+            },
+            "type": "array",
+            "title": "Segments"
+          }
+        },
+        "type": "object",
+        "required": [
+          "segments"
+        ],
+        "title": "Transcript"
+      },
+      "TranscriptSegment": {
+        "properties": {
+          "speaker": {
+            "type": "string",
+            "title": "Speaker"
+          },
+          "is_user": {
+            "type": "boolean",
+            "title": "Is User"
+          },
+          "start": {
+            "type": "number",
+            "title": "Start"
+          },
+          "end": {
+            "type": "number",
+            "title": "End"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text"
+          },
+          "excluded": {
+            "type": "boolean",
+            "title": "Excluded"
+          },
+          "exclusion_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Exclusion Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "speaker",
+          "is_user",
+          "start",
+          "end",
+          "text",
+          "excluded",
+          "exclusion_reason"
+        ],
+        "title": "TranscriptSegment"
+      },
+      "Turn": {
+        "properties": {
+          "index": {
+            "type": "integer",
+            "title": "Index"
+          },
+          "speaker": {
+            "type": "string",
+            "enum": [
+              "partner",
+              "user"
+            ],
+            "title": "Speaker"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text"
+          },
+          "audio_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Audio Url"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          },
+          "quality": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TurnQuality"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "coach_whisper": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coach Whisper"
+          },
+          "excluded": {
+            "type": "boolean",
+            "title": "Excluded"
+          }
+        },
+        "type": "object",
+        "required": [
+          "index",
+          "speaker",
+          "text",
+          "audio_url",
+          "created_at",
+          "quality",
+          "coach_whisper",
+          "excluded"
+        ],
+        "title": "Turn"
+      },
+      "TurnQuality": {
+        "properties": {
+          "usable": {
+            "type": "string",
+            "enum": [
+              "yes",
+              "partly",
+              "no"
+            ],
+            "title": "Usable"
+          },
+          "issues": {
+            "items": {
+              "$ref": "#/components/schemas/Issue"
+            },
+            "type": "array",
+            "title": "Issues"
+          },
+          "speech_seconds": {
+            "type": "number",
+            "title": "Speech Seconds"
+          },
+          "duration_seconds": {
+            "type": "number",
+            "title": "Duration Seconds"
+          }
+        },
+        "type": "object",
+        "required": [
+          "usable",
+          "issues",
+          "speech_seconds",
+          "duration_seconds"
+        ],
+        "title": "TurnQuality"
+      },
+      "TurnResult": {
+        "properties": {
+          "conversation": {
+            "$ref": "#/components/schemas/ConversationOut"
+          },
+          "user_turn": {
+            "$ref": "#/components/schemas/Turn"
+          },
+          "partner_turn": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Turn"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "retry_suggested": {
+            "type": "boolean",
+            "title": "Retry Suggested"
+          },
+          "done": {
+            "type": "boolean",
+            "title": "Done"
+          }
+        },
+        "type": "object",
+        "required": [
+          "conversation",
+          "user_turn",
+          "partner_turn",
+          "retry_suggested",
+          "done"
+        ],
+        "title": "TurnResult"
+      },
+      "TwinMatch": {
+        "properties": {
+          "aspect": {
+            "type": "string",
+            "title": "Aspect"
+          },
+          "aspect_title": {
+            "type": "string",
+            "title": "Aspect Title"
+          },
+          "reference_name": {
+            "type": "string",
+            "title": "Reference Name"
+          },
+          "reference_blurb": {
+            "type": "string",
+            "title": "Reference Blurb"
+          },
+          "closeness": {
+            "type": "number",
+            "title": "Closeness"
+          },
+          "your_value": {
+            "type": "string",
+            "title": "Your Value"
+          },
+          "reference_value": {
+            "type": "string",
+            "title": "Reference Value"
+          }
+        },
+        "type": "object",
+        "required": [
+          "aspect",
+          "aspect_title",
+          "reference_name",
+          "reference_blurb",
+          "closeness",
+          "your_value",
+          "reference_value"
+        ],
+        "title": "TwinMatch"
+      },
+      "TwinResult": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "not_ready",
+              "ready"
+            ],
+            "title": "Status"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "disclaimer": {
+            "type": "string",
+            "title": "Disclaimer"
+          },
+          "next_step": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/NextStep"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "matches": {
+            "items": {
+              "$ref": "#/components/schemas/TwinMatch"
+            },
+            "type": "array",
+            "title": "Matches"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "message",
+          "disclaimer",
+          "next_step",
+          "matches"
+        ],
+        "title": "TwinResult"
+      },
+      "UpcomingEventOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "interview",
+              "meeting",
+              "presentation",
+              "social",
+              "negotiation",
+              "other"
+            ],
+            "title": "Kind"
+          },
+          "date": {
+            "type": "string",
+            "title": "Date"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes"
+          },
+          "prep": {
+            "items": {
+              "$ref": "#/components/schemas/PrepItem"
+            },
+            "type": "array",
+            "title": "Prep"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "kind",
+          "date",
+          "notes",
+          "prep",
+          "created_at"
+        ],
+        "title": "UpcomingEventOut"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      },
+      "VoiceEnrollmentResult": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "rejected"
+            ],
+            "title": "Status"
+          },
+          "issues": {
+            "items": {
+              "$ref": "#/components/schemas/Issue"
+            },
+            "type": "array",
+            "title": "Issues"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "reference": {
+            "$ref": "#/components/schemas/VoiceReferenceStatus"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "issues",
+          "message",
+          "reference"
+        ],
+        "title": "VoiceEnrollmentResult"
+      },
+      "VoiceReferenceStatus": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "none",
+              "active"
+            ],
+            "title": "Status"
+          },
+          "created_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created At"
+          },
+          "duration_seconds": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Duration Seconds"
+          },
+          "consent_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Consent Version"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "created_at",
+          "duration_seconds",
+          "consent_version"
+        ],
+        "title": "VoiceReferenceStatus"
+      },
+      "WeekPractice": {
+        "properties": {
+          "sessions": {
+            "type": "integer",
+            "title": "Sessions"
+          },
+          "missions_completed": {
+            "type": "integer",
+            "title": "Missions Completed"
+          },
+          "attempts": {
+            "type": "integer",
+            "title": "Attempts"
+          },
+          "retries": {
+            "type": "integer",
+            "title": "Retries"
+          },
+          "real_life_attempts": {
+            "type": "integer",
+            "title": "Real Life Attempts"
+          },
+          "minutes": {
+            "type": "integer",
+            "title": "Minutes"
+          },
+          "target": {
+            "type": "integer",
+            "title": "Target"
+          },
+          "met_target": {
+            "type": "boolean",
+            "title": "Met Target"
+          }
+        },
+        "type": "object",
+        "required": [
+          "sessions",
+          "missions_completed",
+          "attempts",
+          "retries",
+          "real_life_attempts",
+          "minutes",
+          "target",
+          "met_target"
+        ],
+        "title": "WeekPractice"
+      },
+      "WeeklyReview": {
+        "properties": {
+          "week_start": {
+            "type": "string",
+            "title": "Week Start"
+          },
+          "week_end": {
+            "type": "string",
+            "title": "Week End"
+          },
+          "practice": {
+            "$ref": "#/components/schemas/WeekPractice"
+          },
+          "highlights": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Highlights"
+          },
+          "before_after": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/BeforeAfter"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "skill_updates": {
+            "items": {
+              "$ref": "#/components/schemas/SkillUpdate"
+            },
+            "type": "array",
+            "title": "Skill Updates"
+          },
+          "evidence_note": {
+            "type": "string",
+            "title": "Evidence Note"
+          },
+          "next_focus_options": {
+            "items": {
+              "$ref": "#/components/schemas/FocusOption"
+            },
+            "type": "array",
+            "title": "Next Focus Options"
+          },
+          "milestones": {
+            "items": {
+              "$ref": "#/components/schemas/MilestoneOut"
+            },
+            "type": "array",
+            "title": "Milestones"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "week_start",
+          "week_end",
+          "practice",
+          "highlights",
+          "before_after",
+          "skill_updates",
+          "evidence_note",
+          "next_focus_options",
+          "milestones",
+          "message"
+        ],
+        "title": "WeeklyReview"
+      }
+    }
+  }
+}

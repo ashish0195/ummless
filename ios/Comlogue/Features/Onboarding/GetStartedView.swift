@@ -67,6 +67,11 @@ struct GetStartedView: View {
                         LocalFlags.hasSeenFirstRun = true
                         app.selectedTab = .course
                         app.dismissFlow()
+                        Task {
+                            var patch = MePatch()
+                            patch.onboarding = MePatch.OnboardingPatch(courseStarted: true)
+                            try? await app.updateMe(patch)
+                        }
                     } label: {
                         VStack(spacing: 4) {
                             Text("Not now — start a goal-based course")

@@ -1,0 +1,309 @@
+{
+  "basis": "partial",
+  "headline": "Your partial communication profile",
+  "summary": "Assessed so far: clarity, structure, concision, storytelling. Not enough evidence yet: listening, warmth, persuasion — that's missing evidence, not a low score.",
+  "dimensions": [
+    {
+      "dimension": "clarity",
+      "title": "Clarity",
+      "status": "provisional",
+      "level": 4,
+      "level_label": "Strong",
+      "confidence": "low",
+      "summary": "In this sample your main point was usually easy to follow.",
+      "strengths": [
+        "Concrete examples made the idea easy to picture."
+      ],
+      "one_change": "Say the main point in your first sentence, then add the example.",
+      "evidence": [
+        {
+          "quote": "So last spring I planned this big surprise picnic for my partner's birthday.",
+          "note": "Your main point is easy to find here.",
+          "source_type": "conversation",
+          "source_id": "cnv_409b6dd52e304a58b27f",
+          "turn_index": 1,
+          "start_seconds": 0.0,
+          "end_seconds": 12.0,
+          "audio_url": "/v1/media/med_3a303e1d2c364661ae0f?exp=1793074817&sig=bROenRZhDRNc-JWI8ERaU3WKauuWMLiD"
+        },
+        {
+          "quote": "And honestly it became the best part.",
+          "note": "Your main point is easy to find here.",
+          "source_type": "conversation",
+          "source_id": "cnv_409b6dd52e304a58b27f",
+          "turn_index": 3,
+          "start_seconds": 0.0,
+          "end_seconds": 11.54,
+          "audio_url": "/v1/media/med_19068a45ca3c4de09138?exp=1793074817&sig=94ddfeOjSGEw0lstGlVTnPlWIdL4w_O8"
+        }
+      ],
+      "missing_reason": null,
+      "next_step": null,
+      "assessed_at": "2026-10-26T22:20:17Z",
+      "context_label": "AI roleplay · Oct 26"
+    },
+    {
+      "dimension": "structure",
+      "title": "Structure",
+      "status": "provisional",
+      "level": 2,
+      "level_label": "Developing",
+      "confidence": "low",
+      "summary": "In this sample your longer answers had a recognizable shape, with room to make it land faster.",
+      "strengths": [
+        "You ended with a clear takeaway."
+      ],
+      "one_change": "Signpost your answer: 'Two things — first…, second…'.",
+      "evidence": [
+        {
+          "quote": "So last spring I planned this big surprise picnic for my partner's birthday.",
+          "note": "A recognizable shape you can build on.",
+          "source_type": "conversation",
+          "source_id": "cnv_409b6dd52e304a58b27f",
+          "turn_index": 1,
+          "start_seconds": 0.0,
+          "end_seconds": 12.0,
+          "audio_url": "/v1/media/med_3a303e1d2c364661ae0f?exp=1793074817&sig=bROenRZhDRNc-JWI8ERaU3WKauuWMLiD"
+        },
+        {
+          "quote": "And honestly it became the best part.",
+          "note": "A recognizable shape you can build on.",
+          "source_type": "conversation",
+          "source_id": "cnv_409b6dd52e304a58b27f",
+          "turn_index": 3,
+          "start_seconds": 0.0,
+          "end_seconds": 11.54,
+          "audio_url": "/v1/media/med_19068a45ca3c4de09138?exp=1793074817&sig=94ddfeOjSGEw0lstGlVTnPlWIdL4w_O8"
+        }
+      ],
+      "missing_reason": null,
+      "next_step": null,
+      "assessed_at": "2026-10-26T22:20:17Z",
+      "context_label": "AI roleplay · Oct 26"
+    },
+    {
+      "dimension": "listening",
+      "title": "Listening",
+      "status": "not_enough_evidence",
+      "level": null,
+      "level_label": null,
+      "confidence": null,
+      "summary": null,
+      "strengths": [],
+      "one_change": null,
+      "evidence": [],
+      "missing_reason": "There wasn't enough clear back-and-forth to assess listening.",
+      "next_step": {
+        "type": "activity",
+        "activity_id": "respond_to_someone",
+        "title": "Try a short listening scenario",
+        "minutes": 3
+      },
+      "assessed_at": null,
+      "context_label": null
+    },
+    {
+      "dimension": "warmth",
+      "title": "Warmth",
+      "status": "not_enough_evidence",
+      "level": null,
+      "level_label": null,
+      "confidence": null,
+      "summary": null,
+      "strengths": [],
+      "one_change": null,
+      "evidence": [],
+      "missing_reason": "We need more back-and-forth with another person to see how you connect.",
+      "next_step": {
+        "type": "activity",
+        "activity_id": "meet_someone_new",
+        "title": "Have a quick chat with someone new",
+        "minutes": 2
+      },
+      "assessed_at": null,
+      "context_label": null
+    },
+    {
+      "dimension": "persuasion",
+      "title": "Persuasion",
+      "status": "not_enough_evidence",
+      "level": null,
+      "level_label": null,
+      "confidence": null,
+      "summary": null,
+      "strengths": [],
+      "one_change": null,
+      "evidence": [],
+      "missing_reason": "We didn't have enough clear speech from you to assess this yet.",
+      "next_step": {
+        "type": "activity",
+        "activity_id": "make_a_case",
+        "title": "Make a quick case",
+        "minutes": 3
+      },
+      "assessed_at": null,
+      "context_label": null
+    },
+    {
+      "dimension": "concision",
+      "title": "Concision",
+      "status": "provisional",
+      "level": 3,
+      "level_label": "Capable",
+      "confidence": "low",
+      "summary": "You mostly got to the point, with some warm-up before it.",
+      "strengths": [
+        "Short sentences in your best answers."
+      ],
+      "one_change": "Cut the warm-up phrase and start with your answer.",
+      "evidence": [
+        {
+          "quote": "So last spring I planned this big surprise picnic for my partner's birthday.",
+          "note": "How quickly you got to the point.",
+          "source_type": "conversation",
+          "source_id": "cnv_409b6dd52e304a58b27f",
+          "turn_index": 1,
+          "start_seconds": 0.0,
+          "end_seconds": 12.0,
+          "audio_url": "/v1/media/med_3a303e1d2c364661ae0f?exp=1793074817&sig=bROenRZhDRNc-JWI8ERaU3WKauuWMLiD"
+        },
+        {
+          "quote": "And honestly it became the best part.",
+          "note": "How quickly you got to the point.",
+          "source_type": "conversation",
+          "source_id": "cnv_409b6dd52e304a58b27f",
+          "turn_index": 3,
+          "start_seconds": 0.0,
+          "end_seconds": 11.54,
+          "audio_url": "/v1/media/med_19068a45ca3c4de09138?exp=1793074817&sig=94ddfeOjSGEw0lstGlVTnPlWIdL4w_O8"
+        }
+      ],
+      "missing_reason": null,
+      "next_step": null,
+      "assessed_at": "2026-10-26T22:20:17Z",
+      "context_label": "AI roleplay · Oct 26"
+    },
+    {
+      "dimension": "storytelling",
+      "title": "Storytelling",
+      "status": "assessed",
+      "level": 4,
+      "level_label": "Strong",
+      "confidence": "moderate",
+      "summary": "Your story had a clear setup and a memorable turn.",
+      "strengths": [
+        "A specific, vivid detail."
+      ],
+      "one_change": "Start in the moment: time, place, action.",
+      "evidence": [
+        {
+          "quote": "So last spring I planned this big surprise picnic for my partner's birthday.",
+          "note": "Where your story came to life.",
+          "source_type": "conversation",
+          "source_id": "cnv_409b6dd52e304a58b27f",
+          "turn_index": 1,
+          "start_seconds": 0.0,
+          "end_seconds": 12.0,
+          "audio_url": "/v1/media/med_3a303e1d2c364661ae0f?exp=1793074817&sig=bROenRZhDRNc-JWI8ERaU3WKauuWMLiD"
+        },
+        {
+          "quote": "And honestly it became the best part.",
+          "note": "Where your story came to life.",
+          "source_type": "conversation",
+          "source_id": "cnv_409b6dd52e304a58b27f",
+          "turn_index": 3,
+          "start_seconds": 0.0,
+          "end_seconds": 11.54,
+          "audio_url": "/v1/media/med_19068a45ca3c4de09138?exp=1793074817&sig=94ddfeOjSGEw0lstGlVTnPlWIdL4w_O8"
+        }
+      ],
+      "missing_reason": null,
+      "next_step": null,
+      "assessed_at": "2026-10-26T22:20:17Z",
+      "context_label": "AI roleplay · Oct 26"
+    }
+  ],
+  "speech_patterns": {
+    "words_per_minute": 118.0,
+    "filler_per_minute": 0.0,
+    "top_fillers": [],
+    "hedges_per_minute": 0.0,
+    "avg_pause_seconds": 0.68,
+    "longest_turn_seconds": 31.6,
+    "talk_share": null,
+    "user_speech_seconds": 43.2,
+    "language_supported": true
+  },
+  "style": {
+    "status": "not_ready",
+    "archetype": null,
+    "description": null,
+    "traits": [],
+    "message": "We need more conversation to describe your style."
+  },
+  "twin": {
+    "status": "not_ready",
+    "message": "Your conversational twin is not ready yet.",
+    "disclaimer": "Reference styles are illustrative profiles, not real people. Matches compare a few measurable speaking habits in your sampled conversations — sounding alike isn't the same as communicating alike.",
+    "next_step": {
+      "type": "activity",
+      "activity_id": "tell_a_story",
+      "title": "Tell a short story",
+      "minutes": 3
+    },
+    "matches": []
+  },
+  "first_win": null,
+  "history": [
+    {
+      "dimension": "clarity",
+      "status": "provisional",
+      "level": 4,
+      "level_label": "Strong",
+      "assessed_at": "2026-10-26T22:20:17Z",
+      "context_label": "AI roleplay · Oct 26",
+      "source_type": "assessment",
+      "source_id": "asm_6c4f8759bac141bebb80"
+    },
+    {
+      "dimension": "structure",
+      "status": "provisional",
+      "level": 2,
+      "level_label": "Developing",
+      "assessed_at": "2026-10-26T22:20:17Z",
+      "context_label": "AI roleplay · Oct 26",
+      "source_type": "assessment",
+      "source_id": "asm_6c4f8759bac141bebb80"
+    },
+    {
+      "dimension": "concision",
+      "status": "provisional",
+      "level": 3,
+      "level_label": "Capable",
+      "assessed_at": "2026-10-26T22:20:17Z",
+      "context_label": "AI roleplay · Oct 26",
+      "source_type": "assessment",
+      "source_id": "asm_6c4f8759bac141bebb80"
+    },
+    {
+      "dimension": "storytelling",
+      "status": "assessed",
+      "level": 4,
+      "level_label": "Strong",
+      "assessed_at": "2026-10-26T22:20:17Z",
+      "context_label": "AI roleplay · Oct 26",
+      "source_type": "assessment",
+      "source_id": "asm_6c4f8759bac141bebb80"
+    }
+  ],
+  "sources": [
+    {
+      "type": "assessment",
+      "id": "asm_6c4f8759bac141bebb80",
+      "title": "AI conversation",
+      "created_at": "2026-10-26T22:20:17Z",
+      "status": "complete"
+    }
+  ],
+  "updated_at": "2026-10-26T22:20:17Z"
+}

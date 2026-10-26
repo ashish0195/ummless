@@ -59,6 +59,7 @@ struct MePatch: Codable, Sendable {
         var language: String?
         var region: String?
         var analysisConsentVersion: String?
+        var courseStarted: Bool?
     }
 
     struct PracticePatch: Codable, Sendable {

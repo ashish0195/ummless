@@ -11,11 +11,15 @@ generated from the implementation and must agree with this file.
 - Auth: `Authorization: Bearer <token>` on every endpoint except `POST /v1/auth/device`, `GET /v1/health` and
   signed media URLs.
 - Timestamps: ISO 8601 UTC **without fractional seconds**, e.g. `"2026-10-26T21:00:00Z"`. Dates: `"2026-10-30"`.
-- IDs are opaque strings with prefixes: `usr_`, `asm_`, `cnv_`, `rec_`, `att_`, `med_`, `evt_`, `ref_`.
+- IDs are opaque strings with prefixes: `usr_`, `asm_`, `cnv_`, `rec_`, `att_`, `med_`, `evt_`, `ref_`, `rfl_`,
+  `fbk_`.
   Content IDs (activities, missions, personas, talks) are readable slugs (e.g. `business.m1.learn`).
 - Nullable fields are always present (`null`), never omitted. Arrays are never null.
 - Audio/media URLs are **relative** (`/v1/media/med_…?exp=…&sig=…`); the client resolves them against its base URL.
-  Media endpoints accept either the signature or the bearer token.
+  Media endpoints accept either the signature or the bearer token. `EvidenceMoment.audio_url` /
+  `RewriteMoment.audio_url` / `SpeakerCandidate.sample_url` point to a **short clip** of just that moment — play it
+  from the start; `start_seconds`/`end_seconds` locate the moment in the source for display only. Any media URL
+  can be `null` (e.g. demo mode, or no audio) — the app then hides playback or speaks the text on-device.
 - Errors: HTTP status + `{"error": {"code": "string", "message": "Human-readable"}}`.
   Codes: `unauthorized` 401 · `consent_required` 403 · `not_found` 404 · `conflict` 409 · `file_too_large` 413 ·
   `unsupported_media` 415 · `validation_error` 422 · `subscription_required` 402 · `rate_limited` 429 ·
@@ -45,7 +49,8 @@ Level bands: `1 Emerging · 2 Developing · 3 Capable · 4 Strong · 5 Exception
 Issue          { code: string, title: string, detail: string, severity: "blocking" | "warning" }
                  // codes: file_unreadable, no_speech, too_short, too_quiet, noisy, clipping, overlapping_voices,
                  //        background_voices, low_intelligibility, multiple_speakers, user_not_found,
-                 //        speaker_uncertain, too_little_user_speech, transcription_failed
+                 //        speaker_uncertain, too_little_user_speech, transcription_failed,
+                 //        trimmed (a long recording was analyzed up to the length limit)
 Partner        { name: string, role: string, voice: string, symbol: string, color_hex: string }
 Turn           { index: int, speaker: "partner" | "user", text: string, audio_url: string?, created_at: ISODate,
                  quality: TurnQuality?, coach_whisper: string?, excluded: bool }
@@ -69,7 +74,7 @@ StyleResult    { status: "ready" | "provisional" | "not_ready", archetype: strin
 RecoveryAction { type: "retry" | "record_again" | "upload_another" | "ai_practice" | "identify_speaker"
                        | "gap_fill" | "starter_course" | "continue", title: string, activity_id: ActivityId? }
 Recovery       { problem: "file_unreadable" | "audio_unclear" | "speaker_uncertain" | "too_little_evidence"
-                         | "no_dimensions",
+                         | "no_dimensions" | "processing_failed",   // processing_failed = our side; offer "retry"
                  title: string, message: string, actions: [RecoveryAction], extra_minutes: int? }
 AnalysisResult { status: "complete" | "partial" | "none", headline: string, summary: string,
                  dimensions: [DimensionResult]  // always 7, canonical order
@@ -115,7 +120,7 @@ ConsentText { version: string, title: string, body: string, bullets: [string] }
 Me { user_id, created_at, demo_mode: bool,
      onboarding: { completed: bool, contexts_ranked: [ContextId], ease_targets: [EaseId], goal_track: TrackId?,
                    language: string, region: string?, analysis_consent_version: string?,
-                   analysis_consented_at: ISODate? },
+                   analysis_consented_at: ISODate?, course_started: bool },
      practice_settings: { weekly_target: int, reminder_time: string? /*"HH:MM"*/, reminder_days: [int] /*1=Mon*/ },
      voice_reference: VoiceReference, entitlement: Entitlement,
      has_results: bool, next_step: "onboarding" | "choose_input" | "home" }
@@ -123,8 +128,12 @@ VoiceReference { status: "none" | "active", created_at: ISODate?, duration_secon
 Entitlement    { tier: "free" | "pro", expires_at: ISODate?, source: "none" | "app_store" | "dev", product_id: string? }
 ```
 - `GET /v1/me` → `Me`
-- `PATCH /v1/me` body `{ onboarding?: {…partial, analysis_consent_version?: string}, practice_settings?: {…partial} }` → `Me`.
-  Setting `analysis_consent_version` records consent time server-side.
+- `PATCH /v1/me` body `{ onboarding?: {…partial, analysis_consent_version?: string, course_started?: bool},
+  practice_settings?: {…partial} }` → `Me`. Only fields present in the body change (send `null` to clear, e.g.
+  `reminder_time`). Setting `analysis_consent_version` records consent time server-side. Setting `goal_track` also
+  switches the course track.
+- `next_step`: `onboarding` until `onboarding.completed`; then `home` once the user has any evidence-backed result
+  **or** chose "start a goal-based course for now" (`course_started: true`); otherwise `choose_input`.
 - `DELETE /v1/me` → `204`. Deletes every recording, result, voice reference and the account.
 
 Audio-accepting endpoints return `403 consent_required` until analysis consent is recorded.
@@ -159,7 +168,11 @@ FinishResult{ conversation: Conversation, result_ref: { type: "assessment" | "mi
 - `GET /v1/conversations/{id}` → `Conversation`
 - `POST /v1/conversations/{id}/turns` multipart `audio`, `elapsed_seconds`, `client_metrics` (JSON, optional) →
   `TurnResult`. If the turn is not usable, `partner_turn` is null, `retry_suggested` is true and the turn is
-  `excluded`. Recording the turn again simply posts another turn.
+  `excluded`. Recording the turn again simply posts another turn. If transcription itself fails (AI outage) the
+  endpoint returns `503 ai_unavailable` and stores nothing — resend the same audio.
+- Mission conversations accept an optional `difficulty`: `"brutal"` is the app's **Harder challenge** (the partner
+  raises a tougher, more specific objection and doesn't concede easily), `"kind"` makes it gentler; absent ⇒
+  default behaviour. It is echoed in `setup.difficulty`.
 - `POST /v1/conversations/{id}/finish` → `FinishResult`. Missions → feedback is generated asynchronously
   (poll `GET /v1/missions/{id}`). Spar → poll `GET /v1/spar/reports/{conversation_id}`.
 
@@ -178,7 +191,9 @@ AssessmentActivity { id: ActivityId, title, prompt, duration_label, suggested_se
 - `POST /v1/assessments/{id}/activities/{activity_id}/start` → `Conversation` (idempotent)
 - `POST /v1/assessments/{id}/activities/{activity_id}/skip` → `Assessment`
 - `POST /v1/assessments/{id}/finalize` → `Assessment` (`processing`; poll until `complete`/`needs_recovery`).
-  Finalizing with some activities skipped is allowed — the result is partial, never penalized.
+  Finalizing with some activities skipped is allowed — the result is partial, never penalized. Allowed again from
+  `needs_recovery` (e.g. after `processing_failed`, or after redoing an activity — starting an activity moves the
+  assessment back to `in_progress`).
 
 ## Recordings (upload & live)
 
@@ -204,7 +219,12 @@ MeetingDebrief { talk_share: [{ label, display_name, is_user: bool, share: numbe
 - `GET /v1/recordings` → `{ items: [Recording] }` · `GET /v1/recordings/{id}` → `Recording`
 - `POST /v1/recordings/{id}/speaker-confirmation` body `{ decision: "confirm" | "choose" | "not_present", speaker_label?: string }`
   → `Recording`. Allowed again later (correction ⇒ reassessment).
+- `POST /v1/recordings/{id}/retry` → `Recording`. Only for `failed` recordings whose `recovery.problem` is
+  `processing_failed` (our side); `409` otherwise.
+- Speaker `label`s are opaque per-file identifiers (e.g. `"A"`, `"B"`, or `"me"` when the diarizer matched the
+  voice reference). Show `display_name`; send `label` back. Labels never carry across files.
 - `GET /v1/recordings/{id}/transcript` → `{ segments: [{ speaker, is_user: bool, start, end, text, excluded: bool, exclusion_reason: string? }] }`
+  (`speaker` here is the display name).
 - `DELETE /v1/recordings/{id}` → `204` (audio + derived results; profile recomputed).
 
 State machine: `processing` → (`failed` | `needs_recovery` | `needs_speaker_confirmation` | `assessing`) →
@@ -257,8 +277,9 @@ Reflection { id, text, went: "well" | "mixed" | "hard" | null, coach_reply: stri
 - `GET /v1/missions/{id}` → `Mission` (locked missions still return content for the preview)
 - `POST /v1/missions/{id}/complete` `{ takeaway?: string }` → `Mission`
 - `POST /v1/missions/{id}/reflections` `{ text: string, went?: "well" | "mixed" | "hard" }` → `Reflection`
-- Attempts: `POST /v1/conversations { kind: "mission", mission_id, quick? }` → turns → `finish`.
-  Locked missions return `402 subscription_required`.
+- Attempts: `POST /v1/conversations { kind: "mission", mission_id, quick?, difficulty? }` → turns → `finish`.
+  Locked missions return `402 subscription_required`. Free users get exactly one practice mission
+  (`Course.free_mission_id`); starting it locks in that choice.
 
 ## Spar, talks, events
 
@@ -279,7 +300,9 @@ PrepItem { id, title, scenario, partner_role, difficulty: Difficulty }
 - `GET /v1/spar/personas` → `{ personas: [Persona] }` · `GET /v1/spar/sessions` → `{ items: [SparSession] }`
 - `GET /v1/spar/reports/{conversation_id}` → `SparReport`
 - `GET /v1/talks` → `{ talks: [TalkSummary] }` · `GET /v1/talks/{id}` → `Talk`
-- `GET /v1/talks/{id}/lines/{index}/audio` → `audio/mpeg` (TTS, cached)
+- `GET /v1/talks/{id}/lines/{index}/audio` → `audio/mpeg` (TTS, cached). `TalkLine.audio_url` is this relative
+  path (bearer auth, not signed) or `null` in demo mode / when TTS is unavailable — speak the line on-device then.
+  Locked talks return only the first 2 lines and `locked: true`; other lines' audio returns `402`.
 - `GET /v1/events` → `{ events: [UpcomingEvent] }` · `POST /v1/events` `{ title, kind, date, notes? }` → `UpcomingEvent`
   (AI builds 3 prep items) · `DELETE /v1/events/{id}` → `204`
 - Rehearse a prep item: `POST /v1/conversations { kind: "spar", event_id, prep_id, difficulty }`.
@@ -303,8 +326,39 @@ WeeklyReview { week_start: string, week_end: string,
 ## Billing
 
 - `POST /v1/billing/app-store` `{ signed_transaction: string }` → `Entitlement`
-- `POST /v1/billing/dev-grant` `{ tier: "pro" | "free" }` → `Entitlement` (only when `ALLOW_DEV_ENTITLEMENTS=true`)
+- `POST /v1/billing/dev-grant` `{ tier: "pro" | "free" }` → `Entitlement`. Dev tools are allowed when
+  `ALLOW_DEV_ENTITLEMENTS=true`, or when it is unset outside production; otherwise `403 forbidden`.
 
 ## Media
 
 - `GET /v1/media/{media_id}` → audio bytes (`audio/mp4`, `audio/mpeg`, `audio/wav`). Auth: bearer token or `exp`+`sig`.
+
+## Feedback reports
+
+"This looks wrong" from any result. Stored for the team to review; **never changes results**.
+
+- `POST /v1/feedback-reports` body
+  `{ target_type: "dimension_result" | "attempt_feedback" | "spar_report" | "recording", target_id: string,
+     dimension: DimensionId?, reason: "inaccurate" | "misheard" | "wrong_speaker" | "unfair" | "other", note: string? }`
+  → `201 { id: "fbk_…", message: "Thanks — we review every report to improve Comlogue." }`.
+  Unknown enum values → `422 validation_error`. Reports are deleted with the account.
+
+## Dev tools
+
+Only when dev entitlements are allowed (see Billing); otherwise `404 not_found`.
+
+- `POST /v1/dev/seed-demo` body `{ pro: bool }` → `{ assessment_id: string, recording_needs_confirmation_id: string?,
+  recording_complete_id: string?, mission_id: string?, spar_conversation_id: string?, event_id: string? }`.
+  Seeds a rich, realistic state for the calling user without audio processing or AI calls: onboarding + analysis
+  consent (if missing), a completed baseline with a **partial** result (5 dimensions assessed/provisional, listening
+  and storytelling "Not enough evidence yet"), a recording awaiting speaker confirmation (3 speakers, one proposed;
+  confirming it runs a real assessment), a completed 1:1 recording with a meeting debrief, the free mission with two
+  attempts (the second compares against the first) plus a reflection, two spar sessions with reports, an upcoming
+  event with three prep items, milestones and practice for this week. `pro: true` also grants dev Pro. Idempotent
+  per user: later calls return the same ids. Media URLs in seeded data are `null`.
+
+## Running the server
+
+`uvicorn app.main:app --host 0.0.0.0 --port 8000` from `backend/` (the app is created lazily from environment
+settings; `create_app(settings)` is the factory used by tests). See `backend/README.md`.
+

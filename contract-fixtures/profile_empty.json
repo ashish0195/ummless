@@ -1,0 +1,178 @@
+{
+  "basis": "none",
+  "headline": "No evidence yet",
+  "summary": null,
+  "dimensions": [
+    {
+      "dimension": "clarity",
+      "title": "Clarity",
+      "status": "not_assessed",
+      "level": null,
+      "level_label": null,
+      "confidence": null,
+      "summary": null,
+      "strengths": [],
+      "one_change": null,
+      "evidence": [],
+      "missing_reason": "We haven't heard a conversation that shows this yet.",
+      "next_step": {
+        "type": "activity",
+        "activity_id": "explain_interest",
+        "title": "Explain something you know",
+        "minutes": 2
+      },
+      "assessed_at": null,
+      "context_label": null
+    },
+    {
+      "dimension": "structure",
+      "title": "Structure",
+      "status": "not_assessed",
+      "level": null,
+      "level_label": null,
+      "confidence": null,
+      "summary": null,
+      "strengths": [],
+      "one_change": null,
+      "evidence": [],
+      "missing_reason": "We haven't heard a conversation that shows this yet.",
+      "next_step": {
+        "type": "activity",
+        "activity_id": "explain_interest",
+        "title": "Explain something you know",
+        "minutes": 2
+      },
+      "assessed_at": null,
+      "context_label": null
+    },
+    {
+      "dimension": "listening",
+      "title": "Listening",
+      "status": "not_assessed",
+      "level": null,
+      "level_label": null,
+      "confidence": null,
+      "summary": null,
+      "strengths": [],
+      "one_change": null,
+      "evidence": [],
+      "missing_reason": "We haven't heard a conversation that shows this yet.",
+      "next_step": {
+        "type": "activity",
+        "activity_id": "respond_to_someone",
+        "title": "Try a short listening scenario",
+        "minutes": 3
+      },
+      "assessed_at": null,
+      "context_label": null
+    },
+    {
+      "dimension": "warmth",
+      "title": "Warmth",
+      "status": "not_assessed",
+      "level": null,
+      "level_label": null,
+      "confidence": null,
+      "summary": null,
+      "strengths": [],
+      "one_change": null,
+      "evidence": [],
+      "missing_reason": "We haven't heard a conversation that shows this yet.",
+      "next_step": {
+        "type": "activity",
+        "activity_id": "meet_someone_new",
+        "title": "Have a quick chat with someone new",
+        "minutes": 2
+      },
+      "assessed_at": null,
+      "context_label": null
+    },
+    {
+      "dimension": "persuasion",
+      "title": "Persuasion",
+      "status": "not_assessed",
+      "level": null,
+      "level_label": null,
+      "confidence": null,
+      "summary": null,
+      "strengths": [],
+      "one_change": null,
+      "evidence": [],
+      "missing_reason": "We haven't heard a conversation that shows this yet.",
+      "next_step": {
+        "type": "activity",
+        "activity_id": "make_a_case",
+        "title": "Make a quick case",
+        "minutes": 3
+      },
+      "assessed_at": null,
+      "context_label": null
+    },
+    {
+      "dimension": "concision",
+      "title": "Concision",
+      "status": "not_assessed",
+      "level": null,
+      "level_label": null,
+      "confidence": null,
+      "summary": null,
+      "strengths": [],
+      "one_change": null,
+      "evidence": [],
+      "missing_reason": "We haven't heard a conversation that shows this yet.",
+      "next_step": {
+        "type": "activity",
+        "activity_id": "explain_interest",
+        "title": "Explain something you know",
+        "minutes": 2
+      },
+      "assessed_at": null,
+      "context_label": null
+    },
+    {
+      "dimension": "storytelling",
+      "title": "Storytelling",
+      "status": "not_assessed",
+      "level": null,
+      "level_label": null,
+      "confidence": null,
+      "summary": null,
+      "strengths": [],
+      "one_change": null,
+      "evidence": [],
+      "missing_reason": "We haven't heard a conversation that shows this yet.",
+      "next_step": {
+        "type": "activity",
+        "activity_id": "tell_a_story",
+        "title": "Tell a short story",
+        "minutes": 3
+      },
+      "assessed_at": null,
+      "context_label": null
+    }
+  ],
+  "speech_patterns": null,
+  "style": {
+    "status": "not_ready",
+    "archetype": null,
+    "description": null,
+    "traits": [],
+    "message": "We need more conversation to describe your style."
+  },
+  "twin": {
+    "status": "not_ready",
+    "message": "Your conversational twin is not ready yet.",
+    "disclaimer": "Reference styles are illustrative profiles, not real people. Matches compare a few measurable speaking habits in your sampled conversations — sounding alike isn't the same as communicating alike.",
+    "next_step": {
+      "type": "activity",
+      "activity_id": "tell_a_story",
+      "title": "Tell a short story",
+      "minutes": 3
+    },
+    "matches": []
+  },
+  "first_win": null,
+  "history": [],
+  "sources": [],
+  "updated_at": null
+}

@@ -1,0 +1,348 @@
+{
+  "id": "rec_1a0f0e4d721242239952",
+  "title": "Team sync",
+  "source": "upload",
+  "status": "complete",
+  "stage": null,
+  "duration_seconds": 48.2,
+  "created_at": "2026-10-26T22:20:06Z",
+  "quality": {
+    "usable": "yes",
+    "issues": [],
+    "usable_seconds": 37.5,
+    "total_seconds": 48.3
+  },
+  "speakers": [
+    {
+      "label": "me",
+      "display_name": "Speaker 1",
+      "speech_seconds": 20.6,
+      "turns": 7,
+      "sample_url": "/v1/media/med_81878fa0e0604a2685a1?exp=1793074808&sig=D2nrBDiGcZQQOU93cUjVjkORKMJvlmW-",
+      "sample_text": "So, to recap, we launch on the fifteenth, Ravi owns the rollback plan, and I'll update the timeline.",
+      "is_proposed_user": true,
+      "match": "reference",
+      "match_strength": "strong"
+    },
+    {
+      "label": "B",
+      "display_name": "Speaker 2",
+      "speech_seconds": 16.9,
+      "turns": 6,
+      "sample_url": "/v1/media/med_50fa738aff1849e9add0?exp=1793074808&sig=mAPFE2Inz_E3AFbBpWmxX2r4kRwmNgLc",
+      "sample_text": "If we fix that first, I'm comfortable launching on the fifteenth.",
+      "is_proposed_user": false,
+      "match": "none",
+      "match_strength": null
+    }
+  ],
+  "attribution": {
+    "status": "confirmed",
+    "user_speaker_label": "me",
+    "requires_confirmation": false,
+    "reason": null,
+    "message": null
+  },
+  "result": {
+    "status": "partial",
+    "headline": "Here's what stood out",
+    "summary": "We could assess your warmth, persuasion and concision, but there wasn't enough clear back-and-forth to assess listening — and we need more evidence for clarity, structure and storytelling. Try a short listening scenario, upload another conversation, or continue with your current results.",
+    "dimensions": [
+      {
+        "dimension": "clarity",
+        "title": "Clarity",
+        "status": "not_enough_evidence",
+        "level": null,
+        "level_label": null,
+        "confidence": null,
+        "summary": null,
+        "strengths": [],
+        "one_change": null,
+        "evidence": [],
+        "missing_reason": "We need a longer explanation from you to see how clearly you make a point.",
+        "next_step": {
+          "type": "activity",
+          "activity_id": "explain_interest",
+          "title": "Explain something you know",
+          "minutes": 2
+        },
+        "assessed_at": null,
+        "context_label": null
+      },
+      {
+        "dimension": "structure",
+        "title": "Structure",
+        "status": "not_enough_evidence",
+        "level": null,
+        "level_label": null,
+        "confidence": null,
+        "summary": null,
+        "strengths": [],
+        "one_change": null,
+        "evidence": [],
+        "missing_reason": "We need at least one longer answer to see how you organize your ideas.",
+        "next_step": {
+          "type": "activity",
+          "activity_id": "explain_interest",
+          "title": "Explain something you know",
+          "minutes": 2
+        },
+        "assessed_at": null,
+        "context_label": null
+      },
+      {
+        "dimension": "listening",
+        "title": "Listening",
+        "status": "not_enough_evidence",
+        "level": null,
+        "level_label": null,
+        "confidence": null,
+        "summary": null,
+        "strengths": [],
+        "one_change": null,
+        "evidence": [],
+        "missing_reason": "There wasn't enough clear back-and-forth to assess listening.",
+        "next_step": {
+          "type": "activity",
+          "activity_id": "respond_to_someone",
+          "title": "Try a short listening scenario",
+          "minutes": 3
+        },
+        "assessed_at": null,
+        "context_label": null
+      },
+      {
+        "dimension": "warmth",
+        "title": "Warmth",
+        "status": "provisional",
+        "level": 3,
+        "level_label": "Capable",
+        "confidence": "low",
+        "summary": "In this conversation you came across as friendly and interested.",
+        "strengths": [
+          "You acknowledged how the other person felt."
+        ],
+        "one_change": "Use the other person's name or words when you respond.",
+        "evidence": [
+          {
+            "quote": "So, to recap, we launch on the fifteenth, Ravi owns the rollback plan, and I'll update the timeline.",
+            "note": "You showed interest in the other person.",
+            "source_type": "recording",
+            "source_id": "rec_1a0f0e4d721242239952",
+            "turn_index": null,
+            "start_seconds": 32.8,
+            "end_seconds": 38.08,
+            "audio_url": "/v1/media/med_81878fa0e0604a2685a1?exp=1793074808&sig=D2nrBDiGcZQQOU93cUjVjkORKMJvlmW-"
+          },
+          {
+            "quote": "So I think the main question today is whether we launch the new onboarding before the holidays.",
+            "note": "You showed interest in the other person.",
+            "source_type": "recording",
+            "source_id": "rec_1a0f0e4d721242239952",
+            "turn_index": null,
+            "start_seconds": 0.0,
+            "end_seconds": 1.04,
+            "audio_url": "/v1/media/med_8c6c9a97d50a4cf886e1?exp=1793074808&sig=_vgnJeHykNUiawVXDqxuF0KzW0znZ4YX"
+          }
+        ],
+        "missing_reason": null,
+        "next_step": null,
+        "assessed_at": "2026-10-26T22:20:07Z",
+        "context_label": "Team sync · Oct 26"
+      },
+      {
+        "dimension": "persuasion",
+        "title": "Persuasion",
+        "status": "provisional",
+        "level": 1,
+        "level_label": "Emerging",
+        "confidence": "low",
+        "summary": "When you made your case, you gave a reason that fit the listener, with room to make it land faster.",
+        "strengths": [
+          "You adapted when you heard the objection."
+        ],
+        "one_change": "Name what's in it for them before you share your reasons.",
+        "evidence": [
+          {
+            "quote": "My recommendation is to launch on the fifteenth, behind a flag, for ten percent of new users.",
+            "note": "Your case and how you adapted.",
+            "source_type": "recording",
+            "source_id": "rec_1a0f0e4d721242239952",
+            "turn_index": null,
+            "start_seconds": 1.72,
+            "end_seconds": 5.74,
+            "audio_url": "/v1/media/med_c9483ccc195d46999957?exp=1793074808&sig=exeWbxe0cIP9tjXK-3-gMpc6t8K4rnu2"
+          },
+          {
+            "quote": "Okay, that's a good point.",
+            "note": "Your case and how you adapted.",
+            "source_type": "recording",
+            "source_id": "rec_1a0f0e4d721242239952",
+            "turn_index": null,
+            "start_seconds": 21.48,
+            "end_seconds": 23.8,
+            "audio_url": "/v1/media/med_444960ca40344719980f?exp=1793074808&sig=PSmdAyQ8HyETGAA7Liinjrosmx0yIpwz"
+          }
+        ],
+        "missing_reason": null,
+        "next_step": null,
+        "assessed_at": "2026-10-26T22:20:07Z",
+        "context_label": "Team sync · Oct 26"
+      },
+      {
+        "dimension": "concision",
+        "title": "Concision",
+        "status": "provisional",
+        "level": 3,
+        "level_label": "Capable",
+        "confidence": "low",
+        "summary": "You mostly got to the point, with some warm-up before it.",
+        "strengths": [
+          "Short sentences in your best answers."
+        ],
+        "one_change": "Cut the warm-up phrase and start with your answer.",
+        "evidence": [
+          {
+            "quote": "So, to recap, we launch on the fifteenth, Ravi owns the rollback plan, and I'll update the timeline.",
+            "note": "How quickly you got to the point.",
+            "source_type": "recording",
+            "source_id": "rec_1a0f0e4d721242239952",
+            "turn_index": null,
+            "start_seconds": 32.8,
+            "end_seconds": 38.08,
+            "audio_url": "/v1/media/med_81878fa0e0604a2685a1?exp=1793074808&sig=D2nrBDiGcZQQOU93cUjVjkORKMJvlmW-"
+          },
+          {
+            "quote": "So I think the main question today is whether we launch the new onboarding before the holidays.",
+            "note": "How quickly you got to the point.",
+            "source_type": "recording",
+            "source_id": "rec_1a0f0e4d721242239952",
+            "turn_index": null,
+            "start_seconds": 0.0,
+            "end_seconds": 1.04,
+            "audio_url": "/v1/media/med_8c6c9a97d50a4cf886e1?exp=1793074808&sig=_vgnJeHykNUiawVXDqxuF0KzW0znZ4YX"
+          }
+        ],
+        "missing_reason": null,
+        "next_step": null,
+        "assessed_at": "2026-10-26T22:20:07Z",
+        "context_label": "Team sync · Oct 26"
+      },
+      {
+        "dimension": "storytelling",
+        "title": "Storytelling",
+        "status": "not_enough_evidence",
+        "level": null,
+        "level_label": null,
+        "confidence": null,
+        "summary": null,
+        "strengths": [],
+        "one_change": null,
+        "evidence": [],
+        "missing_reason": "We didn't hear a story in this sample.",
+        "next_step": {
+          "type": "activity",
+          "activity_id": "tell_a_story",
+          "title": "Tell a short story",
+          "minutes": 3
+        },
+        "assessed_at": null,
+        "context_label": null
+      }
+    ],
+    "speech_patterns": {
+      "words_per_minute": 317.0,
+      "filler_per_minute": 0.0,
+      "top_fillers": [],
+      "hedges_per_minute": 5.8,
+      "avg_pause_seconds": null,
+      "longest_turn_seconds": 5.3,
+      "talk_share": 0.55,
+      "user_speech_seconds": 20.6,
+      "language_supported": true
+    },
+    "first_win": {
+      "dimension": "concision",
+      "you_said": "So I think the main question today is whether we launch the new onboarding before the holidays.",
+      "try_instead": "So the main question today is whether we launch the new onboarding before the holidays.",
+      "why": "Without the warm-up words, your point lands first and sounds more certain.",
+      "source_type": "recording",
+      "source_id": "rec_1a0f0e4d721242239952",
+      "turn_index": null,
+      "start_seconds": 0.0,
+      "end_seconds": 1.04,
+      "audio_url": "/v1/media/med_8c6c9a97d50a4cf886e1?exp=1793074808&sig=_vgnJeHykNUiawVXDqxuF0KzW0znZ4YX"
+    },
+    "style": {
+      "status": "not_ready",
+      "archetype": null,
+      "description": null,
+      "traits": [],
+      "message": "We need more conversation to describe your style."
+    },
+    "recovery": {
+      "problem": "too_little_evidence",
+      "title": "Fill the gaps when you're ready",
+      "message": "We could assess your warmth, persuasion and concision, but there wasn't enough clear back-and-forth to assess listening — and we need more evidence for clarity, structure and storytelling. Try a short listening scenario, upload another conversation, or continue with your current results.",
+      "actions": [
+        {
+          "type": "gap_fill",
+          "title": "Try a short listening scenario",
+          "activity_id": "respond_to_someone"
+        },
+        {
+          "type": "gap_fill",
+          "title": "Tell a short story",
+          "activity_id": "tell_a_story"
+        },
+        {
+          "type": "upload_another",
+          "title": "Upload another conversation",
+          "activity_id": null
+        },
+        {
+          "type": "continue",
+          "title": "Continue with my current results",
+          "activity_id": null
+        }
+      ],
+      "extra_minutes": 6
+    },
+    "context_label": "Team sync · Oct 26",
+    "created_at": "2026-10-26T22:20:07Z"
+  },
+  "debrief": {
+    "talk_share": [
+      {
+        "label": "me",
+        "display_name": "You",
+        "is_user": true,
+        "share": 0.55
+      },
+      {
+        "label": "B",
+        "display_name": "Speaker 2",
+        "is_user": false,
+        "share": 0.45
+      }
+    ],
+    "best_moment": {
+      "quote": "So, to recap, we launch on the fifteenth, Ravi owns the rollback plan, and I'll update the timeline.",
+      "note": "You made a clear recommendation with reasons.",
+      "source_type": "recording",
+      "source_id": "rec_1a0f0e4d721242239952",
+      "turn_index": null,
+      "start_seconds": 32.8,
+      "end_seconds": 38.08,
+      "audio_url": "/v1/media/med_81878fa0e0604a2685a1?exp=1793074808&sig=D2nrBDiGcZQQOU93cUjVjkORKMJvlmW-"
+    },
+    "decisions": [
+      "So I think the main question today is whether we launch the new onboarding before the holidays.",
+      "Okay, that's a good point. Let's fix the export step first, then launch.",
+      "So, to recap, we launch on the fifteenth, Ravi owns the rollback plan, and I'll update the timeline."
+    ],
+    "follow_up_summary": "Thanks, everyone — quick recap: So I think the main question today is whether we launch the new onboarding before the holidays.; Okay, that's a good point. Let's fix the export step first, then launch.",
+    "one_thing_to_try": "Ask one quieter person for their view before giving yours."
+  },
+  "recovery": null
+}

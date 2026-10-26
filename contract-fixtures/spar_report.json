@@ -1,0 +1,52 @@
+{
+  "conversation_id": "cnv_6d8c11710bfb44c8a29f",
+  "status": "complete",
+  "title": "Pitch a budget increase",
+  "outcome": {
+    "label": "Agreed",
+    "detail": "Marcus responded best when you gave concrete numbers."
+  },
+  "momentum": [
+    {
+      "turn_index": 0,
+      "value": 0.3,
+      "note": null
+    },
+    {
+      "turn_index": 2,
+      "value": 0.18,
+      "note": "Momentum rose after you named a specific number."
+    },
+    {
+      "turn_index": 4,
+      "value": 0.74,
+      "note": null
+    },
+    {
+      "turn_index": 6,
+      "value": 0.91,
+      "note": null
+    }
+  ],
+  "moments": [
+    {
+      "dimension": "persuasion",
+      "you_said": "I think it's, um, kind of going to pay back pretty fast, because the team is really stretched right now.",
+      "try_instead": "It's, going to pay back fast, because the team is really stretched right now.",
+      "why": "A direct claim sounds more credible.",
+      "source_type": "conversation",
+      "source_id": "cnv_6d8c11710bfb44c8a29f",
+      "turn_index": 1,
+      "start_seconds": 0.0,
+      "end_seconds": 8.0,
+      "audio_url": "/v1/media/med_c4281da05f09407886f0?exp=1793074814&sig=BpiGoOBPtRh75eJcMrd4h6f5CWBafQUx"
+    }
+  ],
+  "observations": [
+    {
+      "dimension": "persuasion",
+      "note": "You got more specific as the conversation went on."
+    }
+  ],
+  "next_step": "Open with the number next time, then the reason."
+}

@@ -1,0 +1,107 @@
+{
+  "id": "business.m1.learn",
+  "module_id": "business.m1",
+  "track_id": "business",
+  "type": "learn_and_try",
+  "title": "Make your point land",
+  "dimension": "concision",
+  "minutes": 6,
+  "context": "Your project team asks which of two vendors to choose: a cheaper new one, or the familiar, pricier one.",
+  "target_behavior": "State your recommendation first, give two relevant reasons, then invite a response.",
+  "why_it_matters": "Attention drops fast in meetings. Leading with the recommendation means people hear it even if they tune out halfway.",
+  "example": {
+    "text": "\"I'd go with the Lisbon vendor. They're 20% cheaper, and they've already passed our security review. What would you want covered before we sign?\"",
+    "audio_url": null,
+    "explanation": "Recommendation in the first sentence, two reasons that matter to the decision, then an invitation to respond."
+  },
+  "steps": [
+    "Read the target and listen to the example.",
+    "Jordan starts the conversation — answer with the target in mind.",
+    "Jordan will respond once, maybe with an objection. Adapt.",
+    "Get feedback on where the target showed up. Try again if you like."
+  ],
+  "suggested_seconds": 60,
+  "real_life": null,
+  "attempts": [
+    {
+      "id": "att_dd4fb14096fa42a5a050",
+      "conversation_id": "cnv_bd00c63cc88c495f9230",
+      "attempt_number": 1,
+      "quick": false,
+      "status": "complete",
+      "feedback": {
+        "assessable": "yes",
+        "target_met": "no",
+        "headline": "Good start — now bring the recommendation forward.",
+        "where": {
+          "quote": "So I think maybe we should, um, look at both options first.",
+          "note": "Where your recommendation appears.",
+          "source_type": "conversation",
+          "source_id": "cnv_bd00c63cc88c495f9230",
+          "turn_index": 1,
+          "start_seconds": 0.0,
+          "end_seconds": 9.56,
+          "audio_url": "/v1/media/med_ef40dc7d83f24f0d8171?exp=1793074812&sig=wEvToboZM-LYY0FSl3EO-u9vtmxwXiHA"
+        },
+        "what_worked": [
+          "You gave a concrete reason the listener cares about."
+        ],
+        "one_change": "Name the second reason before you invite a response.",
+        "missing_evidence": null,
+        "comparison": null,
+        "issues": []
+      },
+      "created_at": "2026-10-26T22:20:09Z"
+    },
+    {
+      "id": "att_75b7204feecc4635ba15",
+      "conversation_id": "cnv_510c92c933ce4714ab12",
+      "attempt_number": 2,
+      "quick": false,
+      "status": "complete",
+      "feedback": {
+        "assessable": "yes",
+        "target_met": "partly",
+        "headline": "Your recommendation came early — that's the core of this skill.",
+        "where": {
+          "quote": "I'd go with the second vendor.",
+          "note": "Where your recommendation appears.",
+          "source_type": "conversation",
+          "source_id": "cnv_510c92c933ce4714ab12",
+          "turn_index": 1,
+          "start_seconds": 0.0,
+          "end_seconds": 9.56,
+          "audio_url": "/v1/media/med_8850fec6acf14c21a7d5?exp=1793074812&sig=DKY6pzcDduPYlOsS-jJCRqldrCLnxReI"
+        },
+        "what_worked": [
+          "You gave a concrete reason the listener cares about."
+        ],
+        "one_change": "Name the second reason before you invite a response.",
+        "missing_evidence": null,
+        "comparison": {
+          "previous_attempt_id": "att_dd4fb14096fa42a5a050",
+          "summary": "This time your first answer was 16 words (before: 12). You stated your recommendation earlier and kept both reasons.",
+          "changes": [
+            "Recommendation moved into the first sentence",
+            "Ended with a question that invites a response"
+          ],
+          "note": "A shorter answer isn't automatically a better one — we compared both attempts against the same target."
+        },
+        "issues": []
+      },
+      "created_at": "2026-10-26T22:20:11Z"
+    }
+  ],
+  "reflections": [
+    {
+      "id": "rfl_9e134e9adc244f228ef0",
+      "text": "I led with my recommendation in standup and people responded faster.",
+      "went": "well",
+      "coach_reply": "That's great — trying it in a real conversation is the hardest part. Next time, aim for just the first part of the target: state your recommendation first.",
+      "created_at": "2026-10-26T22:20:12Z"
+    }
+  ],
+  "status": "available",
+  "locked_reason": null,
+  "takeaway": null
+}

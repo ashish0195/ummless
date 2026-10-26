@@ -1,0 +1,138 @@
+{
+  "talks": [
+    {
+      "id": "decision_meeting",
+      "title": "Run a decision meeting in 15 minutes",
+      "speaker": "Comlogue exemplar · engineering leader",
+      "source_note": "Original script written for Comlogue.",
+      "year": null,
+      "duration_label": "1 min",
+      "lines_count": 12,
+      "style": {
+        "wpm": 138.0,
+        "avg_pause_seconds": 1.1,
+        "avg_sentence_words": 6.0
+      },
+      "tags": [
+        "meetings",
+        "leadership",
+        "concision"
+      ],
+      "is_free": true
+    },
+    {
+      "id": "project_update",
+      "title": "The 60-second project update",
+      "speaker": "Comlogue exemplar · program manager",
+      "source_note": "Original script written for Comlogue.",
+      "year": null,
+      "duration_label": "1 min",
+      "lines_count": 6,
+      "style": {
+        "wpm": 150.0,
+        "avg_pause_seconds": 0.9,
+        "avg_sentence_words": 10.6
+      },
+      "tags": [
+        "meetings",
+        "structure"
+      ],
+      "is_free": false
+    },
+    {
+      "id": "toast",
+      "title": "A toast that lands",
+      "speaker": "Comlogue exemplar · a friend at a farewell",
+      "source_note": "Original script written for Comlogue.",
+      "year": null,
+      "duration_label": "45 sec",
+      "lines_count": 6,
+      "style": {
+        "wpm": 140.0,
+        "avg_pause_seconds": 1.0,
+        "avg_sentence_words": 10.7
+      },
+      "tags": [
+        "storytelling",
+        "social"
+      ],
+      "is_free": false
+    },
+    {
+      "id": "gettysburg",
+      "title": "Gettysburg Address",
+      "speaker": "Abraham Lincoln",
+      "source_note": "1863. Public domain (Bliss copy).",
+      "year": 1863,
+      "duration_label": "2 min",
+      "lines_count": 11,
+      "style": {
+        "wpm": 110.0,
+        "avg_pause_seconds": 1.3,
+        "avg_sentence_words": 27.2
+      },
+      "tags": [
+        "public speaking",
+        "rhetoric"
+      ],
+      "is_free": false
+    },
+    {
+      "id": "jfk_inaugural",
+      "title": "Inaugural Address (excerpt)",
+      "speaker": "John F. Kennedy",
+      "source_note": "1961. US government work, public domain.",
+      "year": 1961,
+      "duration_label": "1.5 min",
+      "lines_count": 5,
+      "style": {
+        "wpm": 112.0,
+        "avg_pause_seconds": 1.5,
+        "avg_sentence_words": 25.0
+      },
+      "tags": [
+        "public speaking",
+        "persuasion"
+      ],
+      "is_free": false
+    },
+    {
+      "id": "fdr_infamy",
+      "title": "Address to Congress (excerpt)",
+      "speaker": "Franklin D. Roosevelt",
+      "source_note": "December 8, 1941. US government work, public domain.",
+      "year": 1941,
+      "duration_label": "1 min",
+      "lines_count": 4,
+      "style": {
+        "wpm": 105.0,
+        "avg_pause_seconds": 1.4,
+        "avg_sentence_words": 20.2
+      },
+      "tags": [
+        "public speaking",
+        "clarity"
+      ],
+      "is_free": false
+    },
+    {
+      "id": "sojourner_truth",
+      "title": "Ain't I a Woman? (excerpt)",
+      "speaker": "Sojourner Truth",
+      "source_note": "As recorded by Frances Dana Gage (1863); public domain. Historians consider Marius Robinson's 1851 report closer to what Truth actually said.",
+      "year": 1851,
+      "duration_label": "1 min",
+      "lines_count": 4,
+      "style": {
+        "wpm": 120.0,
+        "avg_pause_seconds": 1.2,
+        "avg_sentence_words": 11.1
+      },
+      "tags": [
+        "persuasion",
+        "storytelling"
+      ],
+      "is_free": false
+    }
+  ]
+}

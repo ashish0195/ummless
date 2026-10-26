@@ -1,0 +1,497 @@
+{
+  "items": [
+    {
+      "id": "asm_d6c8a261f50e4af587af",
+      "route": "roleplay",
+      "purpose": "baseline",
+      "status": "complete",
+      "stage": null,
+      "activities": [
+        {
+          "id": "meet_someone_new",
+          "title": "Meet someone new",
+          "prompt": "We've just met at a friend's gathering. What's something you've been spending time on lately?",
+          "duration_label": "1–2 min",
+          "suggested_seconds": 60,
+          "dimensions": [
+            "clarity",
+            "warmth",
+            "listening",
+            "concision"
+          ],
+          "status": "done",
+          "conversation_id": "cnv_cc762a89321d41e5b444"
+        },
+        {
+          "id": "explain_interest",
+          "title": "Explain an interest",
+          "prompt": "Pick something you know or enjoy. Explain it to me as someone completely new to it.",
+          "duration_label": "2 min",
+          "suggested_seconds": 90,
+          "dimensions": [
+            "clarity",
+            "structure",
+            "concision"
+          ],
+          "status": "done",
+          "conversation_id": "cnv_6fb4f8e15aad49cd8d9f"
+        },
+        {
+          "id": "respond_to_someone",
+          "title": "Respond to someone",
+          "prompt": "I joined a new team a month ago. Everyone's friendly, but I still feel outside the group. Yesterday I had an idea and didn't say anything.",
+          "duration_label": "2–3 min",
+          "suggested_seconds": 90,
+          "dimensions": [
+            "listening",
+            "warmth"
+          ],
+          "status": "done",
+          "conversation_id": "cnv_355ebcdbaf6944e1a18f"
+        },
+        {
+          "id": "make_a_case",
+          "title": "Make a case",
+          "prompt": "Suggest an activity we could do together this weekend and try to get me interested.",
+          "duration_label": "2–3 min",
+          "suggested_seconds": 75,
+          "dimensions": [
+            "persuasion",
+            "listening",
+            "structure",
+            "concision"
+          ],
+          "status": "done",
+          "conversation_id": "cnv_f6e88d7f0e9f4cf88ae7"
+        },
+        {
+          "id": "tell_a_story",
+          "title": "Tell a story",
+          "prompt": "Tell me about a time something didn't go as planned. It can be funny, ordinary, or meaningful.",
+          "duration_label": "2–3 min",
+          "suggested_seconds": 120,
+          "dimensions": [
+            "storytelling",
+            "structure",
+            "clarity"
+          ],
+          "status": "done",
+          "conversation_id": "cnv_9f9f3f4c84ca49ea9364"
+        }
+      ],
+      "estimate_minutes": [
+        10,
+        15
+      ],
+      "target_dimensions": [],
+      "result": {
+        "status": "complete",
+        "headline": "Here's what stood out",
+        "summary": "In this sample you made your points with concrete examples. The details below show the moments we used.",
+        "dimensions": [
+          {
+            "dimension": "clarity",
+            "title": "Clarity",
+            "status": "assessed",
+            "level": 4,
+            "level_label": "Strong",
+            "confidence": "moderate",
+            "summary": "In this sample your main point was usually easy to follow.",
+            "strengths": [
+              "Concrete examples made the idea easy to picture."
+            ],
+            "one_change": "Say the main point in your first sentence, then add the example.",
+            "evidence": [
+              {
+                "quote": "So last spring I planned this big surprise picnic for my partner's birthday.",
+                "note": "Your main point is easy to find here.",
+                "source_type": "conversation",
+                "source_id": "cnv_9f9f3f4c84ca49ea9364",
+                "turn_index": 1,
+                "start_seconds": 0.0,
+                "end_seconds": 12.0,
+                "audio_url": "/v1/media/med_055cf8835a7148bba6df?exp=1793074805&sig=T2G7JGCmnAZ30osocjGHsnddWRUVI_dU"
+              },
+              {
+                "quote": "Sure, so I play chess.",
+                "note": "Your main point is easy to find here.",
+                "source_type": "conversation",
+                "source_id": "cnv_6fb4f8e15aad49cd8d9f",
+                "turn_index": 1,
+                "start_seconds": 0.0,
+                "end_seconds": 12.0,
+                "audio_url": "/v1/media/med_e1d0559bd58e4952a41f?exp=1793074805&sig=APG6TWXaGSk5EAhCRjkMTvpqSXEp-Ri1"
+              }
+            ],
+            "missing_reason": null,
+            "next_step": null,
+            "assessed_at": "2026-10-26T22:20:02Z",
+            "context_label": "AI roleplay · Oct 26"
+          },
+          {
+            "dimension": "structure",
+            "title": "Structure",
+            "status": "assessed",
+            "level": 3,
+            "level_label": "Capable",
+            "confidence": "moderate",
+            "summary": "In this sample your longer answers had a recognizable shape.",
+            "strengths": [
+              "You ended with a clear takeaway."
+            ],
+            "one_change": "Signpost your answer: 'Two things — first…, second…'.",
+            "evidence": [
+              {
+                "quote": "So last spring I planned this big surprise picnic for my partner's birthday.",
+                "note": "A recognizable shape you can build on.",
+                "source_type": "conversation",
+                "source_id": "cnv_9f9f3f4c84ca49ea9364",
+                "turn_index": 1,
+                "start_seconds": 0.0,
+                "end_seconds": 12.0,
+                "audio_url": "/v1/media/med_055cf8835a7148bba6df?exp=1793074805&sig=T2G7JGCmnAZ30osocjGHsnddWRUVI_dU"
+              },
+              {
+                "quote": "Sure, so I play chess.",
+                "note": "A recognizable shape you can build on.",
+                "source_type": "conversation",
+                "source_id": "cnv_6fb4f8e15aad49cd8d9f",
+                "turn_index": 1,
+                "start_seconds": 0.0,
+                "end_seconds": 12.0,
+                "audio_url": "/v1/media/med_e1d0559bd58e4952a41f?exp=1793074805&sig=APG6TWXaGSk5EAhCRjkMTvpqSXEp-Ri1"
+              }
+            ],
+            "missing_reason": null,
+            "next_step": null,
+            "assessed_at": "2026-10-26T22:20:02Z",
+            "context_label": "AI roleplay · Oct 26"
+          },
+          {
+            "dimension": "listening",
+            "title": "Listening",
+            "status": "assessed",
+            "level": 4,
+            "level_label": "Strong",
+            "confidence": "moderate",
+            "summary": "In this conversation you picked up on what Maya said.",
+            "strengths": [
+              "You asked a follow-up about something specific."
+            ],
+            "one_change": "Before offering advice, reflect back what you heard in one sentence.",
+            "evidence": [
+              {
+                "quote": "That makes sense.",
+                "note": "You responded to what was said.",
+                "source_type": "conversation",
+                "source_id": "cnv_355ebcdbaf6944e1a18f",
+                "turn_index": 3,
+                "start_seconds": 0.0,
+                "end_seconds": 11.54,
+                "audio_url": "/v1/media/med_e4c6edd02d5548dca8dc?exp=1793074805&sig=UzYw_W0cj_XNA7VOKZN4mGzgdpBTsY6k"
+              },
+              {
+                "quote": "Bouldering, wow.",
+                "note": "You responded to what was said.",
+                "source_type": "conversation",
+                "source_id": "cnv_cc762a89321d41e5b444",
+                "turn_index": 5,
+                "start_seconds": 0.0,
+                "end_seconds": 10.0,
+                "audio_url": "/v1/media/med_638e429ff5304b00a623?exp=1793074805&sig=Ry5O16ATbX4viMDxp-RNAkM4dDvPhWqe"
+              }
+            ],
+            "missing_reason": null,
+            "next_step": null,
+            "assessed_at": "2026-10-26T22:20:02Z",
+            "context_label": "AI roleplay · Oct 26"
+          },
+          {
+            "dimension": "warmth",
+            "title": "Warmth",
+            "status": "assessed",
+            "level": 4,
+            "level_label": "Strong",
+            "confidence": "moderate",
+            "summary": "In this conversation you came across as friendly and interested.",
+            "strengths": [
+              "You acknowledged how the other person felt."
+            ],
+            "one_change": "Use the other person's name or words when you respond.",
+            "evidence": [
+              {
+                "quote": "That makes sense.",
+                "note": "You showed interest in the other person.",
+                "source_type": "conversation",
+                "source_id": "cnv_355ebcdbaf6944e1a18f",
+                "turn_index": 3,
+                "start_seconds": 0.0,
+                "end_seconds": 11.54,
+                "audio_url": "/v1/media/med_e4c6edd02d5548dca8dc?exp=1793074805&sig=UzYw_W0cj_XNA7VOKZN4mGzgdpBTsY6k"
+              },
+              {
+                "quote": "Oh, that sounds hard.",
+                "note": "You showed interest in the other person.",
+                "source_type": "conversation",
+                "source_id": "cnv_355ebcdbaf6944e1a18f",
+                "turn_index": 1,
+                "start_seconds": 0.0,
+                "end_seconds": 11.9,
+                "audio_url": "/v1/media/med_f4c720a461994e359054?exp=1793074805&sig=25xKB9rG4wMvH_NrMdz_nfVcmSRlyC4C"
+              }
+            ],
+            "missing_reason": null,
+            "next_step": null,
+            "assessed_at": "2026-10-26T22:20:02Z",
+            "context_label": "AI roleplay · Oct 26"
+          },
+          {
+            "dimension": "persuasion",
+            "title": "Persuasion",
+            "status": "assessed",
+            "level": 3,
+            "level_label": "Capable",
+            "confidence": "moderate",
+            "summary": "When you made your case, you gave a reason that fit the listener.",
+            "strengths": [
+              "You adapted when you heard the objection."
+            ],
+            "one_change": "Name what's in it for them before you share your reasons.",
+            "evidence": [
+              {
+                "quote": "Oh, okay, that's fair.",
+                "note": "Your case and how you adapted.",
+                "source_type": "conversation",
+                "source_id": "cnv_f6e88d7f0e9f4cf88ae7",
+                "turn_index": 3,
+                "start_seconds": 0.0,
+                "end_seconds": 11.54,
+                "audio_url": "/v1/media/med_2334f660ef22462a8439?exp=1793074805&sig=7KSPTP2KEWXvaxisnUmkQtrEX_kVaDRX"
+              },
+              {
+                "quote": "We should go to the night market by the river on Saturday.",
+                "note": "Your case and how you adapted.",
+                "source_type": "conversation",
+                "source_id": "cnv_f6e88d7f0e9f4cf88ae7",
+                "turn_index": 1,
+                "start_seconds": 0.0,
+                "end_seconds": 13.46,
+                "audio_url": "/v1/media/med_0d23bc3135004bcb8cc3?exp=1793074805&sig=ISr8ou7JO1evBKY9I8DhcDwpkJxPVf3f"
+              }
+            ],
+            "missing_reason": null,
+            "next_step": null,
+            "assessed_at": "2026-10-26T22:20:02Z",
+            "context_label": "AI roleplay · Oct 26"
+          },
+          {
+            "dimension": "concision",
+            "title": "Concision",
+            "status": "assessed",
+            "level": 3,
+            "level_label": "Capable",
+            "confidence": "moderate",
+            "summary": "You mostly got to the point, with some warm-up before it.",
+            "strengths": [
+              "Short sentences in your best answers."
+            ],
+            "one_change": "Cut the warm-up phrase and start with your answer.",
+            "evidence": [
+              {
+                "quote": "So last spring I planned this big surprise picnic for my partner's birthday.",
+                "note": "How quickly you got to the point.",
+                "source_type": "conversation",
+                "source_id": "cnv_9f9f3f4c84ca49ea9364",
+                "turn_index": 1,
+                "start_seconds": 0.0,
+                "end_seconds": 12.0,
+                "audio_url": "/v1/media/med_055cf8835a7148bba6df?exp=1793074805&sig=T2G7JGCmnAZ30osocjGHsnddWRUVI_dU"
+              },
+              {
+                "quote": "Sure, so I play chess.",
+                "note": "How quickly you got to the point.",
+                "source_type": "conversation",
+                "source_id": "cnv_6fb4f8e15aad49cd8d9f",
+                "turn_index": 1,
+                "start_seconds": 0.0,
+                "end_seconds": 12.0,
+                "audio_url": "/v1/media/med_e1d0559bd58e4952a41f?exp=1793074805&sig=APG6TWXaGSk5EAhCRjkMTvpqSXEp-Ri1"
+              }
+            ],
+            "missing_reason": null,
+            "next_step": null,
+            "assessed_at": "2026-10-26T22:20:02Z",
+            "context_label": "AI roleplay · Oct 26"
+          },
+          {
+            "dimension": "storytelling",
+            "title": "Storytelling",
+            "status": "assessed",
+            "level": 4,
+            "level_label": "Strong",
+            "confidence": "moderate",
+            "summary": "Your story had a clear setup and a memorable turn.",
+            "strengths": [
+              "A specific, vivid detail."
+            ],
+            "one_change": "Start in the moment: time, place, action.",
+            "evidence": [
+              {
+                "quote": "So last spring I planned this big surprise picnic for my partner's birthday.",
+                "note": "Where your story came to life.",
+                "source_type": "conversation",
+                "source_id": "cnv_9f9f3f4c84ca49ea9364",
+                "turn_index": 1,
+                "start_seconds": 0.0,
+                "end_seconds": 12.0,
+                "audio_url": "/v1/media/med_055cf8835a7148bba6df?exp=1793074805&sig=T2G7JGCmnAZ30osocjGHsnddWRUVI_dU"
+              },
+              {
+                "quote": "Sure, so I play chess.",
+                "note": "Where your story came to life.",
+                "source_type": "conversation",
+                "source_id": "cnv_6fb4f8e15aad49cd8d9f",
+                "turn_index": 1,
+                "start_seconds": 0.0,
+                "end_seconds": 12.0,
+                "audio_url": "/v1/media/med_e1d0559bd58e4952a41f?exp=1793074805&sig=APG6TWXaGSk5EAhCRjkMTvpqSXEp-Ri1"
+              }
+            ],
+            "missing_reason": null,
+            "next_step": null,
+            "assessed_at": "2026-10-26T22:20:02Z",
+            "context_label": "AI roleplay · Oct 26"
+          }
+        ],
+        "speech_patterns": {
+          "words_per_minute": 136.0,
+          "filler_per_minute": 0.3,
+          "top_fillers": [
+            "um"
+          ],
+          "hedges_per_minute": 0.7,
+          "avg_pause_seconds": 0.69,
+          "longest_turn_seconds": 31.6,
+          "talk_share": null,
+          "user_speech_seconds": 178.2,
+          "language_supported": true
+        },
+        "first_win": {
+          "dimension": "concision",
+          "you_said": "I started during a long winter and now I'm kind of obsessed, I bake every weekend and give most of it away to neighbors.",
+          "try_instead": "I started during a long winter and now I'm obsessed, I bake every weekend and give most of it away to neighbors.",
+          "why": "Without the warm-up words, your point lands first and sounds more certain.",
+          "source_type": "conversation",
+          "source_id": "cnv_cc762a89321d41e5b444",
+          "turn_index": 1,
+          "start_seconds": 0.0,
+          "end_seconds": 11.9,
+          "audio_url": "/v1/media/med_d9209da30b034df79e97?exp=1793074805&sig=OhdTm2dCr3R5BvlnJ6yp5UTyW8FzDMIN"
+        },
+        "style": {
+          "status": "provisional",
+          "archetype": "The Connector",
+          "description": "In these conversations you tended to explain with examples and bring the other person along. This is an early read from a few short samples.",
+          "traits": [
+            "Uses concrete examples",
+            "Checks in with the listener"
+          ],
+          "message": "An early read from a few conversations — it may change as we hear more."
+        },
+        "recovery": null,
+        "context_label": "AI roleplay · Oct 26",
+        "created_at": "2026-10-26T22:20:02Z"
+      },
+      "created_at": "2026-10-26T22:19:49Z",
+      "completed_at": "2026-10-26T22:20:05Z"
+    },
+    {
+      "id": "asm_0f54b67b66af41398e8a",
+      "route": "roleplay",
+      "purpose": "baseline",
+      "status": "in_progress",
+      "stage": null,
+      "activities": [
+        {
+          "id": "meet_someone_new",
+          "title": "Meet someone new",
+          "prompt": "We've just met at a friend's gathering. What's something you've been spending time on lately?",
+          "duration_label": "1–2 min",
+          "suggested_seconds": 60,
+          "dimensions": [
+            "clarity",
+            "warmth",
+            "listening",
+            "concision"
+          ],
+          "status": "in_progress",
+          "conversation_id": "cnv_d92fb0547bcf4862bed2"
+        },
+        {
+          "id": "explain_interest",
+          "title": "Explain an interest",
+          "prompt": "Pick something you know or enjoy. Explain it to me as someone completely new to it.",
+          "duration_label": "2 min",
+          "suggested_seconds": 90,
+          "dimensions": [
+            "clarity",
+            "structure",
+            "concision"
+          ],
+          "status": "pending",
+          "conversation_id": null
+        },
+        {
+          "id": "respond_to_someone",
+          "title": "Respond to someone",
+          "prompt": "I joined a new team a month ago. Everyone's friendly, but I still feel outside the group. Yesterday I had an idea and didn't say anything.",
+          "duration_label": "2–3 min",
+          "suggested_seconds": 90,
+          "dimensions": [
+            "listening",
+            "warmth"
+          ],
+          "status": "pending",
+          "conversation_id": null
+        },
+        {
+          "id": "make_a_case",
+          "title": "Make a case",
+          "prompt": "Suggest an activity we could do together this weekend and try to get me interested.",
+          "duration_label": "2–3 min",
+          "suggested_seconds": 75,
+          "dimensions": [
+            "persuasion",
+            "listening",
+            "structure",
+            "concision"
+          ],
+          "status": "pending",
+          "conversation_id": null
+        },
+        {
+          "id": "tell_a_story",
+          "title": "Tell a story",
+          "prompt": "Tell me about a time something didn't go as planned. It can be funny, ordinary, or meaningful.",
+          "duration_label": "2–3 min",
+          "suggested_seconds": 120,
+          "dimensions": [
+            "storytelling",
+            "structure",
+            "clarity"
+          ],
+          "status": "pending",
+          "conversation_id": null
+        }
+      ],
+      "estimate_minutes": [
+        10,
+        15
+      ],
+      "target_dimensions": [],
+      "result": null,
+      "created_at": "2026-10-26T22:19:48Z",
+      "completed_at": null
+    }
+  ]
+}

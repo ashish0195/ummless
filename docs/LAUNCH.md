@@ -6,7 +6,7 @@ What's needed to take Comlogue from this repository to the App Store, and what s
 
 - [ ] Deploy `backend/` (Docker image; see `backend/README.md`) behind HTTPS, e.g. Render, Fly.io or Railway.
 - [ ] Use Postgres (`DATABASE_URL`) and S3-compatible storage for media. SQLite and local disk are for development only.
-- [ ] Set `ENVIRONMENT=production`, `OPENAI_API_KEY`, a long random `SECRET_KEY`, and `ALLOW_DEV_ENTITLEMENTS=false`.
+- [ ] Set `ENVIRONMENT=production`, `OPENAI_API_KEY`, a long random `SECRET_KEY` (`openssl rand -hex 32`), and `ALLOW_DEV_ENTITLEMENTS=false`. In production the server refuses to start with a short or placeholder key.
 - [ ] Confirm which OpenAI models your account can use and set `ASSESSMENT_MODELS`, `CONVERSATION_MODELS`, `TRANSCRIPTION_MODELS`, `DIARIZATION_MODELS` and `TTS_MODELS`. The backend falls back automatically, but the first choice should be the model you want.
 - [ ] Turn on App Store transaction verification (`APP_STORE_REQUIRE_VERIFICATION=true` once Apple root-certificate checks are wired in). See the billing section in `backend/README.md`.
 - [ ] Point the Release build at it: the `API_BASE_URL` build setting (currently the placeholder `https://api.comlogue.app`).
@@ -66,4 +66,4 @@ What's needed to take Comlogue from this repository to the App Store, and what s
 
 - [ ] Calibrate the thresholds marked "pilot calibration required": audio quality, speaker matching, and per-dimension evidence minimums.
 - [ ] Review `feedback_reports` ("Not quite right?") weekly. They're the fastest signal of miscalibrated feedback.
-- [ ] Track the pilot metrics from the spec: first-task completion, voluntary retries, return for the next mission, real-life application, improvement on a fresh scenario. Report engagement and learning separately.
+- [ ] Track the pilot metrics from the spec: first-task completion, voluntary retries, return for the next mission, real-life application, improvement on a fresh scenario. Run `python scripts/pilot_metrics.py --since YYYY-MM-DD` from `backend/`. It reports engagement and learning separately, with each metric's definition.

@@ -96,6 +96,9 @@ extension APIClient {
                        body: SpeakerConfirmationRequest(decision: decision, speakerLabel: speakerLabel))
     }
 
+    /// Re-runs processing on the saved audio. Only for recordings that failed on the server's side.
+    func retryRecording(_ id: String) async throws -> Recording { try await post("/v1/recordings/\(id)/retry") }
+
     func transcript(recordingId: String) async throws -> Transcript { try await get("/v1/recordings/\(recordingId)/transcript") }
     func deleteRecording(_ id: String) async throws { try await delete("/v1/recordings/\(id)") }
 

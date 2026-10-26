@@ -36,6 +36,9 @@ final class AssessmentFlowModel {
 
     var activities: [AssessmentActivity] { assessment?.activities ?? [] }
 
+    /// The analysis failed on our side; the saved conversations can simply be analysed again.
+    var failedOnOurSide: Bool { assessment?.result?.recovery?.problem == "processing_failed" }
+
     func position(of activity: AssessmentActivity) -> Int {
         (activities.firstIndex { $0.id == activity.id } ?? 0) + 1
     }
@@ -71,7 +74,8 @@ final class AssessmentFlowModel {
             startPolling()
         case .complete, .needsRecovery:
             stage = .result
-            if !purpose.isGapFill { LocalFlags.activeAssessmentId = nil }
+            // Keep a failed analysis resumable so "Talk with an AI partner" brings back its retry.
+            if !purpose.isGapFill && !failedOnOurSide { LocalFlags.activeAssessmentId = nil }
         case .inProgress:
             if let next = assessment.nextActivity {
                 if purpose.isGapFill || assessment.doneCount > 0 || next.status == .inProgress {
@@ -446,7 +450,13 @@ private struct AssessmentResultScreen: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 18) {
                     if let result = model.assessment?.result {
-                        AnalysisResultView(result: result) { action in app.handle(action) }
+                        AnalysisResultView(result: result) { action in
+                            if case .recovery(let recovery) = action, recovery.type == .retry, model.failedOnOurSide {
+                                Task { await model.finalize() }
+                            } else {
+                                app.handle(action)
+                            }
+                        }
                     } else {
                         EmptyStateView(systemImage: "hourglass", title: "Results are on the way",
                                        message: "We're still putting your profile together.")

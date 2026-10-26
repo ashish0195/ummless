@@ -1,0 +1,43 @@
+{
+  "user_id": "usr_f65631b03fa94db195db",
+  "created_at": "2026-10-26T22:19:47Z",
+  "demo_mode": true,
+  "onboarding": {
+    "completed": true,
+    "contexts_ranked": [
+      "meetings",
+      "interviews",
+      "social",
+      "networking"
+    ],
+    "ease_targets": [
+      "concise",
+      "persuading"
+    ],
+    "goal_track": "business",
+    "language": "en",
+    "region": "US-CA",
+    "analysis_consent_version": "analysis-2026-10",
+    "analysis_consented_at": "2026-10-26T22:19:47Z",
+    "course_started": false
+  },
+  "practice_settings": {
+    "weekly_target": 3,
+    "reminder_time": null,
+    "reminder_days": []
+  },
+  "voice_reference": {
+    "status": "none",
+    "created_at": null,
+    "duration_seconds": null,
+    "consent_version": null
+  },
+  "entitlement": {
+    "tier": "free",
+    "expires_at": null,
+    "source": "none",
+    "product_id": null
+  },
+  "has_results": false,
+  "next_step": "choose_input"
+}

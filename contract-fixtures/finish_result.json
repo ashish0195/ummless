@@ -1,0 +1,102 @@
+{
+  "conversation": {
+    "id": "cnv_510c92c933ce4714ab12",
+    "kind": "mission",
+    "status": "finished",
+    "partner": {
+      "name": "Jordan",
+      "role": "Teammate",
+      "voice": "ash",
+      "symbol": "person.2",
+      "color_hex": "#6366F1"
+    },
+    "setup": {
+      "title": "Make your point land",
+      "context": "Your project team asks which of two vendors to choose: a cheaper new one, or the familiar, pricier one.",
+      "target_behavior": "State your recommendation first, give two relevant reasons, then invite a response.",
+      "suggested_seconds": 60,
+      "tips": [
+        "Target: State your recommendation first, give two relevant reasons, then invite a response.",
+        "Jordan may push back once — adapt to it."
+      ],
+      "activity_id": null,
+      "mission_id": "business.m1.learn",
+      "persona_id": null,
+      "difficulty": null,
+      "quick": false
+    },
+    "turns": [
+      {
+        "index": 0,
+        "speaker": "partner",
+        "text": "So, we need to pick a vendor by Friday. Which one do you think we should go with?",
+        "audio_url": null,
+        "created_at": "2026-10-26T22:20:10Z",
+        "quality": null,
+        "coach_whisper": null,
+        "excluded": false
+      },
+      {
+        "index": 1,
+        "speaker": "user",
+        "text": "I'd go with the second vendor. It's cheaper and passed security. What concerns do you have?",
+        "audio_url": "/v1/media/med_8eb5c974e6bb4b09ad93?exp=1793074812&sig=RyM-J3yIYWSbJB6O_wRfb_uGNUAYDWLC",
+        "created_at": "2026-10-26T22:20:11Z",
+        "quality": {
+          "usable": "yes",
+          "issues": [],
+          "speech_seconds": 8.7,
+          "duration_seconds": 10.0
+        },
+        "coach_whisper": null,
+        "excluded": false
+      },
+      {
+        "index": 2,
+        "speaker": "partner",
+        "text": "I hear you, but switching vendors mid-quarter feels risky. What if onboarding takes longer than we think?",
+        "audio_url": null,
+        "created_at": "2026-10-26T22:20:11Z",
+        "quality": null,
+        "coach_whisper": null,
+        "excluded": false
+      },
+      {
+        "index": 3,
+        "speaker": "user",
+        "text": "Fair. They've done three migrations like ours, so I'd still choose them. Two-week trial?",
+        "audio_url": "/v1/media/med_70169711495441a192e0?exp=1793074812&sig=TamAgrj-gJ9sAib4QMfRUtsLYmxhZfM7",
+        "created_at": "2026-10-26T22:20:11Z",
+        "quality": {
+          "usable": "yes",
+          "issues": [],
+          "speech_seconds": 8.7,
+          "duration_seconds": 10.0
+        },
+        "coach_whisper": null,
+        "excluded": false
+      },
+      {
+        "index": 4,
+        "speaker": "partner",
+        "text": "Okay, that's helpful. Thanks.",
+        "audio_url": null,
+        "created_at": "2026-10-26T22:20:11Z",
+        "quality": null,
+        "coach_whisper": null,
+        "excluded": false
+      }
+    ],
+    "awaiting": "none",
+    "user_turns": 2,
+    "max_user_turns": 2,
+    "assessment_id": null,
+    "mission_id": "business.m1.learn",
+    "demo_mode": true,
+    "created_at": "2026-10-26T22:20:10Z"
+  },
+  "result_ref": {
+    "type": "mission_attempt",
+    "id": "att_75b7204feecc4635ba15"
+  }
+}

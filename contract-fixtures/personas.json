@@ -1,0 +1,70 @@
+{
+  "personas": [
+    {
+      "id": "skeptical_cfo",
+      "name": "Marcus",
+      "title": "Skeptical CFO",
+      "scenario": "Pitch a budget increase",
+      "description": "You need $400k more for your team. Marcus has two minutes and wants numbers.",
+      "default_difficulty": "brutal",
+      "symbol": "chart.line.uptrend.xyaxis",
+      "color_hex": "#E64980",
+      "is_free": false
+    },
+    {
+      "id": "tech_interviewer",
+      "name": "Priya",
+      "title": "Senior interviewer",
+      "scenario": "Behavioral interview",
+      "description": "A structured interview at a large tech company. Priya probes for specifics.",
+      "default_difficulty": "real",
+      "symbol": "person.crop.rectangle",
+      "color_hex": "#6366F1",
+      "is_free": false
+    },
+    {
+      "id": "upset_teammate",
+      "name": "Sam",
+      "title": "Upset teammate",
+      "scenario": "Repair after a missed handoff",
+      "description": "Sam looked unprepared in a client call because of your missed update. Repair it.",
+      "default_difficulty": "real",
+      "symbol": "exclamationmark.bubble",
+      "color_hex": "#FF8A3D",
+      "is_free": true
+    },
+    {
+      "id": "first_date",
+      "name": "Alex",
+      "title": "First date",
+      "scenario": "Get past small talk",
+      "description": "Coffee with someone you matched with. Make it a real conversation.",
+      "default_difficulty": "kind",
+      "symbol": "cup.and.saucer",
+      "color_hex": "#10B3A3",
+      "is_free": false
+    },
+    {
+      "id": "landlord",
+      "name": "Rosa",
+      "title": "Landlord",
+      "scenario": "Push back on a rent increase",
+      "description": "Rosa wants to raise your rent 12%. Negotiate something you can live with.",
+      "default_difficulty": "real",
+      "symbol": "house",
+      "color_hex": "#2F9BFF",
+      "is_free": false
+    },
+    {
+      "id": "offer_negotiation",
+      "name": "Daniel",
+      "title": "Hiring manager",
+      "scenario": "Negotiate your job offer",
+      "description": "You have an offer. Daniel's budget is tight. Ask for what you're worth.",
+      "default_difficulty": "real",
+      "symbol": "briefcase",
+      "color_hex": "#9B5DE5",
+      "is_free": false
+    }
+  ]
+}

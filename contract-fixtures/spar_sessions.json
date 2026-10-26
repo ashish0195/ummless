@@ -1,0 +1,13 @@
+{
+  "items": [
+    {
+      "conversation_id": "cnv_6d8c11710bfb44c8a29f",
+      "title": "Pitch a budget increase",
+      "persona_name": "Marcus",
+      "difficulty": "brutal",
+      "created_at": "2026-10-26T22:20:12Z",
+      "status": "complete",
+      "outcome_label": "Agreed"
+    }
+  ]
+}

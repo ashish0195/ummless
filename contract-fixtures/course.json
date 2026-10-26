@@ -1,0 +1,209 @@
+{
+  "track": {
+    "id": "business",
+    "title": "Business communication",
+    "subtitle": "Make your point land in meetings and updates.",
+    "symbol": "briefcase"
+  },
+  "basis": "profile",
+  "basis_label": "Tailored to your profile",
+  "basis_explainer": "Ordered using what we've seen so far (concision, persuasion, warmth, storytelling, listening, structure, clarity) plus your goal. You can change the focus anytime.",
+  "focus_module_id": "business.m1",
+  "modules": [
+    {
+      "id": "business.m1",
+      "index": 1,
+      "title": "Make your point land",
+      "dimension": "concision",
+      "target_behavior": "State your recommendation first, give two relevant reasons, then invite a response.",
+      "summary": "Lead with your recommendation so nobody has to dig for it.",
+      "status": "current",
+      "completed_missions": 0,
+      "missions": [
+        {
+          "id": "business.m1.learn",
+          "type": "learn_and_try",
+          "title": "Make your point land",
+          "minutes": 6,
+          "status": "available",
+          "locked_reason": null
+        },
+        {
+          "id": "business.m1.remix",
+          "type": "remix",
+          "title": "Remix: the hallway question",
+          "minutes": 5,
+          "status": "available",
+          "locked_reason": null
+        },
+        {
+          "id": "business.m1.real",
+          "type": "real_life",
+          "title": "Real-life mission",
+          "minutes": 10,
+          "status": "available",
+          "locked_reason": null
+        },
+        {
+          "id": "business.m1.reveal",
+          "type": "weekly_reveal",
+          "title": "Weekly reveal",
+          "minutes": 3,
+          "status": "available",
+          "locked_reason": null
+        }
+      ]
+    },
+    {
+      "id": "business.m2",
+      "index": 2,
+      "title": "Give an update people can follow",
+      "dimension": "structure",
+      "target_behavior": "Give a three-part update: where things stand, what's at risk, and what you need.",
+      "summary": "A predictable shape makes your update easy to follow and act on.",
+      "status": "available",
+      "completed_missions": 0,
+      "missions": [
+        {
+          "id": "business.m2.learn",
+          "type": "learn_and_try",
+          "title": "Give an update people can follow",
+          "minutes": 6,
+          "status": "available",
+          "locked_reason": null
+        },
+        {
+          "id": "business.m2.remix",
+          "type": "remix",
+          "title": "Remix: the worried client",
+          "minutes": 5,
+          "status": "available",
+          "locked_reason": null
+        },
+        {
+          "id": "business.m2.real",
+          "type": "real_life",
+          "title": "Real-life mission",
+          "minutes": 10,
+          "status": "available",
+          "locked_reason": null
+        },
+        {
+          "id": "business.m2.reveal",
+          "type": "weekly_reveal",
+          "title": "Weekly reveal",
+          "minutes": 3,
+          "status": "available",
+          "locked_reason": null
+        }
+      ]
+    },
+    {
+      "id": "business.m3",
+      "index": 3,
+      "title": "Handle pushback calmly",
+      "dimension": "persuasion",
+      "target_behavior": "When challenged, acknowledge the concern, answer it with one specific fact, then restate your ask.",
+      "summary": "Turn objections into reasons to agree — without getting defensive.",
+      "status": "available",
+      "completed_missions": 0,
+      "missions": [
+        {
+          "id": "business.m3.learn",
+          "type": "learn_and_try",
+          "title": "Handle pushback calmly",
+          "minutes": 6,
+          "status": "available",
+          "locked_reason": null
+        },
+        {
+          "id": "business.m3.remix",
+          "type": "remix",
+          "title": "Remix: pushback in the room",
+          "minutes": 5,
+          "status": "available",
+          "locked_reason": null
+        },
+        {
+          "id": "business.m3.real",
+          "type": "real_life",
+          "title": "Real-life mission",
+          "minutes": 10,
+          "status": "available",
+          "locked_reason": null
+        },
+        {
+          "id": "business.m3.reveal",
+          "type": "weekly_reveal",
+          "title": "Weekly reveal",
+          "minutes": 3,
+          "status": "available",
+          "locked_reason": null
+        }
+      ]
+    },
+    {
+      "id": "business.m4",
+      "index": 4,
+      "title": "Bring others in",
+      "dimension": "listening",
+      "target_behavior": "After you speak, ask one specific question and build on the answer before adding your view.",
+      "summary": "Meetings aren't won by talking most. Draw out what others know.",
+      "status": "available",
+      "completed_missions": 0,
+      "missions": [
+        {
+          "id": "business.m4.learn",
+          "type": "learn_and_try",
+          "title": "Bring others in",
+          "minutes": 6,
+          "status": "available",
+          "locked_reason": null
+        },
+        {
+          "id": "business.m4.remix",
+          "type": "remix",
+          "title": "Remix: the one-to-one",
+          "minutes": 5,
+          "status": "available",
+          "locked_reason": null
+        },
+        {
+          "id": "business.m4.real",
+          "type": "real_life",
+          "title": "Real-life mission",
+          "minutes": 10,
+          "status": "available",
+          "locked_reason": null
+        },
+        {
+          "id": "business.m4.reveal",
+          "type": "weekly_reveal",
+          "title": "Weekly reveal",
+          "minutes": 3,
+          "status": "available",
+          "locked_reason": null
+        }
+      ]
+    }
+  ],
+  "gap_tasks": [],
+  "today": {
+    "mission": {
+      "id": "business.m1.learn",
+      "type": "learn_and_try",
+      "title": "Make your point land",
+      "minutes": 6,
+      "status": "available",
+      "locked_reason": null
+    },
+    "module_title": "Make your point land",
+    "quick": {
+      "mission_id": "business.m1.learn",
+      "title": "Two-minute version",
+      "minutes": 2
+    }
+  },
+  "is_pro": true,
+  "free_mission_id": null
+}

@@ -1,0 +1,114 @@
+{
+  "id": "decision_meeting",
+  "title": "Run a decision meeting in 15 minutes",
+  "speaker": "Comlogue exemplar · engineering leader",
+  "source_note": "Original script written for Comlogue.",
+  "year": null,
+  "duration_label": "1 min",
+  "lines_count": 12,
+  "style": {
+    "wpm": 138.0,
+    "avg_pause_seconds": 1.1,
+    "avg_sentence_words": 6.0
+  },
+  "tags": [
+    "meetings",
+    "leadership",
+    "concision"
+  ],
+  "is_free": true,
+  "technique": "Decision-first framing",
+  "breakdown": [
+    "Opens with the decision, the owner and the ask in nine words.",
+    "Each option gets the same two-beat shape, so they're easy to compare.",
+    "Names what would change the speaker's mind — which invites real disagreement.",
+    "Pauses separate ideas so the room can keep up and respond."
+  ],
+  "lines": [
+    {
+      "index": 0,
+      "text": "Here's the decision. [pause] Here's who owns it. [pause] Disagree now, or commit.",
+      "display_text": "Here's the decision. Here's who owns it. Disagree now, or commit.",
+      "pause_count": 2,
+      "audio_url": null
+    },
+    {
+      "index": 1,
+      "text": "We have fifteen minutes, [pause] and one question: [pause] do we ship the new onboarding on Monday?",
+      "display_text": "We have fifteen minutes, and one question: do we ship the new onboarding on Monday?",
+      "pause_count": 2,
+      "audio_url": null
+    },
+    {
+      "index": 2,
+      "text": "Option one: ship Monday. [pause] We learn faster, [pause] and support is ready.",
+      "display_text": "Option one: ship Monday. We learn faster, and support is ready.",
+      "pause_count": 2,
+      "audio_url": null
+    },
+    {
+      "index": 3,
+      "text": "Option two: wait two weeks. [pause] We fix the edge cases, [pause] and lose two weeks of data.",
+      "display_text": "Option two: wait two weeks. We fix the edge cases, and lose two weeks of data.",
+      "pause_count": 2,
+      "audio_url": null
+    },
+    {
+      "index": 4,
+      "text": "My recommendation is to ship Monday, [pause] behind a flag, [pause] for ten percent of new users.",
+      "display_text": "My recommendation is to ship Monday, behind a flag, for ten percent of new users.",
+      "pause_count": 2,
+      "audio_url": null
+    },
+    {
+      "index": 5,
+      "text": "Two reasons. [pause] The risky cases are rare. [pause] And the flag lets us roll back in minutes.",
+      "display_text": "Two reasons. The risky cases are rare. And the flag lets us roll back in minutes.",
+      "pause_count": 2,
+      "audio_url": null
+    },
+    {
+      "index": 6,
+      "text": "What would change my mind? [pause] Evidence that the rare cases aren't rare.",
+      "display_text": "What would change my mind? Evidence that the rare cases aren't rare.",
+      "pause_count": 1,
+      "audio_url": null
+    },
+    {
+      "index": 7,
+      "text": "Lin, you know the data best. [pause] What am I missing?",
+      "display_text": "Lin, you know the data best. What am I missing?",
+      "pause_count": 1,
+      "audio_url": null
+    },
+    {
+      "index": 8,
+      "text": "Okay. [pause] Here's where we landed: [pause] we ship Monday, behind the flag, at ten percent.",
+      "display_text": "Okay. Here's where we landed: we ship Monday, behind the flag, at ten percent.",
+      "pause_count": 2,
+      "audio_url": null
+    },
+    {
+      "index": 9,
+      "text": "Priya owns the rollout. [pause] Ravi owns the rollback plan.",
+      "display_text": "Priya owns the rollout. Ravi owns the rollback plan.",
+      "pause_count": 1,
+      "audio_url": null
+    },
+    {
+      "index": 10,
+      "text": "If you disagree, [pause] say it now. [pause] Otherwise, we commit.",
+      "display_text": "If you disagree, say it now. Otherwise, we commit.",
+      "pause_count": 2,
+      "audio_url": null
+    },
+    {
+      "index": 11,
+      "text": "Thanks, everyone. [pause] That's the decision.",
+      "display_text": "Thanks, everyone. That's the decision.",
+      "pause_count": 1,
+      "audio_url": null
+    }
+  ],
+  "locked": false
+}

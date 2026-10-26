@@ -1,0 +1,35 @@
+{
+  "events": [
+    {
+      "id": "evt_b574e36c963a449684f7",
+      "title": "Final-round interview",
+      "kind": "interview",
+      "date": "2026-11-02",
+      "notes": "Product manager role",
+      "prep": [
+        {
+          "id": "prep_1",
+          "title": "Warm-up",
+          "scenario": "A friendly run-through of the start of 'Final-round interview'.",
+          "partner_role": "Interviewer",
+          "difficulty": "kind"
+        },
+        {
+          "id": "prep_2",
+          "title": "The realistic version",
+          "scenario": "'Final-round interview' as it will most likely go, including one tricky question.",
+          "partner_role": "Interviewer",
+          "difficulty": "real"
+        },
+        {
+          "id": "prep_3",
+          "title": "The tough moment",
+          "scenario": "The hardest part of 'Final-round interview': someone pushes back hard.",
+          "partner_role": "Interviewer",
+          "difficulty": "brutal"
+        }
+      ],
+      "created_at": "2026-10-26T22:20:14Z"
+    }
+  ]
+}

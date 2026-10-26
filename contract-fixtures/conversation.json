@@ -1,0 +1,46 @@
+{
+  "id": "cnv_d92fb0547bcf4862bed2",
+  "kind": "assessment_activity",
+  "status": "active",
+  "partner": {
+    "name": "Maya",
+    "role": "Someone you've just met",
+    "voice": "marin",
+    "symbol": "person.wave.2",
+    "color_hex": "#FF8A3D"
+  },
+  "setup": {
+    "title": "Meet someone new",
+    "context": "You've just met Maya at a friend's gathering. Chat the way you normally would.",
+    "target_behavior": null,
+    "suggested_seconds": 60,
+    "tips": [
+      "There's no right answer — talk like you would at a party.",
+      "Ask Maya something back if you like."
+    ],
+    "activity_id": "meet_someone_new",
+    "mission_id": null,
+    "persona_id": null,
+    "difficulty": null,
+    "quick": false
+  },
+  "turns": [
+    {
+      "index": 0,
+      "speaker": "partner",
+      "text": "We've just met at a friend's gathering. What's something you've been spending time on lately?",
+      "audio_url": null,
+      "created_at": "2026-10-26T22:19:48Z",
+      "quality": null,
+      "coach_whisper": null,
+      "excluded": false
+    }
+  ],
+  "awaiting": "user",
+  "user_turns": 0,
+  "max_user_turns": 3,
+  "assessment_id": "asm_0f54b67b66af41398e8a",
+  "mission_id": null,
+  "demo_mode": true,
+  "created_at": "2026-10-26T22:19:48Z"
+}
