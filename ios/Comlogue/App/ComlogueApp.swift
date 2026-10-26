@@ -15,6 +15,7 @@ struct ComlogueApp: App {
 
 struct RootView: View {
     @Environment(AppModel.self) private var app
+    @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
         @Bindable var app = app
@@ -48,6 +49,15 @@ struct RootView: View {
         }
         .task {
             if app.phase == .launching { await app.bootstrap() }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: IntentRoute.notification)) { _ in
+            app.handlePendingIntent()
+        }
+        .onChange(of: app.phase) { _, newPhase in
+            if newPhase == .ready { app.handlePendingIntent() }
+        }
+        .onChange(of: scenePhase) { _, newPhase in
+            if newPhase == .active { app.handlePendingIntent() }
         }
     }
 }

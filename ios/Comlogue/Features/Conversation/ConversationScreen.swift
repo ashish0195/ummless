@@ -38,7 +38,9 @@ struct ConversationScreen: View {
                     if let whisper = model.latestWhisper, model.phase != .recording {
                         CoachWhisperCard(text: whisper)
                     }
-                    if let error = model.errorMessage {
+                    if AudioPermission.isDenied {
+                        MicrophoneAccessBanner()
+                    } else if let error = model.errorMessage {
                         InlineErrorBanner(message: error) { model.errorMessage = nil }
                     }
                 }

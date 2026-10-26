@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 struct LoadingStateView: View {
     var title: String = "Loading…"
@@ -177,5 +178,28 @@ struct ProgressRing: View {
                 .rotationEffect(.degrees(-90))
                 .animation(.spring(response: 0.6, dampingFraction: 0.8), value: value)
         }
+    }
+}
+
+/// Shown when microphone access is off, with a direct route to Settings.
+struct MicrophoneAccessBanner: View {
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Label("Microphone access is off", systemImage: "mic.slash.fill")
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(Theme.ink)
+            Text("Comlogue needs the microphone to hear your answers. You can turn it on in Settings.")
+                .font(.footnote)
+                .foregroundStyle(Theme.inkSecondary)
+            Button("Open Settings") {
+                if let url = URL(string: UIApplication.openSettingsURLString) {
+                    UIApplication.shared.open(url)
+                }
+            }
+            .buttonStyle(.pill(.secondary, fullWidth: false))
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(14)
+        .background(Theme.amber.opacity(0.12), in: RoundedRectangle(cornerRadius: Theme.radiusSmall, style: .continuous))
     }
 }
