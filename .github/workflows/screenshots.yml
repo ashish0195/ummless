@@ -1,0 +1,105 @@
+name: Screenshots
+
+# Builds the app, runs the backend in demo mode, launches each screen in the iOS Simulator with seeded demo
+# data and commits the screenshots to docs/screenshots on the branch it ran for.
+# Runs when a pushed commit message contains "[screenshots]", or manually.
+on:
+  push:
+    branches: ["claude/**", main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  screenshots:
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[screenshots]')
+    runs-on: macos-15
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.ref_name }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install ffmpeg
+        run: brew install ffmpeg >/dev/null
+
+      - name: Start the backend in demo mode
+        working-directory: backend
+        env:
+          AI_PROVIDER: mock
+          ALLOW_DEV_ENTITLEMENTS: "true"
+          SECRET_KEY: screenshots-only-secret
+        run: |
+          python -m venv .venv
+          .venv/bin/pip install -q -r requirements.txt
+          nohup .venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8000 > "$RUNNER_TEMP/backend.log" 2>&1 &
+          for i in $(seq 1 60); do curl -sf http://127.0.0.1:8000/v1/health && break; sleep 1; done
+          curl -sf http://127.0.0.1:8000/v1/health
+
+      - name: Select the newest installed Xcode
+        run: |
+          latest=$(ls -d /Applications/Xcode_*.app | grep -vi beta | sort -V | tail -1)
+          sudo xcode-select -s "$latest/Contents/Developer"
+          xcodebuild -version
+
+      - name: Build for the iOS Simulator
+        working-directory: ios
+        run: |
+          set -o pipefail
+          xcodebuild -project Comlogue.xcodeproj -scheme Comlogue -configuration Debug \
+            -destination 'generic/platform=iOS Simulator' -derivedDataPath build/DerivedData \
+            CODE_SIGNING_ALLOWED=NO build -quiet
+
+      - name: Capture screenshots
+        run: |
+          DEVICE=$(xcrun simctl list devices available -j | python3 -c '
+          import json, sys, re
+          data = json.load(sys.stdin)["devices"]
+          phones = [d for runtime, ds in data.items() if "iOS" in runtime for d in ds if re.match(r"iPhone \d+ Pro$", d["name"])]
+          phones.sort(key=lambda d: d["name"])
+          print(phones[-1]["udid"])')
+          echo "Using device $DEVICE"
+          xcrun simctl boot "$DEVICE" || true
+          xcrun simctl bootstatus "$DEVICE" -b
+          xcrun simctl status_bar "$DEVICE" override --time 9:41 --dataNetwork wifi --wifiBars 3 \
+            --cellularMode active --cellularBars 4 --batteryState charged --batteryLevel 100
+          APP=$(find ios/build/DerivedData -name "Comlogue.app" -path "*iphonesimulator*" | head -1)
+          xcrun simctl install "$DEVICE" "$APP"
+          mkdir -p docs/screenshots
+          capture() {
+            xcrun simctl launch --terminate-running-process "$DEVICE" com.comlogue.app -ComlogueScreenshotScene "$1"
+            sleep "${3:-10}"
+            xcrun simctl io "$DEVICE" screenshot "docs/screenshots/$2.png"
+          }
+          xcrun simctl ui "$DEVICE" appearance light
+          for scene in welcome getStarted activity spar results recording debrief today course mission practice you paywall; do
+            capture "$scene" "$scene"
+          done
+          xcrun simctl ui "$DEVICE" appearance dark
+          for scene in today results you; do
+            capture "$scene" "dark-$scene"
+          done
+
+      - name: Commit screenshots
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/screenshots
+          if git diff --cached --quiet; then
+            echo "No screenshot changes"
+          else
+            git commit -m "Update app screenshots"
+            git push origin "HEAD:${{ github.ref_name }}"
+          fi
+
+      - name: Upload backend log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-log
+          path: ${{ runner.temp }}/backend.log

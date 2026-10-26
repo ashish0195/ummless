@@ -49,30 +49,7 @@ final class OnboardingModel {
 
     /// Suggests a goal area from the ranked contexts and ease targets. The person can always pick another.
     func suggestedTrack(available: [Track]) -> String? {
-        var score: [String: Double] = [:]
-        let weights: [Double] = [3, 2, 1, 1]
-        for (index, context) in contextsRanked.enumerated() {
-            let weight = weights[min(index, weights.count - 1)]
-            switch context {
-            case "social": score["conversational", default: 0] += weight; score["storytelling", default: 0] += weight * 0.4
-            case "networking": score["conversational", default: 0] += weight * 0.7; score["business", default: 0] += weight * 0.5
-            case "meetings": score["business", default: 0] += weight
-            case "interviews": score["business", default: 0] += weight * 0.6; score["storytelling", default: 0] += weight * 0.5
-            default: break
-            }
-        }
-        for ease in easeTargets {
-            switch ease {
-            case "persuading": score["negotiation", default: 0] += 2
-            case "concise": score["business", default: 0] += 1.5
-            case "explaining": score["public_speaking", default: 0] += 1.5
-            case "connecting": score["conversational", default: 0] += 1.5
-            case "contributing": score["business", default: 0] += 1.2
-            default: break
-            }
-        }
-        let ids = Set(available.map(\.id))
-        return score.filter { ids.contains($0.key) }.max { $0.value < $1.value }?.key ?? available.first?.id
+        GoalSuggestion.suggest(contextsRanked: contextsRanked, easeTargets: easeTargets, available: available.map(\.id))
     }
 
     func patch(consentVersion: String, allContexts: [String]) -> MePatch {

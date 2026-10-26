@@ -93,6 +93,12 @@ final class AppModel {
     func bootstrap() async {
         phase = .launching
         api.updateBaseURL(AppConfig.baseURL)
+        #if DEBUG
+        if let scene = ScreenshotScene.current {
+            await runScreenshotScene(scene)
+            return
+        }
+        #endif
         do {
             if api.token == nil {
                 guard await authenticate() else { throw APIError.network("Could not sign in") }

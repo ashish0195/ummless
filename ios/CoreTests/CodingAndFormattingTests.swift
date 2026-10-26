@@ -60,3 +60,28 @@ final class CodingAndFormattingTests: XCTestCase {
         XCTAssertEqual(client.resolve("https://cdn.example.com/a.mp3")?.absoluteString, "https://cdn.example.com/a.mp3")
     }
 }
+
+final class GoalSuggestionTests: XCTestCase {
+    private let tracks = ["negotiation", "business", "conversational", "storytelling", "public_speaking"]
+
+    func testMeetingsFirstSuggestsBusiness() {
+        XCTAssertEqual(GoalSuggestion.suggest(contextsRanked: ["meetings", "interviews"], easeTargets: ["concise"], available: tracks), "business")
+    }
+
+    func testSocialAndConnectingSuggestsConversational() {
+        XCTAssertEqual(GoalSuggestion.suggest(contextsRanked: ["social"], easeTargets: ["connecting"], available: tracks), "conversational")
+    }
+
+    func testPersuadingCanTipTowardsNegotiation() {
+        XCTAssertEqual(GoalSuggestion.suggest(contextsRanked: [], easeTargets: ["persuading"], available: tracks), "negotiation")
+    }
+
+    func testFallsBackToFirstAvailableTrack() {
+        XCTAssertEqual(GoalSuggestion.suggest(contextsRanked: [], easeTargets: [], available: tracks), "negotiation")
+        XCTAssertNil(GoalSuggestion.suggest(contextsRanked: [], easeTargets: [], available: []))
+    }
+
+    func testOnlySuggestsAvailableTracks() {
+        XCTAssertEqual(GoalSuggestion.suggest(contextsRanked: ["meetings"], easeTargets: [], available: ["storytelling"]), "storytelling")
+    }
+}
