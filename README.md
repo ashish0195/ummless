@@ -15,6 +15,23 @@ only where there's real evidence. Then it coaches you one small change at a time
 | **API contract** | [`docs/API.md`](docs/API.md) |
 | **Architecture** | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) |
 
+## Screenshots
+
+Captured from the iOS Simulator against the demo backend by `.github/workflows/screenshots.yml`. Push a commit
+whose message starts with `[screenshots]` to refresh them.
+
+| Welcome | How to start | Initial assessment | Is this you? |
+| :---: | :---: | :---: | :---: |
+| <img src="docs/screenshots/welcome.png" width="190" alt="Welcome screen"> | <img src="docs/screenshots/getStarted.png" width="190" alt="Three ways to start"> | <img src="docs/screenshots/results.png" width="190" alt="Partial communication profile with gaps for missing evidence"> | <img src="docs/screenshots/recording.png" width="190" alt="Speaker confirmation"> |
+
+| Today | Course | Mission | Spar |
+| :---: | :---: | :---: | :---: |
+| <img src="docs/screenshots/today.png" width="190" alt="Today"> | <img src="docs/screenshots/course.png" width="190" alt="Course map"> | <img src="docs/screenshots/mission.png" width="190" alt="Mission"> | <img src="docs/screenshots/spar.png" width="190" alt="Sparring with a Brutal persona"> |
+
+| Practice | You | Pro | Dark mode |
+| :---: | :---: | :---: | :---: |
+| <img src="docs/screenshots/practice.png" width="190" alt="Practice hub"> | <img src="docs/screenshots/you.png" width="190" alt="Profile"> | <img src="docs/screenshots/paywall.png" width="190" alt="Paywall"> | <img src="docs/screenshots/dark-results.png" width="190" alt="Results in dark mode"> |
+
 ## What's inside
 
 - **Three ways to start:** a guided AI conversation (five short activities, 10–15 min), uploading recordings,

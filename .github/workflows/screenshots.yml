@@ -96,7 +96,14 @@ jobs:
             echo "No screenshot changes"
           else
             git commit -m "Update app screenshots"
-            git push origin "HEAD:${{ github.ref_name }}"
+            # The branch may have moved while the simulator ran; this commit only touches docs/screenshots.
+            for attempt in 1 2 3; do
+              if git pull --rebase origin "${{ github.ref_name }}" && git push origin "HEAD:${{ github.ref_name }}"; then
+                exit 0
+              fi
+              sleep 5
+            done
+            exit 1
           fi
 
       - name: Upload backend log
