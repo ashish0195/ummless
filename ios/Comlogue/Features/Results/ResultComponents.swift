@@ -129,6 +129,7 @@ struct DimensionResultCard: View {
                             }
                         }
                     }
+                    NotQuiteRightButton(target: .dimension(result.dimension, sourceId: result.evidence.first?.sourceId))
                 }
             } else {
                 Text(result.missingReason ?? "We didn't hear a clear chance to show this skill yet. That says nothing about how good you are at it.")

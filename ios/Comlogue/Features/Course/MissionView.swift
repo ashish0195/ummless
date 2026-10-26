@@ -29,14 +29,15 @@ final class MissionModel {
         }
     }
 
-    func startAttempt(quick: Bool) async {
+    /// - Parameter harder: an optional tougher partner once the basic attempt feels comfortable.
+    func startAttempt(quick: Bool, harder: Bool = false) async {
         guard !isStarting else { return }
         if mission?.isLocked == true { showPaywall = true; return }
         isStarting = true
         defer { isStarting = false }
         do {
             activeConversation = try await app.api.createConversation(
-                CreateConversationRequest(kind: "mission", missionId: missionId, quick: quick)
+                CreateConversationRequest(kind: "mission", missionId: missionId, quick: quick, difficulty: harder ? .brutal : nil)
             )
         } catch let apiError as APIError where apiError.isSubscriptionRequired {
             showPaywall = true
@@ -367,6 +368,9 @@ private struct MissionContent: View {
                 HStack(spacing: 18) {
                     if mission.realLife == nil && mission.attempts.isEmpty {
                         Button("2-minute version") { Task { await model.startAttempt(quick: true) } }
+                    }
+                    if mission.realLife == nil && hasAssessableAttempt {
+                        Button("Harder challenge") { Task { await model.startAttempt(quick: false, harder: true) } }
                     }
                     if (hasAssessableAttempt || !mission.reflections.isEmpty) && !mission.isCompleted {
                         Button("Save takeaway & finish") { model.showComplete = true }

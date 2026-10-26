@@ -61,6 +61,8 @@ struct AttemptFeedbackView: View {
                             }
                         }
 
+                        NotQuiteRightButton(target: .attempt(attempt.id))
+
                         if let comparison = feedback.comparison {
                             VStack(alignment: .leading, spacing: 8) {
                                 Eyebrow("Compared with your last attempt", color: Theme.violet)

@@ -2,7 +2,7 @@ name: Screenshots
 
 # Builds the app, runs the backend in demo mode, launches each screen in the iOS Simulator with seeded demo
 # data and commits the screenshots to docs/screenshots on the branch it ran for.
-# Runs when a pushed commit message contains "[screenshots]", or manually.
+# Runs when a pushed commit message starts with "[screenshots]", or manually.
 on:
   push:
     branches: ["claude/**", main]
@@ -13,7 +13,7 @@ permissions:
 
 jobs:
   screenshots:
-    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[screenshots]')
+    if: github.event_name == 'workflow_dispatch' || startsWith(github.event.head_commit.message, '[screenshots]')
     runs-on: macos-15
     timeout-minutes: 50
     steps:

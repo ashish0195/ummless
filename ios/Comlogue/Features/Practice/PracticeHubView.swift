@@ -436,6 +436,7 @@ struct SparReportView: View {
         if let next = report.nextStep {
             Label(next, systemImage: "arrow.turn.down.right").font(.subheadline).foregroundStyle(Theme.ink).card()
         }
+        NotQuiteRightButton(target: .sparReport(report.conversationId))
         if let onAgain {
             Button("Spar again", action: onAgain).buttonStyle(.primaryPill)
         }

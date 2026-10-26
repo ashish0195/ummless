@@ -147,6 +147,7 @@ struct ConnectionProblemView: View {
         .screenBackground()
         .sheet(isPresented: $showServerSheet) {
             ServerSettingsSheet()
+                .environment(app)
         }
     }
 }

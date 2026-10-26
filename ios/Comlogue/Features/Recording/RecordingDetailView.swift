@@ -126,7 +126,9 @@ struct RecordingDetailView: View {
             Text("Your communication profile will be recalculated without it. This can't be undone.")
         }
         .task {
-            if model == nil {
+            if let model {
+                await model.load() // refresh and resume polling when coming back to this screen
+            } else {
                 let created = RecordingDetailModel(recordingId: recordingId, app: app)
                 model = created
                 await created.load()
