@@ -189,6 +189,48 @@ final class NotificationPlannerTests: XCTestCase {
                        instant("2026-10-27T08:30:00Z"))
     }
 
+    func testNoNudgeOnADayThatAlreadyHasAPracticeReminder() {
+        // Tuesday 27 Oct; the 3-day nudge lands on Friday 30 Oct, a practice day at 08:00.
+        let planned = NotificationPlanner.plan(input(now: "2026-10-27T00:30:00Z"))
+        XCTAssertFalse(planned.contains { $0.id == "comlogue.local.nudge.3" })
+        XCTAssertTrue(planned.contains { $0.id == "comlogue.local.practice.2026-10-30" })
+        // With Tue/Thu/Sat practice instead, Friday's nudge stays.
+        var other = input(now: "2026-10-27T00:30:00Z")
+        other.practiceDays = [2, 4, 6]
+        XCTAssertTrue(NotificationPlanner.plan(other).contains { $0.id == "comlogue.local.nudge.3" })
+    }
+
+    func testAnEarlyEventsMorningReminderNeverArrivesAfterItStarts() {
+        var plan = input(now: "2026-10-27T00:30:00Z")
+        plan.practiceDays = []
+        plan.settings.nudges = false
+        // 07:30 IST: two hours before is 05:30, inside quiet hours, and 08:00 would be too late.
+        plan.events = [PlannedEvent(id: "evt_1", title: "Early flight pitch", date: "2026-10-29", time: "07:30")]
+        let ids = NotificationPlanner.plan(plan).map(\.id)
+        XCTAssertTrue(ids.contains("comlogue.local.event_eve.evt_1"))
+        XCTAssertFalse(ids.contains("comlogue.local.event_day.evt_1"))
+        // 10:00 IST: 08:00 is still two hours before.
+        plan.events = [PlannedEvent(id: "evt_2", title: "Panel interview", date: "2026-10-29", time: "10:00")]
+        let morning = NotificationPlanner.plan(plan).first { $0.id == "comlogue.local.event_day.evt_2" }
+        XCTAssertEqual(morning?.fireDate, instant("2026-10-29T02:30:00Z"))
+    }
+
+    func testWeeklyRevealOnSundayEveningOnlyAfterPractice() {
+        var plan = input(now: "2026-10-27T00:30:00Z")
+        plan.settings.nudges = false
+        XCTAssertFalse(NotificationPlanner.plan(plan).contains { $0.kind == .weeklyReveal })
+        plan.practicedThisWeek = true
+        let reveal = NotificationPlanner.plan(plan).first { $0.kind == .weeklyReveal }
+        // Sunday 1 Nov, 18:00 IST.
+        XCTAssertEqual(reveal?.fireDate, instant("2026-11-01T12:30:00Z"))
+        XCTAssertEqual(reveal?.deepLink, .weeklyReview)
+        plan.settings.weeklyReveal = false
+        XCTAssertFalse(NotificationPlanner.plan(plan).contains { $0.kind == .weeklyReveal })
+        plan.settings.weeklyReveal = true
+        plan.serverSendsPush = true
+        XCTAssertFalse(NotificationPlanner.plan(plan).contains { $0.kind == .weeklyReveal })
+    }
+
     func testRemindMeLaterStaysOutOfQuietHours() {
         let settings = NotificationSettings.defaults // 22:00–08:00
         func snooze(_ iso: String) -> Date { NotificationPlanner.snoozeDate(now: instant(iso), settings: settings, timeZone: ist) }

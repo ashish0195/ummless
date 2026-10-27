@@ -138,6 +138,7 @@ final class NotificationManager: NSObject {
             case .practice, .nudge: content.categoryIdentifier = Category.dailyRep
             case .eventPrep: content.categoryIdentifier = Category.eventPrep
             case .checkIn: content.categoryIdentifier = Category.checkIn
+            case .weeklyReveal: break
             }
             content.interruptionLevel = item.kind == .nudge ? .passive : .active
             let parts = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute], from: item.fireDate)

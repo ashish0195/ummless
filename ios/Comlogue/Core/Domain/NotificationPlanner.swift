@@ -6,6 +6,7 @@ struct LocalNotification: Hashable, Sendable {
         case practice
         case eventPrep = "event_prep"
         case checkIn = "check_in"
+        case weeklyReveal = "weekly_reveal"
         case nudge
 
         /// Lower wins when a day has more than the cap.
@@ -14,7 +15,8 @@ struct LocalNotification: Hashable, Sendable {
             case .eventPrep: return 0
             case .checkIn: return 1
             case .practice: return 2
-            case .nudge: return 3
+            case .weeklyReveal: return 3
+            case .nudge: return 4
             }
         }
     }
@@ -46,6 +48,8 @@ struct NotificationPlanInput: Sendable {
     var pausedUntil: String?
     var weeklyTarget: Int = 3
     var practicedToday = false
+    /// At least one session this week (Monday to Sunday), so Sunday's weekly reveal has something to show.
+    var practicedThisWeek = false
     var upcomingReps: [DailyRepPreview] = []
     var events: [PlannedEvent] = []
     /// The server delivers event prep, check-ins and nudges by push, so the device mustn't duplicate them.
@@ -58,9 +62,9 @@ struct NotificationPlanInput: Sendable {
 /// Rules:
 /// - Practice reminders go out on the chosen days at the chosen time. They follow that explicit choice even
 ///   inside quiet hours, and are skipped on a day already practised or during a break.
-/// - Event prep and check-ins are planned only when the server isn't pushing them.
+/// - Event prep, check-ins and Sunday's weekly reveal are planned only when the server isn't pushing them.
 /// - Re-engagement nudges (3 and 8 days out) are re-planned on every app open, so they only fire if the person
-///   stays away.
+///   stays away, and never on a day that already has a practice reminder.
 /// - Everything except practice respects quiet hours. Each day is capped at two notifications (event prep
 ///   first), and the plan stays well under iOS's 64 pending local notifications.
 enum NotificationPlanner {
@@ -114,10 +118,13 @@ enum NotificationPlanner {
                         }
                         return HabitMath.moment(on: eventDay, at: (8, 0), timeZone: zone)
                     }()
-                    if let fire = morningOf {
+                    let startsAt = HabitMath.parseTime(event.time).flatMap { HabitMath.moment(on: eventDay, at: $0, timeZone: zone) }
+                    // Quiet hours can push an early event's reminder past its start; the evening one covers it then.
+                    if let fire = morningOf.map({ respectingQuietHours($0, settings: input.settings, timeZone: zone) }),
+                       startsAt.map({ fire <= $0.addingTimeInterval(-15 * 60) }) ?? true {
                         planned.append(LocalNotification(
                             id: identifierPrefix + "event_day.\(event.id)", kind: .eventPrep,
-                            fireDate: respectingQuietHours(fire, settings: input.settings, timeZone: zone),
+                            fireDate: fire,
                             title: "Today: \(event.title)",
                             body: "One quick rep to warm up your voice? Two minutes is enough.",
                             deepLink: .event(id: event.id)))
@@ -136,13 +143,33 @@ enum NotificationPlanner {
                 }
             }
 
+            // Sunday evening: the week's before-and-after moments and next week's focus.
+            if input.settings.weeklyReveal, input.practicedThisWeek {
+                let sunday = HabitMath.adding(days: 7 - HabitMath.weekday(input.now, timeZone: zone), to: startOfToday, timeZone: zone)
+                if !isPaused(HabitMath.dayString(sunday, timeZone: zone)),
+                   let fire = HabitMath.moment(on: sunday, at: (18, 0), timeZone: zone) {
+                    planned.append(LocalNotification(
+                        id: identifierPrefix + "weekly_reveal.\(HabitMath.dayString(sunday, timeZone: zone))", kind: .weeklyReveal,
+                        fireDate: respectingQuietHours(fire, settings: input.settings, timeZone: zone),
+                        title: "Your week in review is ready",
+                        body: "See what changed this week and choose next week's focus.",
+                        deepLink: .weeklyReview))
+                }
+            }
+
             // Re-engagement: only fires if the app isn't opened again before then.
             if input.settings.nudges, input.weeklyTarget > 0 {
                 let time = HabitMath.parseTime(input.reminderTime) ?? (hour: 19, minute: 0)
                 for (daysAway, isWelcomeBack) in [(3, false), (8, true)] {
                     let day = HabitMath.adding(days: daysAway, to: startOfToday, timeZone: zone)
                     let dayString = HabitMath.dayString(day, timeZone: zone)
-                    guard !isPaused(dayString), let fire = HabitMath.moment(on: day, at: time, timeZone: zone) else { continue }
+                    guard !isPaused(dayString), let moment = HabitMath.moment(on: day, at: time, timeZone: zone) else { continue }
+                    let fire = respectingQuietHours(moment, settings: input.settings, timeZone: zone)
+                    // A practice reminder that day already says the same thing.
+                    let fireDay = HabitMath.dayString(fire, timeZone: zone)
+                    if planned.contains(where: { $0.kind == .practice && HabitMath.dayString($0.fireDate, timeZone: zone) == fireDay }) {
+                        continue
+                    }
                     let rep = input.upcomingReps.first { $0.date == dayString }
                     let title = isWelcomeBack ? "Welcome back whenever you're ready" : "Your 60-second rep is waiting"
                     let body = isWelcomeBack
@@ -151,7 +178,7 @@ enum NotificationPlanner {
                            ?? "One minute, one small change. No catching up needed.")
                     planned.append(LocalNotification(
                         id: identifierPrefix + "nudge.\(daysAway)", kind: .nudge,
-                        fireDate: respectingQuietHours(fire, settings: input.settings, timeZone: zone),
+                        fireDate: fire,
                         title: title, body: body, deepLink: .daily(date: nil)))
                 }
             }
