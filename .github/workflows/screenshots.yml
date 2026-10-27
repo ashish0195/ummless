@@ -79,6 +79,13 @@ jobs:
             pid=$(xcrun simctl launch --terminate-running-process "$DEVICE" com.comlogue.app -ComlogueScreenshotScene "$1" | awk '{print $NF}') || pid=""
             sleep "${3:-10}"
             xcrun simctl io "$DEVICE" screenshot "docs/screenshots/$2.png"
+            # A blank frame (the launch screen) compresses to well under 150 KB; real screens are far larger.
+            # Give a slow launch one more chance instead of committing an empty screenshot.
+            if [ "$(stat -f %z "docs/screenshots/$2.png")" -lt 150000 ]; then
+              echo "::warning title=Blank screenshot::$1 looked blank; waiting and capturing again"
+              sleep 10
+              xcrun simctl io "$DEVICE" screenshot "docs/screenshots/$2.png"
+            fi
             if ! kill -0 "$pid" 2>/dev/null; then
               echo "::error title=App crashed::The app was not running after opening the $1 scene"
               crashed="$crashed $1"

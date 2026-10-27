@@ -1,0 +1,13 @@
+{
+  "name": "comlogue-instagram",
+  "private": true,
+  "description": "Renders the Comlogue Instagram posts, carousels, stories, reel and profile art from HTML templates.",
+  "type": "module",
+  "scripts": {
+    "render": "node src/render.mjs",
+    "reel": "sh src/reel.sh"
+  },
+  "devDependencies": {
+    "playwright": "1.63.0"
+  }
+}

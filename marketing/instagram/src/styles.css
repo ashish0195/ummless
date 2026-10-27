@@ -1,0 +1,149 @@
+/* Comlogue social templates. Colours and type follow the app: the "aurora" gradient (indigo → violet → coral),
+   calm lavender paper, deep night for contrast, Plus Jakarta Sans for type and Noto Sans Devanagari for Hindi.
+   Minimal by rule: one headline, at most one line under it, one phone, lots of space. */
+
+:root {
+  --indigo: #5146E6;
+  --violet: #8B5CF6;
+  --coral: #F2708A;
+  --ink: #111325;
+  --ink-2: #575B73;
+  --ink-3: #8C90A8;
+  --paper: #F6F5FB;
+  --aurora: linear-gradient(100deg, #5146E6 0%, #8B5CF6 55%, #F2708A 100%);
+  --side: 84px;            /* keeps copy clear of the profile grid's 3:4 crop */
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body { width: 100%; height: 100%; }
+
+body {
+  font-family: 'Plus Jakarta Sans', 'Noto Sans Devanagari', sans-serif;
+  color: var(--ink);
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
+}
+
+.canvas { position: relative; width: 100vw; height: 100vh; overflow: hidden; }
+
+/* ---------------------------------------------------------------- backgrounds */
+
+.bg-aurora {
+  color: #fff;
+  background:
+    radial-gradient(60% 45% at 12% 8%, rgba(129, 117, 255, .95) 0%, rgba(129, 117, 255, 0) 70%),
+    radial-gradient(45% 35% at 100% 0%, rgba(242, 112, 138, .95) 0%, rgba(242, 112, 138, 0) 72%),
+    radial-gradient(70% 50% at 100% 100%, rgba(194, 106, 208, .9) 0%, rgba(194, 106, 208, 0) 70%),
+    linear-gradient(160deg, #4F46E5 0%, #6A4BEF 45%, #8B5CF6 80%, #A160E4 100%);
+}
+
+.bg-night {
+  color: #fff;
+  background:
+    radial-gradient(55% 40% at 88% 10%, rgba(139, 92, 246, .55) 0%, rgba(139, 92, 246, 0) 70%),
+    radial-gradient(50% 40% at 0% 100%, rgba(242, 112, 138, .32) 0%, rgba(242, 112, 138, 0) 70%),
+    linear-gradient(180deg, #121228 0%, #1B1840 55%, #2A2470 100%);
+}
+
+.bg-paper {
+  background:
+    radial-gradient(55% 40% at 100% 0%, rgba(139, 92, 246, .16) 0%, rgba(139, 92, 246, 0) 70%),
+    radial-gradient(55% 40% at 0% 100%, rgba(242, 112, 138, .14) 0%, rgba(242, 112, 138, 0) 70%),
+    var(--paper);
+}
+
+/* Soft glow behind phones */
+.glow {
+  position: absolute; border-radius: 50%; filter: blur(70px); opacity: .7; pointer-events: none;
+  background: radial-gradient(circle, rgba(139, 92, 246, .9), rgba(242, 112, 138, .5) 60%, transparent 70%);
+}
+
+/* ---------------------------------------------------------------- type */
+
+.block { position: absolute; left: var(--side); right: var(--side); }
+
+.center {
+  position: absolute; inset: 0; padding: 0 var(--side);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;
+}
+
+.hero { font-weight: 800; font-size: 100px; line-height: 1.02; letter-spacing: -0.03em; }
+.hero.s { font-size: 86px; }
+.hero.m { font-size: 80px; line-height: 1.06; }
+.hero.xl { font-size: 124px; line-height: .98; }
+
+.h2 { font-weight: 800; font-size: 76px; line-height: 1.04; letter-spacing: -0.035em; }
+
+.sub { margin-top: 30px; font-weight: 600; font-size: 38px; line-height: 1.3; color: var(--ink-2); }
+.on-dark .sub { color: rgba(255, 255, 255, .82); }
+
+.soon {
+  margin-top: 56px; padding: 16px 30px; border-radius: 999px;
+  font-weight: 700; font-size: 28px; line-height: 1;
+  background: rgba(255, 255, 255, .16); border: 2px solid rgba(255, 255, 255, .38); color: #fff;
+}
+
+.num { font-weight: 800; font-size: 150px; line-height: .9; letter-spacing: -0.05em; }
+
+.grad-text {
+  background: var(--aurora);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+/* The same idea on dark backgrounds, where the indigo end would disappear. */
+.grad-soft {
+  background: linear-gradient(100deg, #B7B0FF 0%, #D4BBFF 50%, #FF9AAE 100%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+
+.deva { font-family: 'Noto Sans Devanagari', 'Plus Jakarta Sans', sans-serif; }
+
+/* ---------------------------------------------------------------- pieces */
+
+.brand {
+  position: absolute; display: flex; align-items: center; gap: 14px;
+  font-weight: 800; font-size: 34px; letter-spacing: -0.02em;
+}
+.brand svg { width: 64px; height: 40px; }
+
+.phone {
+  position: absolute;
+  width: var(--w);
+  padding: calc(var(--w) * .03);
+  border-radius: calc(var(--w) * .145);
+  background: linear-gradient(145deg, #34344a 0%, #0c0c14 38%, #1d1d2b 100%);
+  box-shadow:
+    0 60px 120px -30px rgba(30, 20, 100, .6),
+    0 30px 60px -30px rgba(0, 0, 0, .45),
+    inset 0 0 0 3px rgba(255, 255, 255, .07);
+}
+.phone img {
+  display: block; width: 100%; aspect-ratio: 1206 / 2622;
+  border-radius: calc(var(--w) * .118);
+}
+
+/* Instead / Try pairs on tip slides, like the app's "Next time" card */
+.pair { display: flex; flex-direction: column; gap: 18px; }
+.said, .try {
+  border-radius: 30px; padding: 28px 34px; font-size: 34px; line-height: 1.35; font-weight: 600;
+}
+.said { background: #ECEBF5; color: #4A4E66; }
+.said b, .try b { display: block; font-size: 26px; font-weight: 800; margin-bottom: 8px; }
+.said b { color: #8C90A8; }
+.try { background: var(--aurora); color: #fff; }
+.try b { color: rgba(255, 255, 255, .8); }
+.on-dark .said { background: rgba(255, 255, 255, .1); color: rgba(255, 255, 255, .85); }
+.on-dark .said b { color: rgba(255, 255, 255, .55); }
+
+.dots { position: absolute; display: flex; gap: 12px; }
+.dots i { width: 14px; height: 14px; border-radius: 50%; background: rgba(17, 19, 37, .18); }
+.on-dark .dots i { background: rgba(255, 255, 255, .3); }
+.dots i.on { width: 42px; border-radius: 7px; background: var(--aurora); }
+.on-dark .dots i.on { background: #fff; }
+
+.swipe { position: absolute; font-weight: 800; font-size: 28px; display: flex; align-items: center; gap: 12px; }
+
+/* Highlight covers: one glyph in the middle, which Instagram crops to a circle */
+.highlight { width: 420px; height: 420px; }
+.highlight svg { width: 100%; height: 100%; }
