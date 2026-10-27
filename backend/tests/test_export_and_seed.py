@@ -60,7 +60,10 @@ def test_export_contains_everything_but_audio(client, audio_dir):
     assert rep["attempts"][0]["feedback"] is not None
     assert [t["is_user"] for t in rep["attempts"][0]["transcript"]] == [False, True, False]
     assert data["events"][0]["time"] == "11:00"
-    assert data["notifications"][0]["title"] == "Notifications are on" and data["notifications"][0]["push"] == "sent"
+    by_title = {n["title"]: n for n in data["notifications"]}
+    assert by_title["Notifications are on"]["push"] == "sent"
+    # The rep's feedback push waits (the person was in the app when it landed).
+    assert by_title["Feedback on today's rep is ready"]["push"] == "pending"
     device = data["devices"][0]
     assert device["push_token_registered"] is True and TOKEN not in response.text
     assert list(_media_urls(data)) == []
