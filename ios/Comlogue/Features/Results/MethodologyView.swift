@@ -19,7 +19,7 @@ struct MethodologyView: View {
 
                 VStack(alignment: .leading, spacing: 10) {
                     Eyebrow("Levels and confidence")
-                    Text("Each skill gets a level band — Emerging, Developing, Capable, Strong or Exceptional — tied to a written rubric and the moments that support it. Confidence is shown separately: a clear level from one short sample is still low confidence.")
+                    Text("Each skill gets a level band — Emerging, Developing, Capable, Strong or Exceptional — tied to a written rubric and the moments that support it. Confidence is shown separately: a clear level from one short sample is still low confidence. On the chart, a hollow point is an early read and a question mark is a skill we haven't heard yet.")
                         .font(.subheadline)
                         .foregroundStyle(Theme.ink)
                     HStack(spacing: 6) {
@@ -93,7 +93,7 @@ struct HowItWorksLink: View {
         Button {
             show = true
         } label: {
-            Label("How we assess", systemImage: "info.circle")
+            Label("How we measure", systemImage: "info.circle")
                 .font(.footnote.weight(.semibold))
         }
         .foregroundStyle(Theme.indigo)

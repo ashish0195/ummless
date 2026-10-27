@@ -15,19 +15,20 @@ each day that turns practice into a habit. Built for the US and India.
 | **Decisions** | [`docs/PRODUCT_DECISIONS.md`](docs/PRODUCT_DECISIONS.md) |
 | **API contract** | [`docs/API.md`](docs/API.md) |
 | **Architecture** | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) |
+| **Marketing** | [`marketing/instagram/`](marketing/instagram/) · Instagram launch kit |
 
 ## Screenshots
 
 Captured from the iOS Simulator against the demo backend by `.github/workflows/screenshots.yml`. Push a commit
 whose message starts with `[screenshots]` to refresh them.
 
-| Welcome | How to start | Initial assessment | Is this you? |
+| Welcome | One question | How to start | Your profile |
 | :---: | :---: | :---: | :---: |
-| <img src="docs/screenshots/welcome.png" width="190" alt="Welcome screen"> | <img src="docs/screenshots/getStarted.png" width="190" alt="Three ways to start"> | <img src="docs/screenshots/results.png" width="190" alt="Partial communication profile with gaps for missing evidence"> | <img src="docs/screenshots/recording.png" width="190" alt="Speaker confirmation"> |
+| <img src="docs/screenshots/welcome.png" width="190" alt="Welcome screen"> | <img src="docs/screenshots/goal.png" width="190" alt="What do you want to get better at?"> | <img src="docs/screenshots/getStarted.png" width="190" alt="Two ways to start"> | <img src="docs/screenshots/results.png" width="190" alt="Partial communication profile with gaps for missing evidence"> |
 
-| Today | Course | Mission | Spar |
+| Today | Course | Mission | Rehearse |
 | :---: | :---: | :---: | :---: |
-| <img src="docs/screenshots/today.png" width="190" alt="Today"> | <img src="docs/screenshots/course.png" width="190" alt="Course map"> | <img src="docs/screenshots/mission.png" width="190" alt="Mission"> | <img src="docs/screenshots/spar.png" width="190" alt="Sparring with a Brutal persona"> |
+| <img src="docs/screenshots/today.png" width="190" alt="Today"> | <img src="docs/screenshots/course.png" width="190" alt="Course map"> | <img src="docs/screenshots/mission.png" width="190" alt="Mission"> | <img src="docs/screenshots/spar.png" width="190" alt="Rehearsing a hard conversation with an AI partner"> |
 
 | Practice | You | Pro | Dark mode |
 | :---: | :---: | :---: | :---: |
@@ -35,13 +36,13 @@ whose message starts with `[screenshots]` to refresh them.
 
 **The daily habit**
 
-| Today's rep | Rep feedback | Practice plan | Notifications |
+| Today's practice | Feedback | Reminders | Notifications |
 | :---: | :---: | :---: | :---: |
-| <img src="docs/screenshots/daily.png" width="190" alt="Today's 60-second rep"> | <img src="docs/screenshots/dailyFeedback.png" width="190" alt="Feedback on a daily rep"> | <img src="docs/screenshots/plan.png" width="190" alt="Practice plan with days, time and an anchor"> | <img src="docs/screenshots/notifications.png" width="190" alt="Notification settings"> |
+| <img src="docs/screenshots/daily.png" width="190" alt="Today's 1-minute practice"> | <img src="docs/screenshots/dailyFeedback.png" width="190" alt="Feedback on a daily practice"> | <img src="docs/screenshots/plan.png" width="190" alt="Reminders tied to a routine"> | <img src="docs/screenshots/notifications.png" width="190" alt="Notification settings"> |
 
 | Inbox | Panel interview | Interview report | Dark mode |
 | :---: | :---: | :---: | :---: |
-| <img src="docs/screenshots/inbox.png" width="190" alt="In-app inbox"> | <img src="docs/screenshots/group.png" width="190" alt="A panel interview with several AI voices"> | <img src="docs/screenshots/groupReport.png" width="190" alt="Report after a group conversation"> | <img src="docs/screenshots/dark-daily.png" width="190" alt="Daily rep in dark mode"> |
+| <img src="docs/screenshots/inbox.png" width="190" alt="In-app inbox"> | <img src="docs/screenshots/group.png" width="190" alt="A panel interview with several AI voices"> | <img src="docs/screenshots/groupReport.png" width="190" alt="Report after a group conversation"> | <img src="docs/screenshots/dark-daily.png" width="190" alt="Daily practice in dark mode"> |
 
 **Built for India**
 
@@ -49,12 +50,14 @@ whose message starts with `[screenshots]` to refresh them.
 | :---: | :---: | :---: | :---: |
 | <img src="docs/screenshots/todayIndia.png" width="190" alt="Today for an Indian account"> | <img src="docs/screenshots/groupIndia.png" width="190" alt="A campus placement group discussion"> | <img src="docs/screenshots/practiceIndia.png" width="190" alt="Practice with placement scenarios"> | <img src="docs/screenshots/paywallIndia.png" width="190" alt="Paywall in rupees"> |
 
-| Plan with an anchor | Consent in Hindi |
+| Reminders | Consent in Hindi |
 | :---: | :---: |
-| <img src="docs/screenshots/planIndia.png" width="190" alt="Practice plan anchored to morning chai"> | <img src="docs/screenshots/consentIndia.png" width="190" alt="Analysis consent with a Hindi option"> |
+| <img src="docs/screenshots/planIndia.png" width="190" alt="Reminders tied to morning chai"> | <img src="docs/screenshots/consentIndia.png" width="190" alt="Analysis consent with a Hindi option"> |
 
 ## What's inside
 
+- **Simple by design:** a one-time, four-step walkthrough (welcome, one goal, a reminder tied to a routine,
+  consent), then one obvious action per screen, plain words, and detail one tap away.
 - **A daily 1-minute practice:**
   - one short speaking prompt a day, picked for the user's goal, focus skill and market;
   - feedback on one target behaviour, with unlimited retries;
@@ -76,8 +79,9 @@ whose message starts with `[screenshots]` to refresh them.
     Hindi consent text;
   - the US gets behavioural interviews, performance reviews and networking;
   - accents and dialects are never scored.
-- **Three ways to start:** a guided AI conversation (five short activities, 10–15 min), uploading recordings,
-  or recording a live conversation. Each one passes audio-quality, speaker-attribution and evidence checks.
+- **Two ways to start:** a guided AI conversation (five short activities, 10–15 min) or a 1-minute practice.
+  Uploading or recording a real conversation is one tap away. Every analysis passes audio-quality,
+  speaker-attribution and evidence checks.
 - **An evidence-gated communication profile** across Clarity, Structure, Listening, Warmth, Persuasion,
   Concision and Storytelling:
   - Each skill shows a level and, separately, how confident we are, plus the moments that support it.
@@ -88,8 +92,8 @@ whose message starts with `[screenshots]` to refresh them.
   Remix, a Real-life mission and a Weekly reveal. Missions are AI conversations with feedback tied to one
   target behaviour, retries, and before/after comparisons.
 - **Practice tools:**
-  - Spar with AI personas (Kind/Real/Brutal), get a coach whisper between turns, and a report that suggests
-    rewrites of key moments.
+  - Rehearse a conversation with an AI partner (friendly, realistic or tough), with a coach whisper between
+    turns and a report that suggests rewrites of key moments.
   - Shadow great talks line by line with an on-device rhythm match.
   - Rehearse an upcoming event.
   - Get a debrief of a recorded meeting.

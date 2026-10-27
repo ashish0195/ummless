@@ -5,7 +5,7 @@ import SwiftUI
 @MainActor
 struct TalkView: View {
     private enum Mode: String, CaseIterable, Identifiable {
-        case learn = "Learn", shadow = "Shadow"
+        case learn = "Learn", shadow = "Try it"
         var id: String { rawValue }
     }
 
@@ -31,7 +31,6 @@ struct TalkView: View {
             }
         }
         .screenBackground()
-        .navigationTitle(talk?.speaker ?? "Talk")
         .navigationBarTitleDisplayMode(.inline)
         .task { await load() }
         .onDisappear {
@@ -46,8 +45,10 @@ struct TalkView: View {
     private func content(_ talk: Talk) -> some View {
         VStack(spacing: 0) {
             VStack(alignment: .leading, spacing: 10) {
-                Eyebrow(talk.sourceNote, color: Theme.violet)
-                Text(talk.title).font(.titleRounded).foregroundStyle(Theme.ink)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(talk.title).font(.titleRounded).foregroundStyle(Theme.ink)
+                    Text(talk.speaker).font(.subheadline).foregroundStyle(Theme.inkSecondary)
+                }
                 Picker("Mode", selection: $mode) {
                     ForEach(Mode.allCases) { mode in Text(mode.rawValue).tag(mode) }
                 }
@@ -82,14 +83,14 @@ struct TalkView: View {
                 }
                 .card()
                 VStack(alignment: .leading, spacing: 12) {
-                    Eyebrow("Style breakdown")
+                    Eyebrow("Their style")
                     comparisonRow("Pace", theirs: "\(Int(talk.style.wpm)) wpm",
                                   yours: app.profile?.speechPatterns?.wordsPerMinute.map { "\(Int($0)) wpm" })
                     comparisonRow("Pauses", theirs: "\(Formatting.oneDecimal(talk.style.avgPauseSeconds)) s",
                                   yours: app.profile?.speechPatterns?.avgPauseSeconds.map { "\(Formatting.oneDecimal($0)) s" })
                     comparisonRow("Sentence length", theirs: "\(Int(talk.style.avgSentenceWords)) words", yours: nil)
                     if app.profile?.speechPatterns == nil {
-                        Text("Do an assessment to compare with your own numbers.").font(.caption).foregroundStyle(Theme.inkTertiary)
+                        Text("Get your profile to compare with your own.").font(.caption).foregroundStyle(Theme.inkTertiary)
                     }
                 }
                 .card()
@@ -100,7 +101,8 @@ struct TalkView: View {
                     }
                 }
                 .card()
-                Button("Start shadowing") { mode = .shadow }.buttonStyle(.primaryPill)
+                Button("Try it yourself") { mode = .shadow }.buttonStyle(.primaryPill)
+                Text(talk.sourceNote).font(.caption2).foregroundStyle(Theme.inkTertiary)
             }
             .padding(.horizontal, Theme.gutter)
             .padding(.bottom, 20)
@@ -128,7 +130,7 @@ struct TalkView: View {
         } else {
             let line = lines[min(lineIndex, lines.count - 1)]
             VStack(spacing: 18) {
-                Eyebrow("Line \(line.index + 1) of \(lines.count) · repeat after", color: Theme.violet)
+                Eyebrow("Line \(line.index + 1) of \(lines.count)", color: Theme.violet)
                 LineText(text: line.text)
                     .card()
                     .padding(.horizontal, Theme.gutter)

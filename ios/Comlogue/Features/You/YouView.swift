@@ -1,16 +1,15 @@
 import SwiftUI
 
-/// The communication profile (evidence-based, per dimension, no overall score) plus practice progress
-/// kept visibly separate from skill.
+/// "You": the communication profile at a glance (no overall score — each skill stands on its own evidence) and
+/// practice progress, kept visibly separate from skill. Everything else is one tap away, so the screen stays calm.
 struct YouView: View {
     @Environment(AppModel.self) private var app
     @State private var showSettings = false
-    @State private var recordings: [Recording] = []
 
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(alignment: .leading, spacing: 20) {
+                VStack(alignment: .leading, spacing: 24) {
                     HStack {
                         Text("You").font(.displayLarge).foregroundStyle(Theme.ink)
                         Spacer()
@@ -22,16 +21,12 @@ struct YouView: View {
                         LoadingStateView(title: "Loading your profile…").frame(minHeight: 300)
                     }
                     practiceSection
-                    conversationsSection
+                    links
                 }
                 .padding(Theme.gutter)
             }
             .screenBackground()
-            .refreshable {
-                await app.refreshAll()
-                await loadRecordings()
-            }
-            .task(id: app.dataVersion) { await loadRecordings() }
+            .refreshable { await app.refreshAll() }
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button { showSettings = true } label: { Image(systemName: "gearshape.fill") }
@@ -54,84 +49,58 @@ struct YouView: View {
 
     @ViewBuilder
     private func profileSection(_ profile: Profile) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Eyebrow(basisLabel(profile), color: Theme.indigo)
-            Text(profile.headline).font(.titleRounded).foregroundStyle(Theme.ink).fixedSize(horizontal: false, vertical: true)
-            if let summary = profile.summary {
-                Text(summary).font(.subheadline).foregroundStyle(Theme.inkSecondary)
+        if profile.hasAnyAssessed {
+            VStack(alignment: .leading, spacing: 14) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Your communication profile").font(.title3Rounded).foregroundStyle(Theme.ink)
+                    if let line = SkillSummary.line(profile.dimensions, focus: focusDimension) {
+                        Text(line).font(.subheadline).foregroundStyle(Theme.inkSecondary).fixedSize(horizontal: false, vertical: true)
+                    }
+                }
+                CommunicationWeb(dimensions: profile.dimensions)
+                    .frame(maxWidth: 360)
+                    .frame(maxWidth: .infinity)
+                HStack {
+                    if let coverage = SkillSummary.coverage(profile.dimensions) {
+                        Text(coverage).font(.caption).foregroundStyle(Theme.inkTertiary)
+                    }
+                    Spacer()
+                    HowItWorksLink()
+                }
             }
-            if let updated = profile.updatedAt {
-                Text("Updated \(Formatting.relative(updated))").font(.caption).foregroundStyle(Theme.inkTertiary)
+            .card()
+
+            NavigationLink {
+                ProfileDetailsView()
+            } label: {
+                YouRow(symbol: "list.bullet", color: Theme.indigo, title: "Skill by skill",
+                       detail: "Each one, with moments from your conversations")
             }
-        }
-
-        VStack(spacing: 12) {
-            CommunicationWeb(dimensions: profile.dimensions)
-                .frame(maxWidth: 360)
-                .frame(maxWidth: .infinity)
-            WebLegend()
-            Text("No overall score — each skill stands on its own evidence.")
-                .font(.caption)
-                .foregroundStyle(Theme.inkTertiary)
-            HowItWorksLink()
-        }
-        .card()
-
-        if !profile.hasAnyAssessed {
-            EmptyStateView(systemImage: "waveform.badge.plus", title: "Nothing assessed yet",
-                           message: "Talk with an AI partner, upload a conversation or record one to start your profile.",
+            .buttonStyle(.pressableCard)
+        } else {
+            EmptyStateView(systemImage: "waveform.badge.plus", title: "Get your communication profile",
+                           message: "Talk with your AI coach or add a real conversation to see how you come across.",
                            actionTitle: "Get started") { app.present(.getStarted) }
                 .card()
         }
-
-        VStack(spacing: 8) {
-            ForEach(profile.dimensions) { dimension in
-                NavigationLink(value: dimension.dimension) {
-                    DimensionRow(result: dimension)
-                }
-                .buttonStyle(.pressableCard)
-            }
-        }
-
-        if let win = profile.firstWin {
-            RewriteMomentCard(moment: win, title: "Try this next time")
-        }
-        if let patterns = profile.speechPatterns {
-            SpeechPatternsCard(patterns: patterns)
-        }
-        StyleCard(style: profile.style)
-        TwinCard(twin: profile.twin) { step in app.present(.gapFill(activityId: step.activityId)) }
     }
 
-    /// What the profile rests on. The headline below already names the profile, so this adds the evidence count.
-    private func basisLabel(_ profile: Profile) -> String {
-        let assessed = profile.dimensions.filter { $0.status.hasLevel }.count
-        switch profile.basis {
-        case "goal_only": return "Based on your goal so far"
-        case "partial": return "\(assessed) of \(profile.dimensions.count) skills assessed so far"
-        default: return "From your conversations"
-        }
+    /// The skill the course is on now, so "Work on" here matches the Course tab.
+    private var focusDimension: DimensionId? {
+        guard let course = app.course else { return nil }
+        return course.modules.first(where: { $0.id == course.focusModuleId })?.dimension
     }
 
     // MARK: Practice
 
     private var practiceSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            SectionHeader("Practice", subtitle: "What you've done — kept separate from what your skills show.")
+            Text("Your practice").font(.title3Rounded).foregroundStyle(Theme.ink)
             if let practice = app.progress?.practice {
-                HStack(spacing: 12) {
-                    statTile("\(practice.totalSessions)", "sessions")
-                    if let reps = practice.reps {
-                        statTile("\(reps)", reps == 1 ? "daily rep" : "daily reps")
-                    } else {
-                        statTile("\(practice.missionsCompleted)", "missions")
-                    }
-                    statTile("\(practice.minutes)", "minutes")
-                    if let best = practice.bestWeeksOnTarget {
-                        statTile("\(best)", "best run")
-                    } else {
-                        statTile("\(practice.weeksActive)", "weeks")
-                    }
+                HStack(spacing: 10) {
+                    statTile(practice.weeksOnTarget ?? 0, one: "week on target", many: "weeks on target")
+                    statTile(practice.totalSessions, one: "practice", many: "practices")
+                    statTile(practice.minutes, one: "minute", many: "minutes")
                 }
             }
             if let milestones = app.progress?.milestones, !milestones.isEmpty {
@@ -143,68 +112,172 @@ struct YouView: View {
                                 Text(milestone.title).font(.subheadline.weight(.semibold)).foregroundStyle(Theme.ink)
                                 Text(milestone.detail).font(.caption).foregroundStyle(Theme.inkSecondary).lineLimit(2)
                             }
-                            .frame(width: 170, alignment: .leading)
+                            .frame(width: 160, alignment: .leading)
                             .card(padding: 14)
                         }
                     }
                 }
             }
+        }
+    }
+
+    private func statTile(_ value: Int, one: String, many: String) -> some View {
+        VStack(spacing: 2) {
+            Text("\(value)").font(.metric).foregroundStyle(Theme.ink)
+            Text(value == 1 ? one : many)
+                .font(.caption)
+                .foregroundStyle(Theme.inkSecondary)
+                .multilineTextAlignment(.center)
+                .lineLimit(2)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 14)
+        .padding(.horizontal, 6)
+        .background(Theme.surface, in: RoundedRectangle(cornerRadius: Theme.radiusSmall, style: .continuous))
+    }
+
+    // MARK: Everything else, one tap away
+
+    private var links: some View {
+        VStack(spacing: 10) {
             Button {
                 app.present(.weeklyReview)
             } label: {
-                HStack {
-                    Image(systemName: "gift.fill").foregroundStyle(Theme.violet)
-                    Text("Your weekly reveal").font(.subheadline.weight(.semibold)).foregroundStyle(Theme.ink)
-                    Spacer()
-                    Image(systemName: "chevron.right").font(.caption.weight(.bold)).foregroundStyle(Theme.inkTertiary)
-                }
-                .card(padding: 14)
+                YouRow(symbol: "gift.fill", color: Theme.violet, title: "Weekly reveal", detail: "Your week and what changed")
             }
             .buttonStyle(.pressableCard)
             NavigationLink {
                 PracticePlanView()
             } label: {
-                HStack {
-                    Image(systemName: "calendar.badge.clock").foregroundStyle(Theme.indigo)
-                    Text("Practice plan and reminders").font(.subheadline.weight(.semibold)).foregroundStyle(Theme.ink)
-                    Spacer()
-                    Image(systemName: "chevron.right").font(.caption.weight(.bold)).foregroundStyle(Theme.inkTertiary)
-                }
-                .card(padding: 14)
+                YouRow(symbol: "calendar.badge.clock", color: Theme.indigo, title: "Practice plan", detail: "Days, time and reminders")
+            }
+            .buttonStyle(.pressableCard)
+            NavigationLink {
+                ConversationsListView()
+            } label: {
+                YouRow(symbol: "waveform", color: Theme.coral, title: "Your conversations", detail: "Recordings and their feedback")
             }
             .buttonStyle(.pressableCard)
             ShareLink(item: Brand.websiteURL, message: Text(Brand.inviteMessage(market: app.market))) {
-                HStack {
-                    Image(systemName: "person.2.wave.2.fill").foregroundStyle(Theme.coral)
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("Invite a friend").font(.subheadline.weight(.semibold)).foregroundStyle(Theme.ink)
-                        Text("Practice sticks better with someone to compare notes with.")
-                            .font(.caption).foregroundStyle(Theme.inkSecondary)
-                    }
-                    Spacer()
-                    Image(systemName: "square.and.arrow.up").font(.caption.weight(.bold)).foregroundStyle(Theme.inkTertiary)
-                }
-                .card(padding: 14)
+                YouRow(symbol: "person.2.wave.2.fill", color: Theme.mint, title: "Invite a friend",
+                       detail: "Practice sticks better together", trailingSymbol: "square.and.arrow.up")
             }
             .buttonStyle(.pressableCard)
         }
     }
+}
 
-    private func statTile(_ value: String, _ label: String) -> some View {
-        VStack(spacing: 2) {
-            Text(value).font(.metricSmall).foregroundStyle(Theme.ink)
-            Text(label).font(.caption2).foregroundStyle(Theme.inkSecondary)
+/// A big tappable row: icon in a soft circle, a title, one short line, and a chevron.
+private struct YouRow: View {
+    let symbol: String
+    let color: Color
+    let title: String
+    let detail: String
+    var trailingSymbol = "chevron.right"
+
+    var body: some View {
+        HStack(spacing: 14) {
+            Image(systemName: symbol)
+                .font(.headline)
+                .foregroundStyle(color)
+                .frame(width: 44, height: 44)
+                .background(color.opacity(0.12), in: Circle())
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title).font(.headlineRounded).foregroundStyle(Theme.ink).lineLimit(2)
+                    .multilineTextAlignment(.leading)
+                Text(detail).font(.subheadline).foregroundStyle(Theme.inkSecondary).lineLimit(1)
+            }
+            Spacer(minLength: 8)
+            Image(systemName: trailingSymbol).font(.footnote.weight(.bold)).foregroundStyle(Theme.inkTertiary)
         }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 12)
-        .background(Theme.surface, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .padding(16)
+        .background(Theme.surface, in: RoundedRectangle(cornerRadius: Theme.radius, style: .continuous))
     }
+}
 
-    // MARK: Conversations
+/// Skill by skill, plus what the profile rests on: the first win, how you sounded, your style and twin.
+private struct ProfileDetailsView: View {
+    @Environment(AppModel.self) private var app
 
-    private var conversationsSection: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            SectionHeader("Your conversations", trailing: AnyView(
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 16) {
+                if let profile = app.profile {
+                    if let summary = profile.summary {
+                        Text(summary).font(.subheadline).foregroundStyle(Theme.inkSecondary).fixedSize(horizontal: false, vertical: true)
+                    }
+                    VStack(spacing: 8) {
+                        ForEach(profile.dimensions) { dimension in
+                            NavigationLink(value: dimension.dimension) {
+                                DimensionRow(result: dimension)
+                            }
+                            .buttonStyle(.pressableCard)
+                        }
+                    }
+                    if let win = profile.firstWin {
+                        RewriteMomentCard(moment: win, title: "Try this next time")
+                    }
+                    if let patterns = profile.speechPatterns {
+                        SpeechPatternsCard(patterns: patterns)
+                    }
+                    StyleCard(style: profile.style)
+                    TwinCard(twin: profile.twin) { step in app.present(.gapFill(activityId: step.activityId)) }
+                    if let updated = profile.updatedAt {
+                        Text("Updated \(Formatting.relative(updated))").font(.caption).foregroundStyle(Theme.inkTertiary)
+                    }
+                }
+            }
+            .padding(Theme.gutter)
+        }
+        .screenBackground()
+        .navigationTitle("Skill by skill")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+}
+
+/// Recordings you've added, with where each one is. Adding one is in the toolbar; deleting happens inside each.
+private struct ConversationsListView: View {
+    @Environment(AppModel.self) private var app
+    @State private var recordings: [Recording] = []
+    @State private var isLoaded = false
+
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 10) {
+                if isLoaded && recordings.isEmpty {
+                    EmptyStateView(systemImage: "waveform", title: "No conversations yet",
+                                   message: "Upload or record a real conversation to get feedback on it. You can delete any of them.",
+                                   actionTitle: "Upload a recording") { app.present(.upload) }
+                        .card()
+                }
+                ForEach(recordings) { recording in
+                    NavigationLink(value: recording.id) {
+                        HStack(spacing: 12) {
+                            Image(systemName: recording.source == "live" ? "record.circle" : "doc.richtext")
+                                .foregroundStyle(Theme.indigo)
+                                .frame(width: 36, height: 36)
+                                .background(Theme.indigo.opacity(0.1), in: Circle())
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(recording.title).font(.subheadline.weight(.semibold)).foregroundStyle(Theme.ink).lineLimit(1)
+                                Text("\(statusText(recording)) · \(Formatting.relative(recording.createdAt))")
+                                    .font(.caption)
+                                    .foregroundStyle(Theme.inkSecondary)
+                            }
+                            Spacer()
+                            Image(systemName: "chevron.right").font(.caption.weight(.bold)).foregroundStyle(Theme.inkTertiary)
+                        }
+                        .card(padding: 12)
+                    }
+                    .buttonStyle(.pressableCard)
+                }
+            }
+            .padding(Theme.gutter)
+        }
+        .screenBackground()
+        .navigationTitle("Your conversations")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
                 Menu {
                     Button { app.present(.upload) } label: { Label("Upload", systemImage: "square.and.arrow.up") }
                     Button { app.present(.liveRecording) } label: { Label("Record", systemImage: "record.circle") }
@@ -212,48 +285,27 @@ struct YouView: View {
                 } label: {
                     Image(systemName: "plus.circle.fill").font(.title2)
                 }
-            ))
-            if recordings.isEmpty {
-                Text("Recordings you add appear here with their results. You can delete any of them.")
-                    .font(.footnote)
-                    .foregroundStyle(Theme.inkSecondary)
-            }
-            ForEach(recordings) { recording in
-                NavigationLink(value: recording.id) {
-                    HStack(spacing: 12) {
-                        Image(systemName: recording.source == "live" ? "record.circle" : "doc.richtext")
-                            .foregroundStyle(Theme.indigo)
-                            .frame(width: 36, height: 36)
-                            .background(Theme.indigo.opacity(0.1), in: Circle())
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(recording.title).font(.subheadline.weight(.semibold)).foregroundStyle(Theme.ink).lineLimit(1)
-                            Text("\(statusText(recording)) · \(Formatting.relative(recording.createdAt))")
-                                .font(.caption)
-                                .foregroundStyle(Theme.inkSecondary)
-                        }
-                        Spacer()
-                        Image(systemName: "chevron.right").font(.caption.weight(.bold)).foregroundStyle(Theme.inkTertiary)
-                    }
-                    .card(padding: 12)
-                }
-                .buttonStyle(.pressableCard)
+                .accessibilityLabel("Add a conversation")
             }
         }
+        .refreshable { await load() }
+        .task(id: app.dataVersion) { await load() }
     }
 
     private func statusText(_ recording: Recording) -> String {
         switch recording.status {
         case .processing, .assessing: return "Processing"
         case .needsSpeakerConfirmation: return "Needs you: which voice is yours?"
-        case .complete: return recording.result?.status == .complete ? "Assessed" : "Partly assessed"
+        case .complete: return recording.result?.status == .complete ? "Feedback ready" : "Partial feedback"
         case .needsRecovery: return "Couldn't assess — see why"
         case .failed: return "Couldn't open"
         case .noUser: return "You're not in it"
         }
     }
 
-    private func loadRecordings() async {
+    private func load() async {
         recordings = (try? await app.api.recordings()) ?? recordings
+        isLoaded = true
     }
 }
 
@@ -276,7 +328,7 @@ struct DimensionRow: View {
                         .font(.caption)
                         .foregroundStyle(color)
                 } else {
-                    Text("Not enough evidence yet").font(.caption).foregroundStyle(Theme.inkTertiary)
+                    Text("Not heard yet").font(.caption).foregroundStyle(Theme.inkTertiary)
                 }
             }
             Spacer()
@@ -310,7 +362,7 @@ struct DimensionDetailView: View {
                     }
                 }
                 if let result = app.profile?.dimension(dimension) {
-                    DimensionResultCard(result: result) { step in app.present(.gapFill(activityId: step.activityId)) }
+                    DimensionResultCard(result: result, expanded: true) { step in app.present(.gapFill(activityId: step.activityId)) }
                 }
                 let history = app.profile?.history(for: dimension) ?? []
                 if !history.isEmpty {
@@ -390,10 +442,10 @@ struct WeeklyReviewView: View {
             }
             .frame(width: 92, height: 92)
             VStack(alignment: .leading, spacing: 4) {
-                Text("\(review.practice.missionsCompleted) missions · \(review.practice.attempts) attempts · \(review.practice.retries) retries")
+                Text("\(review.practice.minutes) minutes of practice")
                     .font(.subheadline.weight(.semibold))
                     .foregroundStyle(Theme.ink)
-                Text("\(review.practice.minutes) minutes of practice · \(review.practice.realLifeAttempts) real-life")
+                Text("\(review.practice.missionsCompleted) missions · \(review.practice.attempts) attempts · \(review.practice.realLifeAttempts) in real life")
                     .font(.footnote)
                     .foregroundStyle(Theme.inkSecondary)
             }

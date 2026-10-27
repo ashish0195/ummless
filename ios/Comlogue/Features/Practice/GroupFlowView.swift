@@ -83,6 +83,7 @@ struct GroupFlowView: View {
     }
 }
 
+/// The one screen before the room: what it is, who's there, three things that work, and the start button.
 private struct GroupIntroView: View {
     @Environment(AppModel.self) private var app
     let panel: Panel
@@ -90,20 +91,18 @@ private struct GroupIntroView: View {
     let onStart: () -> Void
     let onClose: () -> Void
 
+    /// Three things that matter most, short enough to remember in the room.
     private var tips: [String] {
         if panel.isGroupDiscussion {
             return [
-                "Enter early with one clear point. You don't need to speak first, just soon.",
-                "Add something new rather than agreeing at length.",
-                "Build on people by name: \"Building on Ananya's point…\"",
-                "Bring in someone who hasn't spoken.",
-                "Near the end, help the group land on a conclusion.",
+                "Come in early with one clear point.",
+                "Build on others by name.",
+                "Help the group reach a conclusion.",
             ]
         }
         return [
-            "Answer the person who asked, then include the rest of the panel.",
-            "Use one short story with a result, not a list of duties.",
-            "If two panelists disagree, acknowledge both before you answer.",
+            "Answer the person who asked, then the whole panel.",
+            "Tell one short story with a result.",
             "Close with a question that shows you listened.",
         ]
     }
@@ -118,60 +117,38 @@ private struct GroupIntroView: View {
             .padding(.horizontal, Theme.gutter)
             .padding(.top, 10)
             ScrollView {
-                VStack(alignment: .leading, spacing: 18) {
-                    Eyebrow("\(panel.isGroupDiscussion ? "Group discussion" : "Panel interview") · about \(panel.minutes) min",
-                            color: Color(hex: panel.colorHex))
-                    Text(panel.title).font(.display).foregroundStyle(Theme.ink).fixedSize(horizontal: false, vertical: true)
-                    Text(panel.description).font(.body).foregroundStyle(Theme.inkSecondary)
-                        .fixedSize(horizontal: false, vertical: true)
-
-                    if let topic = panel.topic {
-                        VStack(alignment: .leading, spacing: 6) {
-                            Eyebrow(panel.isGroupDiscussion ? "Topic" : "Role", color: Color(hex: panel.colorHex))
-                            Text(topic).font(.title3Rounded).foregroundStyle(Theme.ink).fixedSize(horizontal: false, vertical: true)
-                        }
-                        .card()
-                    }
-
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("In the room").font(.headlineRounded).foregroundStyle(Theme.ink)
-                        ForEach(panel.participants) { participant in
-                            HStack(spacing: 12) {
-                                Image(systemName: SymbolName.safe(participant.symbol))
-                                    .font(.subheadline.weight(.semibold))
-                                    .foregroundStyle(.white)
-                                    .frame(width: 36, height: 36)
-                                    .background(Color(hex: participant.colorHex), in: Circle())
-                                VStack(alignment: .leading, spacing: 1) {
-                                    Text(participant.name).font(.subheadline.weight(.semibold)).foregroundStyle(Theme.ink)
-                                    Text(participant.role).font(.caption).foregroundStyle(Theme.inkSecondary)
-                                }
-                            }
-                        }
-                        HStack(spacing: 12) {
-                            Image(systemName: "person.fill").font(.subheadline.weight(.semibold)).foregroundStyle(Theme.indigo)
-                                .frame(width: 36, height: 36).background(Theme.indigo.opacity(0.12), in: Circle())
-                            Text("You · \(panel.userRole)").font(.subheadline.weight(.semibold)).foregroundStyle(Theme.ink)
-                        }
-                    }
-                    .card()
-
+                VStack(alignment: .leading, spacing: 22) {
                     VStack(alignment: .leading, spacing: 8) {
-                        Eyebrow("What good looks like", color: Theme.mint)
+                        Text(panel.title).font(.display).foregroundStyle(Theme.ink).fixedSize(horizontal: false, vertical: true)
+                        // The GD topic, or the role being interviewed for.
+                        Text(panel.topic ?? panel.scenario).font(.body).foregroundStyle(Theme.inkSecondary)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                    room
+                    VStack(alignment: .leading, spacing: 10) {
+                        Text("What works").font(.headlineRounded).foregroundStyle(Theme.ink)
                         ForEach(tips, id: \.self) { tip in
-                            Label(tip, systemImage: "checkmark").font(.subheadline).foregroundStyle(Theme.ink)
-                                .fixedSize(horizontal: false, vertical: true)
+                            Label {
+                                Text(tip)
+                            } icon: {
+                                Image(systemName: "checkmark").foregroundStyle(Theme.mint)
+                            }
+                            .font(.subheadline)
+                            .foregroundStyle(Theme.ink)
+                            .fixedSize(horizontal: false, vertical: true)
                         }
                     }
                     .card()
-
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("Difficulty").font(.subheadline.weight(.semibold)).foregroundStyle(Theme.ink)
-                        Picker("Difficulty", selection: $difficulty) {
+                    HStack {
+                        Text("How tough?").font(.subheadline.weight(.semibold)).foregroundStyle(Theme.ink)
+                        Spacer()
+                        Picker("How tough?", selection: $difficulty) {
                             ForEach(Difficulty.allCases) { level in Text(DifficultyCatalog.title(level)).tag(level) }
                         }
-                        .pickerStyle(.segmented)
+                        .pickerStyle(.menu)
+                        .tint(Theme.indigo)
                     }
+                    .card(padding: 14)
                 }
                 .padding(Theme.gutter)
             }
@@ -184,37 +161,46 @@ private struct GroupIntroView: View {
         }
         .screenBackground()
     }
-}
 
-/// A card for one group discussion or panel interview.
-struct PanelCard: View {
-    let panel: Panel
-    let locked: Bool
-
-    var body: some View {
-        let color = Color(hex: panel.colorHex)
-        VStack(alignment: .leading, spacing: 10) {
-            HStack {
-                Image(systemName: SymbolName.safe(panel.symbol, fallback: "person.3.fill"))
-                    .font(.headline)
-                    .foregroundStyle(.white)
-                    .frame(width: 40, height: 40)
-                    .background(color, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+    /// Everyone in the room as a row of avatars, like a group call — names only; roles are read out by VoiceOver.
+    private var room: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            HStack(alignment: .firstTextBaseline) {
+                Text("In the room").font(.headlineRounded).foregroundStyle(Theme.ink)
                 Spacer()
-                if locked { Image(systemName: "lock.fill").font(.caption).foregroundStyle(Theme.inkTertiary) }
+                Text("About \(panel.minutes) min").font(.subheadline).foregroundStyle(Theme.inkSecondary)
             }
-            Text(panel.title).font(.headlineRounded).foregroundStyle(Theme.ink).lineLimit(2)
-                .multilineTextAlignment(.leading)
-            Text(panel.scenario).font(.caption).foregroundStyle(Theme.inkSecondary).lineLimit(2)
-                .multilineTextAlignment(.leading)
-            HStack(spacing: 4) {
-                ForEach(panel.participants.prefix(4)) { participant in
-                    Circle().fill(Color(hex: participant.colorHex)).frame(width: 10, height: 10)
+            HStack(alignment: .top, spacing: 4) {
+                ForEach(panel.participants) { participant in
+                    VStack(spacing: 6) {
+                        Text(String(participant.name.prefix(1)))
+                            .font(.headlineRounded)
+                            .foregroundStyle(.white)
+                            .frame(width: 48, height: 48)
+                            .background(Color(hex: participant.colorHex), in: Circle())
+                        Text(participant.name)
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(Theme.ink)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.8)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .accessibilityElement(children: .ignore)
+                    .accessibilityLabel("\(participant.name), \(participant.role)")
                 }
-                Text("· \(panel.minutes) min").font(.caption2.weight(.semibold)).foregroundStyle(Theme.inkTertiary)
+                VStack(spacing: 6) {
+                    Image(systemName: "person.fill")
+                        .font(.headline)
+                        .foregroundStyle(Theme.indigo)
+                        .frame(width: 48, height: 48)
+                        .background(Theme.indigo.opacity(0.12), in: Circle())
+                    Text("You").font(.caption.weight(.semibold)).foregroundStyle(Theme.ink)
+                }
+                .frame(maxWidth: .infinity)
+                .accessibilityElement(children: .ignore)
+                .accessibilityLabel("You, \(panel.userRole)")
             }
         }
-        .frame(width: 200, alignment: .leading)
-        .card(padding: 16)
+        .card()
     }
 }

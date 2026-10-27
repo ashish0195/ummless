@@ -15,8 +15,12 @@ struct EventDetailView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
-                Eyebrow("\(EventFormatting.kindTitle(event.kind, meta: app.meta)) · \(EventFormatting.when(event))", color: Theme.coral)
-                Text(event.title).font(.display).foregroundStyle(Theme.ink)
+                VStack(alignment: .leading, spacing: 6) {
+                    Text(event.title).font(.display).foregroundStyle(Theme.ink).fixedSize(horizontal: false, vertical: true)
+                    Text("\(EventFormatting.kindTitle(event.kind, meta: app.meta)) · \(EventFormatting.when(event))")
+                        .font(.subheadline)
+                        .foregroundStyle(Theme.inkSecondary)
+                }
                 if let notes = event.notes, !notes.isEmpty {
                     Text(notes).font(.body).foregroundStyle(Theme.inkSecondary)
                 }
@@ -24,25 +28,15 @@ struct EventDetailView: View {
                     reflectionCard
                 }
                 SectionHeader("Rehearsals", subtitle: hasHappened ? "Run the tricky part again while it's fresh."
-                                                                  : "Built for this moment. Start with any of them.")
+                                                                  : "Made for this moment. Start with any of them.")
                 ForEach(event.prep) { item in
-                    VStack(alignment: .leading, spacing: 10) {
-                        HStack {
-                            Text(item.title).font(.headlineRounded).foregroundStyle(Theme.ink)
-                            Spacer()
-                            Tag(text: DifficultyCatalog.title(item.difficulty), color: Theme.coral)
-                        }
-                        Text(item.scenario).font(.subheadline).foregroundStyle(Theme.inkSecondary)
-                        Text("Partner: \(item.partnerRole)").font(.caption).foregroundStyle(Theme.inkTertiary)
-                        Button {
-                            app.present(.spar(SparLaunch(title: item.title, personaId: nil, customScenario: item.scenario,
-                                                         difficulty: item.difficulty, eventId: event.id, prepId: item.id)))
-                        } label: {
-                            Label("Rehearse", systemImage: "play.fill")
-                        }
-                        .buttonStyle(.secondaryPill)
+                    Button {
+                        app.present(.spar(SparLaunch(title: item.title, personaId: nil, customScenario: item.scenario,
+                                                     difficulty: item.difficulty, eventId: event.id, prepId: item.id)))
+                    } label: {
+                        RehearsalRow(item: item)
                     }
-                    .card()
+                    .buttonStyle(.pressableCard)
                 }
                 Button("Remove event", role: .destructive) { confirmDelete = true }
                     .font(.footnote.weight(.semibold))
@@ -102,7 +96,7 @@ extension EventDetailView {
         } else {
             VStack(alignment: .leading, spacing: 10) {
                 Text("How did it go?").font(.title3Rounded).foregroundStyle(Theme.ink)
-                Text("Thirty seconds now makes the next one easier. It counts as practice, and the coach will suggest one thing to try next time.")
+                Text("Thirty seconds now makes the next one easier.")
                     .font(.subheadline).foregroundStyle(Theme.inkSecondary).fixedSize(horizontal: false, vertical: true)
                 Button {
                     showReflection = true
@@ -171,7 +165,7 @@ struct AddEventSheet: View {
             } header: {
                 Text("Details (optional)")
             } footer: {
-                Text("The more you share, the more realistic your rehearsals. We emulate behaviour, never a real person's voice. We'll remind you the evening before and the morning of.")
+                Text("More detail makes the rehearsals more realistic. We copy how people behave, never their voice. We'll remind you the evening before and the morning of.")
             }
             if let error {
                 Section { Text(error).foregroundStyle(Theme.danger) }
@@ -228,6 +222,42 @@ struct AddEventSheet: View {
         } catch {
             self.error = error.userMessage
         }
+    }
+}
+
+/// One rehearsal for an event, started with a tap: what it's about, in a line or two.
+private struct RehearsalRow: View {
+    let item: PrepItem
+
+    var body: some View {
+        HStack(spacing: 14) {
+            Image(systemName: "play.fill")
+                .font(.subheadline.weight(.bold))
+                .foregroundStyle(Theme.coral)
+                .frame(width: 44, height: 44)
+                .background(Theme.coral.opacity(0.12), in: Circle())
+                .accessibilityHidden(true)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(item.title)
+                    .font(.headlineRounded)
+                    .foregroundStyle(Theme.ink)
+                    .multilineTextAlignment(.leading)
+                Text(item.scenario)
+                    .font(.subheadline)
+                    .foregroundStyle(Theme.inkSecondary)
+                    .lineLimit(2)
+                    .multilineTextAlignment(.leading)
+            }
+            Spacer(minLength: 8)
+            Image(systemName: "chevron.right")
+                .font(.footnote.weight(.bold))
+                .foregroundStyle(Theme.inkTertiary)
+                .accessibilityHidden(true)
+        }
+        .padding(18)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Theme.surface, in: RoundedRectangle(cornerRadius: Theme.radius, style: .continuous))
+        .accessibilityHint("Starts a rehearsal with \(item.partnerRole), \(DifficultyCatalog.title(item.difficulty).lowercased())")
     }
 }
 

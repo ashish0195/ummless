@@ -113,8 +113,8 @@ enum ActivityCatalog {
 enum MissionCatalog {
     static func title(_ type: MissionType) -> String {
         switch type {
-        case .learnAndTry: return "Learn & try"
-        case .remix: return "Remix"
+        case .learnAndTry: return "Learn and try"
+        case .remix: return "New situation"
         case .realLife: return "Real-life mission"
         case .weeklyReveal: return "Weekly reveal"
         }
@@ -130,12 +130,13 @@ enum MissionCatalog {
     }
 }
 
+/// Everyday words for how hard a practice partner pushes. The API's values stay `kind`, `real` and `brutal`.
 enum DifficultyCatalog {
     static func title(_ difficulty: Difficulty) -> String {
         switch difficulty {
-        case .kind: return "Kind"
-        case .real: return "Real"
-        case .brutal: return "Brutal"
+        case .kind: return "Friendly"
+        case .real: return "Realistic"
+        case .brutal: return "Tough"
         }
     }
 
@@ -143,7 +144,7 @@ enum DifficultyCatalog {
         switch difficulty {
         case .kind: return "Patient and encouraging."
         case .real: return "Like a real person on a normal day."
-        case .brutal: return "Impatient, skeptical, interrupts."
+        case .brutal: return "Impatient and skeptical. Interrupts."
         }
     }
 }

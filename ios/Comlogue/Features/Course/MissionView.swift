@@ -137,26 +137,32 @@ private struct MissionContent: View {
     @Environment(AppModel.self) private var app
     @Bindable var model: MissionModel
     let mission: Mission
+    @State private var showsHow = false
 
     private var color: Color { Theme.color(for: mission.dimension) }
     private var hasAssessableAttempt: Bool {
         mission.attempts.contains { $0.feedback?.assessable == .yes || $0.feedback?.assessable == .partly }
     }
 
+    /// Plain words for the mission type, shown above the conversation. A real-life mission's conversation is the
+    /// rehearsal before the real thing.
+    private var typeLabel: String {
+        mission.type == .realLife ? "Rehearsal" : MissionCatalog.title(mission.type)
+    }
+
     var body: some View {
         VStack(spacing: 0) {
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
-                    VStack(alignment: .leading, spacing: 8) {
-                        HStack {
-                            Eyebrow("\(MissionCatalog.title(mission.type)) · \(mission.minutes) min", color: color)
-                            Spacer()
-                            DimensionTag(dimension: mission.dimension)
-                        }
+                    VStack(alignment: .leading, spacing: 6) {
                         Text(mission.title).font(.display).foregroundStyle(Theme.ink).fixedSize(horizontal: false, vertical: true)
-                        if mission.isCompleted {
-                            Label("Completed", systemImage: "checkmark.seal.fill").font(.subheadline.weight(.semibold)).foregroundStyle(Theme.mint)
+                        HStack(spacing: 10) {
+                            if mission.isCompleted {
+                                Label("Completed", systemImage: "checkmark.seal.fill").foregroundStyle(Theme.mint)
+                            }
+                            Text("\(mission.minutes) min · \(DimensionCatalog.title(mission.dimension))").foregroundStyle(Theme.inkSecondary)
                         }
+                        .font(.subheadline.weight(.semibold))
                     }
 
                     if let error = model.error { InlineErrorBanner(message: error) { model.error = nil } }
@@ -171,30 +177,26 @@ private struct MissionContent: View {
 
                     infoCard("The situation", icon: "theatermasks.fill", text: mission.context, tint: Theme.inkSecondary)
 
-                    VStack(alignment: .leading, spacing: 6) {
+                    VStack(alignment: .leading, spacing: 8) {
                         Eyebrow("Your target", color: color)
                         Text(mission.targetBehavior).font(.title3Rounded).foregroundStyle(Theme.ink).fixedSize(horizontal: false, vertical: true)
-                        Text(mission.whyItMatters).font(.footnote).foregroundStyle(Theme.inkSecondary)
+                        DetailToggle(title: "How this works", isExpanded: $showsHow, tint: color)
+                        if showsHow {
+                            Text(mission.whyItMatters).font(.footnote).foregroundStyle(Theme.inkSecondary).fixedSize(horizontal: false, vertical: true)
+                            ForEach(Array(mission.steps.enumerated()), id: \.offset) { index, step in
+                                HStack(alignment: .top, spacing: 10) {
+                                    Text("\(index + 1)").font(.caption.weight(.bold)).foregroundStyle(.white)
+                                        .frame(width: 22, height: 22).background(color, in: Circle())
+                                    Text(step).font(.subheadline).foregroundStyle(Theme.ink).fixedSize(horizontal: false, vertical: true)
+                                }
+                            }
+                        }
                     }
                     .padding(18)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .background(color.opacity(0.1), in: RoundedRectangle(cornerRadius: Theme.radius, style: .continuous))
 
                     ExampleCard(example: mission.example, color: color)
-
-                    if !mission.steps.isEmpty {
-                        VStack(alignment: .leading, spacing: 10) {
-                            Eyebrow("How it works")
-                            ForEach(Array(mission.steps.enumerated()), id: \.offset) { index, step in
-                                HStack(alignment: .top, spacing: 10) {
-                                    Text("\(index + 1)").font(.caption.weight(.bold)).foregroundStyle(.white)
-                                        .frame(width: 22, height: 22).background(color, in: Circle())
-                                    Text(step).font(.subheadline).foregroundStyle(Theme.ink)
-                                }
-                            }
-                        }
-                        .card()
-                    }
 
                     if let realLife = mission.realLife {
                         realLifeCard(realLife)
@@ -222,7 +224,7 @@ private struct MissionContent: View {
             ConversationScreen(
                 conversation: conversation,
                 app: app,
-                progressLabel: MissionCatalog.title(mission.type),
+                progressLabel: typeLabel,
                 finishTitle: "See feedback",
                 endTitle: "End & get feedback",
                 onFinished: { result in Task { await model.attemptFinished(result) } },
@@ -260,7 +262,7 @@ private struct MissionContent: View {
 
     private func infoCard(_ title: String, icon: String, text: String, tint: Color) -> some View {
         VStack(alignment: .leading, spacing: 6) {
-            Label(title.uppercased(), systemImage: icon).font(.eyebrow).tracking(1).foregroundStyle(tint)
+            Label(title, systemImage: icon).font(.subheadline.weight(.semibold)).foregroundStyle(tint)
             Text(text).font(.body).foregroundStyle(Theme.ink).fixedSize(horizontal: false, vertical: true)
         }
         .card()
@@ -268,7 +270,7 @@ private struct MissionContent: View {
 
     private func realLifeCard(_ realLife: RealLifeTask) -> some View {
         VStack(alignment: .leading, spacing: 12) {
-            Label("IN REAL LIFE", systemImage: "figure.walk").font(.eyebrow).tracking(1).foregroundStyle(Theme.coral)
+            Label("In real life", systemImage: "figure.walk").font(.subheadline.weight(.semibold)).foregroundStyle(Theme.coral)
             Text(realLife.prompt).font(.title3Rounded).foregroundStyle(Theme.ink).fixedSize(horizontal: false, vertical: true)
             if !realLife.reflectionQuestions.isEmpty {
                 VStack(alignment: .leading, spacing: 4) {
@@ -284,7 +286,7 @@ private struct MissionContent: View {
                 .font(.footnote.weight(.semibold))
                 .foregroundStyle(Theme.indigo)
                 .frame(maxWidth: .infinity)
-            Text("Reflections help shape your goals. They don't change your skill estimates — only assessable audio does.")
+            Text("Reflections shape your goals. Only what we can hear changes your skill levels.")
                 .font(.caption2)
                 .foregroundStyle(Theme.inkTertiary)
         }
@@ -373,7 +375,7 @@ private struct MissionContent: View {
                         Button("Harder challenge") { Task { await model.startAttempt(quick: false, harder: true) } }
                     }
                     if (hasAssessableAttempt || !mission.reflections.isEmpty) && !mission.isCompleted {
-                        Button("Save takeaway & finish") { model.showComplete = true }
+                        Button("Finish") { model.showComplete = true }
                     }
                 }
                 .font(.footnote.weight(.semibold))

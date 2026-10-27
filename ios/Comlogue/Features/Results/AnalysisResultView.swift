@@ -1,25 +1,33 @@
 import SwiftUI
 
 /// Renders an initial assessment / communication profile result for one source (AI conversation or
-/// recording). Partial results are first-class: assessed skills first, then honest "not enough evidence"
-/// cards with the smallest follow-up, then recovery when nothing was assessable.
+/// recording). Kept short on first look: a title, one line, the web, then each skill with one thing to try.
+/// Partial results are first-class: skills we didn't hear get a quick way to fill the gap (never a low score),
+/// and the full explanation and measurements stay one tap away.
 struct AnalysisResultView: View {
     @Environment(AppModel.self) private var app
     let result: AnalysisResult
-    /// What this result is, shown before its context: the first baseline is an "Initial assessment".
+    /// What this result is, shown with its context under "More detail": the first baseline is an "Initial assessment".
     var kind = "Initial assessment"
     var onAction: (ResultAction) -> Void
+    @State private var showsMore = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 18) {
             header
 
             if result.status != .noneAssessed {
-                VStack(spacing: 10) {
+                VStack(spacing: 12) {
                     CommunicationWeb(dimensions: result.dimensions)
                         .frame(maxWidth: 360)
                         .frame(maxWidth: .infinity)
-                    WebLegend()
+                    HStack {
+                        if let coverage = SkillSummary.coverage(result.dimensions) {
+                            Text(coverage).font(.caption).foregroundStyle(Theme.inkTertiary)
+                        }
+                        Spacer()
+                        HowItWorksLink()
+                    }
                 }
                 .card()
             }
@@ -33,47 +41,54 @@ struct AnalysisResultView: View {
             }
 
             if !result.assessedDimensions.isEmpty {
-                SectionHeader("What we could assess", subtitle: "Applies to this conversation — people sound different in different moments.")
+                SectionHeader("Skill by skill")
                 ForEach(result.assessedDimensions) { dimension in
                     DimensionResultCard(result: dimension)
                 }
             }
 
             if !result.missingDimensions.isEmpty {
-                SectionHeader("Not enough evidence yet", subtitle: "Missing evidence is never a low score. Each one has a short way to fill the gap.")
+                SectionHeader("Fill in the gaps", subtitle: "We didn't hear these yet. That's never a low score.")
                 ForEach(result.missingDimensions) { dimension in
                     DimensionResultCard(result: dimension) { step in onAction(.gapFill(step.activityId)) }
                 }
             }
 
-            if let patterns = result.speechPatterns {
-                SpeechPatternsCard(patterns: patterns)
-            }
-
             StyleCard(style: result.style)
+
+            VStack(alignment: .leading, spacing: 14) {
+                DetailToggle(title: showsMore ? "Less detail" : "More detail", isExpanded: $showsMore)
+                if showsMore {
+                    Text("\(kind) · \(result.contextLabel)").font(.caption.weight(.semibold)).foregroundStyle(Theme.inkSecondary)
+                    if SkillSummary.line(result.dimensions) != nil {
+                        Text(result.summary).font(.subheadline).foregroundStyle(Theme.inkSecondary).fixedSize(horizontal: false, vertical: true)
+                    }
+                    if let patterns = result.speechPatterns {
+                        SpeechPatternsCard(patterns: patterns)
+                    }
+                }
+            }
         }
     }
 
     private var header: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack {
-                Eyebrow("\(kind) · \(result.contextLabel)", color: Theme.indigo)
-                Spacer()
+        VStack(alignment: .leading, spacing: 6) {
+            HStack(alignment: .top) {
+                Text(title).font(.display).foregroundStyle(Theme.ink).fixedSize(horizontal: false, vertical: true)
+                Spacer(minLength: 8)
                 if app.isDemo { DemoBadge() }
             }
-            Text(result.headline).font(.display).foregroundStyle(Theme.ink).fixedSize(horizontal: false, vertical: true)
-            Text(result.summary).font(.body).foregroundStyle(Theme.inkSecondary).fixedSize(horizontal: false, vertical: true)
-            HStack {
-                if result.status == .partial {
-                    Label("\(result.assessedDimensions.count) of \(result.dimensions.count) skills assessed so far", systemImage: "circle.lefthalf.filled")
-                        .font(.footnote.weight(.semibold))
-                        .foregroundStyle(Theme.indigo)
-                }
-                Spacer()
-                HowItWorksLink()
-            }
-            .padding(.top, 2)
+            // One line when skills have levels; otherwise the server's explanation is the whole story.
+            Text(SkillSummary.line(result.dimensions) ?? result.summary)
+                .font(.subheadline)
+                .foregroundStyle(Theme.inkSecondary)
+                .fixedSize(horizontal: false, vertical: true)
         }
+    }
+
+    /// The coverage caption under the web already says how much is in, so a partial first profile keeps a short title.
+    private var title: String {
+        result.headline == "Your partial communication profile" ? "Your communication profile" : result.headline
     }
 }
 

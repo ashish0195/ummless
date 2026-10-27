@@ -54,11 +54,74 @@ struct EvidenceMomentRow: View {
     }
 }
 
-/// One dimension with level, separate evidence confidence, and the moments behind it.
+/// One plain line about a set of skill results, so result screens lead with a sentence instead of a paragraph.
+/// Only skills with a level count: a skill we didn't hear is never called weak.
+enum SkillSummary {
+    /// "Strongest: Warmth and Clarity · Work on: Concision". `focus` is the skill the course is on, if any, so the
+    /// line agrees with the Course tab; otherwise "Work on" is the one lowest skill. Ties are never broken at random.
+    static func line(_ dimensions: [DimensionResult], focus: DimensionId? = nil) -> String? {
+        let leveled = dimensions.filter { $0.displayLevel != nil }
+        let levels = leveled.compactMap { $0.displayLevel }
+        guard let top = levels.max(), let low = levels.min() else { return nil }
+        var parts: [String] = []
+        let strongest = leveled.filter { $0.displayLevel == top }
+        if strongest.count <= 2 {
+            parts.append("Strongest: " + join(strongest.map { $0.title }))
+        }
+        let lowest = leveled.filter { $0.displayLevel == low }
+        if let focus, !strongest.contains(where: { $0.dimension == focus }),
+           let next = dimensions.first(where: { $0.dimension == focus }) {
+            parts.append("Work on: " + next.title)
+        } else if low < top, lowest.count == 1 {
+            parts.append("Work on: " + lowest[0].title)
+        }
+        return parts.isEmpty ? nil : parts.joined(separator: " · ")
+    }
+
+    /// "6 of 7 skills so far" while some skills still need evidence; nil once every skill has a level.
+    static func coverage(_ dimensions: [DimensionResult]) -> String? {
+        let leveled = dimensions.filter { $0.status.hasLevel }.count
+        guard leveled > 0, leveled < dimensions.count else { return nil }
+        return "\(leveled) of \(dimensions.count) skills so far"
+    }
+
+    private static func join(_ names: [String]) -> String {
+        guard names.count > 1, let last = names.last else { return names.first ?? "" }
+        return names.dropLast().joined(separator: ", ") + " and " + last
+    }
+}
+
+/// A quiet text toggle for detail most people don't need on first look ("See why", "How this works").
+struct DetailToggle: View {
+    let title: String
+    @Binding var isExpanded: Bool
+    var tint: Color = Theme.indigo
+
+    var body: some View {
+        Button {
+            withAnimation(.easeInOut(duration: 0.2)) { isExpanded.toggle() }
+        } label: {
+            HStack(spacing: 4) {
+                Text(title)
+                Image(systemName: "chevron.down")
+                    .font(.caption2.weight(.bold))
+                    .rotationEffect(.degrees(isExpanded ? 180 : 0))
+            }
+            .font(.footnote.weight(.semibold))
+            .foregroundStyle(tint)
+        }
+        .buttonStyle(.plain)
+        .accessibilityValue(isExpanded ? "Expanded" : "Collapsed")
+    }
+}
+
+/// One skill: its level, a sentence on what we heard, and the one thing to try. Confidence, context, what worked
+/// and the moments behind it are one tap away ("See why"), or shown straight away when `expanded`.
 struct DimensionResultCard: View {
     let result: DimensionResult
-    var expanded: Bool = true
+    var expanded: Bool = false
     var onNextStep: ((NextStep) -> Void)?
+    @State private var showsWhy = false
 
     private var color: Color { Theme.color(for: result.dimension) }
 
@@ -82,7 +145,7 @@ struct DimensionResultCard: View {
                             }
                         }
                     } else {
-                        Text("Not enough evidence yet").font(.subheadline.weight(.semibold)).foregroundStyle(Theme.inkSecondary)
+                        Text("Not heard yet").font(.subheadline.weight(.semibold)).foregroundStyle(Theme.inkSecondary)
                     }
                 }
                 Spacer()
@@ -92,44 +155,26 @@ struct DimensionResultCard: View {
             }
 
             if result.status.hasLevel {
-                HStack(spacing: 8) {
-                    Tag(text: DimensionCatalog.confidenceLabel(result.confidence), color: Theme.inkSecondary, systemImage: "gauge.with.dots.needle.33percent")
-                    if let context = result.contextLabel { Tag(text: context, color: Theme.inkSecondary) }
-                }
                 if let summary = result.summary {
                     Text(summary).font(.subheadline).foregroundStyle(Theme.ink).fixedSize(horizontal: false, vertical: true)
                 }
-                if expanded {
-                    if !result.strengths.isEmpty {
-                        VStack(alignment: .leading, spacing: 6) {
-                            ForEach(result.strengths, id: \.self) { strength in
-                                Label(strength, systemImage: "checkmark")
-                                    .font(.footnote)
-                                    .foregroundStyle(Theme.ink)
-                            }
+                if let change = result.oneChange {
+                    HStack(alignment: .top, spacing: 8) {
+                        Image(systemName: "arrow.turn.down.right").foregroundStyle(color)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Eyebrow("One thing to try", color: color)
+                            Text(change).font(.subheadline).foregroundStyle(Theme.ink).fixedSize(horizontal: false, vertical: true)
                         }
                     }
-                    if let change = result.oneChange {
-                        HStack(alignment: .top, spacing: 8) {
-                            Image(systemName: "arrow.turn.down.right").foregroundStyle(color)
-                            VStack(alignment: .leading, spacing: 2) {
-                                Eyebrow("One thing to try", color: color)
-                                Text(change).font(.subheadline).foregroundStyle(Theme.ink)
-                            }
-                        }
-                        .padding(12)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(color.opacity(0.08), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-                    }
-                    if !result.evidence.isEmpty {
-                        VStack(alignment: .leading, spacing: 10) {
-                            Eyebrow("Moments behind this")
-                            ForEach(Array(result.evidence.enumerated()), id: \.offset) { _, moment in
-                                EvidenceMomentRow(moment: moment, tint: color)
-                            }
-                        }
-                    }
-                    NotQuiteRightButton(target: .dimension(result.dimension, sourceId: result.evidence.first?.sourceId))
+                    .padding(12)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(color.opacity(0.08), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                }
+                if expanded || showsWhy {
+                    why
+                }
+                if !expanded {
+                    DetailToggle(title: showsWhy ? "Hide" : "See why", isExpanded: $showsWhy, tint: color)
                 }
             } else {
                 Text(result.missingReason ?? "We didn't hear a clear chance to show this skill yet. That says nothing about how good you are at it.")
@@ -148,6 +193,32 @@ struct DimensionResultCard: View {
             }
         }
         .card()
+    }
+
+    /// How sure we are and where it comes from, what worked, and the moments behind the level.
+    @ViewBuilder private var why: some View {
+        FlowLayout(spacing: 6, lineSpacing: 6) {
+            Tag(text: DimensionCatalog.confidenceLabel(result.confidence), color: Theme.inkSecondary, systemImage: "gauge.with.dots.needle.33percent")
+            if let context = result.contextLabel { Tag(text: context, color: Theme.inkSecondary) }
+        }
+        if !result.strengths.isEmpty {
+            VStack(alignment: .leading, spacing: 6) {
+                ForEach(result.strengths, id: \.self) { strength in
+                    Label(strength, systemImage: "checkmark")
+                        .font(.footnote)
+                        .foregroundStyle(Theme.ink)
+                }
+            }
+        }
+        if !result.evidence.isEmpty {
+            VStack(alignment: .leading, spacing: 10) {
+                Eyebrow("Moments behind this")
+                ForEach(Array(result.evidence.enumerated()), id: \.offset) { _, moment in
+                    EvidenceMomentRow(moment: moment, tint: color)
+                }
+            }
+        }
+        NotQuiteRightButton(target: .dimension(result.dimension, sourceId: result.evidence.first?.sourceId))
     }
 }
 
@@ -361,29 +432,6 @@ struct RecoveryCard: View {
         case "audio_unclear": return "speaker.slash.fill"
         case "speaker_uncertain": return "person.crop.circle.badge.questionmark"
         default: return "puzzlepiece.extension.fill"
-        }
-    }
-}
-
-/// Legend for the communication web.
-struct WebLegend: View {
-    var body: some View {
-        HStack(spacing: 14) {
-            legendItem(Circle().fill(Theme.indigo), "Assessed")
-            legendItem(Circle().strokeBorder(Theme.indigo, lineWidth: 2), "Early read")
-            HStack(spacing: 5) {
-                Text("?").font(.caption2.weight(.heavy)).foregroundStyle(Theme.inkTertiary)
-                    .frame(width: 12, height: 12)
-                    .background(Circle().fill(Theme.surfaceMuted))
-                Text("Not enough evidence yet").font(.caption2).foregroundStyle(Theme.inkSecondary)
-            }
-        }
-    }
-
-    private func legendItem<S: View>(_ shape: S, _ label: String) -> some View {
-        HStack(spacing: 5) {
-            shape.frame(width: 9, height: 9)
-            Text(label).font(.caption2).foregroundStyle(Theme.inkSecondary)
         }
     }
 }
