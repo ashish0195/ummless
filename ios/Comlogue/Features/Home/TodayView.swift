@@ -9,6 +9,23 @@ struct TodayView: View {
     @State private var isLoading = false
 
     private var events: [UpcomingEvent] { app.events }
+    /// The next event from today on (past ones wait for their check-in).
+    private var nextEvent: UpcomingEvent? {
+        let today = HabitMath.dayString(Date(), timeZone: .current)
+        return events.filter { $0.date >= today }.min { ($0.date, $0.time ?? "") < ($1.date, $1.time ?? "") }
+    }
+    /// An event from the last three days that hasn't been reflected on yet.
+    private var eventToReflectOn: UpcomingEvent? {
+        let today = HabitMath.dayString(Date(), timeZone: .current)
+        let earliest = HabitMath.dayString(HabitMath.adding(days: -3, to: Date(), timeZone: .current), timeZone: .current)
+        return events.filter { $0.reflection == nil && $0.date < today && $0.date >= earliest }.max { $0.date < $1.date }
+    }
+    /// Today or tomorrow: worth more than the rest of the screen.
+    private var eventIsImminent: Bool {
+        guard let next = nextEvent else { return false }
+        let tomorrow = HabitMath.dayString(HabitMath.adding(days: 1, to: Date(), timeZone: .current), timeZone: .current)
+        return next.date <= tomorrow
+    }
     private var isOnBreak: Bool {
         guard let until = app.me?.practiceSettings.pausedUntil else { return false }
         return HabitMath.dayString(Date(), timeZone: .current) <= until
@@ -43,6 +60,12 @@ struct TodayView: View {
                         dailyRepCard(daily, prominent: app.me?.hasResults ?? false || activeAssessment != nil)
                     }
 
+                    if let past = eventToReflectOn {
+                        reflectCard(past)
+                    }
+
+                    if eventIsImminent { eventCard }
+
                     weeklyCard
 
                     if let today = app.course?.today {
@@ -53,7 +76,7 @@ struct TodayView: View {
                         gapCard(gaps)
                     }
 
-                    eventCard
+                    if !eventIsImminent { eventCard }
 
                     if let profile = app.profile, profile.hasAnyAssessed {
                         profileSnapshot(profile)
@@ -341,11 +364,35 @@ struct TodayView: View {
         .card()
     }
 
+    private func reflectCard(_ event: UpcomingEvent) -> some View {
+        Button {
+            app.present(.event(id: event.id))
+        } label: {
+            HStack(spacing: 14) {
+                Image(systemName: "bubble.left.and.text.bubble.right.fill")
+                    .font(.title3)
+                    .foregroundStyle(Theme.violet)
+                    .frame(width: 44, height: 44)
+                    .background(Theme.violet.opacity(0.12), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                VStack(alignment: .leading, spacing: 3) {
+                    Text("How did \(event.title) go?").font(.headlineRounded).foregroundStyle(Theme.ink)
+                        .multilineTextAlignment(.leading)
+                    Text("Thirty seconds to note what worked. It counts as practice.")
+                        .font(.footnote).foregroundStyle(Theme.inkSecondary)
+                }
+                Spacer(minLength: 0)
+                Image(systemName: "chevron.right").foregroundStyle(Theme.inkTertiary)
+            }
+            .card()
+        }
+        .buttonStyle(.pressableCard)
+    }
+
     @ViewBuilder
     private var eventCard: some View {
-        if let next = events.sorted(by: { $0.date < $1.date }).first {
+        if let next = nextEvent {
             VStack(alignment: .leading, spacing: 10) {
-                Eyebrow("Coming up · \(EventFormatting.when(next))", color: Theme.coral)
+                Eyebrow("\(eventIsImminent ? "Soon" : "Coming up") · \(EventFormatting.when(next))", color: Theme.coral)
                 Text(next.title).font(.headlineRounded).foregroundStyle(Theme.ink)
                 if let prep = next.prep.first {
                     Button {

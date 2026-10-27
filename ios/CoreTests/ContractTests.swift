@@ -64,6 +64,53 @@ final class ContractTests: XCTestCase {
         _ = try decode(FeedbackReportResponse.self, "feedback_report.json")
     }
 
+    /// v2: the habit loop, notifications, group conversations and markets.
+    func testHabitNotificationAndMarketFixturesDecode() throws {
+        let device = try decode(DeviceInfo.self, "device.json")
+        XCTAssertTrue(device.id.hasPrefix("dev_"))
+
+        let inbox = try decode(NotificationsResponse.self, "notifications.json")
+        XCTAssertFalse(inbox.items.isEmpty)
+        for item in inbox.items {
+            XCTAssertNotNil(DeepLink(string: item.deepLink), "\(item.deepLink) isn't a link the app can open")
+            XCTAssertNotEqual(item.category, .other, "\(item.id) has a category the app doesn't know")
+        }
+
+        let daily = try decode(DailyRep.self, "daily_rep.json")
+        XCTAssertTrue(daily.attempts.contains { $0.feedback != nil }, "daily_rep.json should include feedback")
+        XCTAssertFalse(daily.targetBehavior.isEmpty)
+        let upcoming = try decode(ItemsResponse<DailyRepPreview>.self, "daily_upcoming.json")
+        XCTAssertFalse(upcoming.items.isEmpty)
+        XCTAssertEqual(upcoming.items.map(\.date), upcoming.items.map(\.date).sorted(), "Upcoming reps are in date order")
+
+        let panels = try decode(PanelsResponse.self, "panels.json")
+        XCTAssertTrue(panels.panels.contains { $0.isGroupDiscussion })
+        XCTAssertTrue(panels.panels.contains { !$0.isGroupDiscussion })
+        for panel in panels.panels {
+            XCTAssertGreaterThanOrEqual(panel.participants.count, 3, "\(panel.id) needs a moderator and participants")
+        }
+        let group = try decode(Conversation.self, "group_conversation.json")
+        XCTAssertTrue(group.isGroup)
+        for turn in group.turns where turn.speaker == .partner {
+            XCTAssertNotNil(group.participant(turn.speakerId), "Turn \(turn.index) has an unknown speaker")
+        }
+        let groupTurn = try decode(TurnResult.self, "turn_result_group.json")
+        XCTAssertFalse(groupTurn.partnerTurns?.isEmpty ?? true)
+
+        let meta = try decode(Meta.self, "meta.json")
+        XCTAssertEqual(meta.pricingByMarket?["in"]?.currency, "INR")
+        XCTAssertEqual(meta.pricingByMarket?["us"]?.currency, "USD")
+        XCTAssertTrue(meta.languages.contains { $0.code == "hinglish" })
+        XCTAssertFalse(meta.eventKinds?.isEmpty ?? true)
+
+        let me = try decode(Me.self, "me.json")
+        XCTAssertNotNil(me.market)
+        XCTAssertNotNil(me.notificationSettings)
+
+        let event = try decode(UpcomingEvent.self, "event.json")
+        XCTAssertNotNil(HabitMath.parseTime(event.time), "event.json should exercise a start time")
+    }
+
     func testProfileNeverHasAnOverallScoreAndMissingEvidenceHasNoLevel() throws {
         let raw = String(decoding: try fixture("profile_partial.json"), as: UTF8.self)
         XCTAssertFalse(raw.contains("overall_score"), "An overall numeric score is deferred by the spec")

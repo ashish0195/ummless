@@ -591,6 +591,9 @@ private struct AnalysisConsentStep: View {
         } message: {
             Text("Every route — AI conversations, uploads and recordings — relies on analysing your voice. You can come back whenever you're ready, and delete your data at any time.")
         }
+        #if DEBUG
+        .onAppear { if ScreenshotScene.current == .consentIndia && hasHindi { readInHindi = true } }
+        #endif
     }
 
     private var defaultBullets: [String] {

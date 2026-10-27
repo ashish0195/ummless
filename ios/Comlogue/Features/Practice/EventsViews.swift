@@ -6,6 +6,11 @@ struct EventDetailView: View {
     @Environment(\.dismiss) private var dismiss
     let event: UpcomingEvent
     @State private var confirmDelete = false
+    @State private var showReflection = false
+    @State private var reflection: Reflection?
+
+    private var hasHappened: Bool { event.hasHappened(today: HabitMath.dayString(Date(), timeZone: .current)) }
+    private var savedReflection: Reflection? { reflection ?? event.reflection }
 
     var body: some View {
         ScrollView {
@@ -15,7 +20,11 @@ struct EventDetailView: View {
                 if let notes = event.notes, !notes.isEmpty {
                     Text(notes).font(.body).foregroundStyle(Theme.inkSecondary)
                 }
-                SectionHeader("Rehearsals", subtitle: "Built for this moment. Start with any of them.")
+                if hasHappened {
+                    reflectionCard
+                }
+                SectionHeader("Rehearsals", subtitle: hasHappened ? "Run the tricky part again while it's fresh."
+                                                                  : "Built for this moment. Start with any of them.")
                 ForEach(event.prep) { item in
                     VStack(alignment: .leading, spacing: 10) {
                         HStack {
@@ -43,6 +52,22 @@ struct EventDetailView: View {
         }
         .screenBackground()
         .navigationBarTitleDisplayMode(.inline)
+        .sheet(isPresented: $showReflection) {
+            ReflectionSheet(questions: ["What did you say first?", "What would you change next time?"]) { text, went in
+                do {
+                    let updated = try await app.api.reflectOnEvent(event.id, text: text, went: went)
+                    reflection = updated.reflection
+                    await app.refreshEvents()
+                    await app.refreshProgress()
+                    app.dataVersion += 1
+                    return updated.reflection
+                } catch {
+                    app.showToast(error.userMessage)
+                    return nil
+                }
+            }
+            .environment(app)
+        }
         .confirmationDialog("Remove this event?", isPresented: $confirmDelete, titleVisibility: .visible) {
             Button("Remove", role: .destructive) {
                 Task {
@@ -53,6 +78,40 @@ struct EventDetailView: View {
                     dismiss()
                 }
             }
+        }
+    }
+}
+
+extension EventDetailView {
+    @ViewBuilder
+    fileprivate var reflectionCard: some View {
+        if let saved = savedReflection {
+            VStack(alignment: .leading, spacing: 10) {
+                HStack {
+                    Eyebrow("Your reflection", color: Theme.violet)
+                    Spacer()
+                    if let went = saved.went { Tag(text: ReflectionSheet.label(for: went), color: Theme.violet) }
+                }
+                Text(saved.text).font(.subheadline).foregroundStyle(Theme.ink).fixedSize(horizontal: false, vertical: true)
+                if let reply = saved.coachReply {
+                    Label(reply, systemImage: "sparkles").font(.subheadline).foregroundStyle(Theme.inkSecondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+            .card()
+        } else {
+            VStack(alignment: .leading, spacing: 10) {
+                Text("How did it go?").font(.title3Rounded).foregroundStyle(Theme.ink)
+                Text("Thirty seconds now makes the next one easier. It counts as practice, and the coach will suggest one thing to try next time.")
+                    .font(.subheadline).foregroundStyle(Theme.inkSecondary).fixedSize(horizontal: false, vertical: true)
+                Button {
+                    showReflection = true
+                } label: {
+                    Label("Reflect on it", systemImage: "bubble.left.and.text.bubble.right.fill")
+                }
+                .buttonStyle(.primaryPill)
+            }
+            .card()
         }
     }
 }

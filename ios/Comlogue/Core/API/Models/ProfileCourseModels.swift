@@ -335,6 +335,11 @@ struct UpcomingEvent: Codable, Hashable, Sendable, Identifiable {
     let createdAt: Date
     /// Optional local start time, "HH:MM".
     let time: String?
+    /// "How did it go?" after the day (v2).
+    let reflection: Reflection?
+
+    /// The day has come (or gone), so it's time to reflect rather than only rehearse.
+    func hasHappened(today: String) -> Bool { date <= today }
 }
 
 struct EventsResponse: Codable, Sendable { let events: [UpcomingEvent] }

@@ -212,6 +212,9 @@ struct PracticeHubView: View {
                                 Text("\(EventFormatting.when(event)) · \(event.prep.count) rehearsals").font(.caption).foregroundStyle(Theme.inkSecondary)
                             }
                             Spacer()
+                            if event.hasHappened(today: HabitMath.dayString(Date(), timeZone: .current)) && event.reflection == nil {
+                                Tag(text: "How did it go?", color: Theme.violet)
+                            }
                             Image(systemName: "chevron.right").font(.caption.weight(.bold)).foregroundStyle(Theme.inkTertiary)
                         }
                         .card(padding: 14)

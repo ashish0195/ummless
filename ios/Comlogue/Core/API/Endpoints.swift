@@ -146,6 +146,9 @@ extension APIClient {
 
     func createEvent(_ request: CreateEventRequest) async throws -> UpcomingEvent { try await post("/v1/events", body: request) }
     func deleteEvent(_ id: String) async throws { try await delete("/v1/events/\(id)") }
+    func reflectOnEvent(_ id: String, text: String, went: String?) async throws -> UpcomingEvent {
+        try await post("/v1/events/\(id)/reflection", body: ReflectionRequest(text: text, went: went))
+    }
 
     // MARK: Progress, review, billing
 
