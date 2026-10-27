@@ -92,13 +92,15 @@ struct TodayView: View {
     private var weekSection: some View {
         let week = app.progress?.practice.thisWeek
         let target = max(week?.target ?? app.me?.practiceSettings.weeklyTarget ?? 3, 1)
-        let sessions = week?.sessions ?? 0
+        // The target is a number of days ("3 days a week"): two sessions on one day count once.
+        let days = week?.days.count ?? 0
+        let met = days >= target
         let run = app.progress?.practice.weeksOnTarget ?? 0
         let summary: String = {
-            if sessions >= target {
+            if met {
                 return run >= 2 ? "Goal met · \(run) weeks in a row" : "Goal met"
             }
-            return "\(sessions) of \(target) days"
+            return "\(days) of \(target) days"
         }()
         return VStack(alignment: .leading, spacing: 14) {
             HStack(alignment: .firstTextBaseline) {
@@ -106,7 +108,7 @@ struct TodayView: View {
                 Spacer()
                 Text(summary)
                     .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(sessions >= target ? Theme.mint : Theme.inkSecondary)
+                    .foregroundStyle(met ? Theme.mint : Theme.inkSecondary)
             }
             WeekStrip(days: week?.days ?? [])
             if let until = breakEnd {

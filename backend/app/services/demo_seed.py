@@ -67,7 +67,7 @@ from ..schemas import (
 )
 from ..timeutil import as_utc, iso_required, local_datetime, short_date, utcnow, week_bounds, week_start
 from . import billing, daily, group, progress, users
-from .analysis import missing_dimension, partial_message
+from .analysis import GAP_MESSAGE, missing_dimension, partial_message
 from .course import COMPARISON_NOTE
 
 FREE_MISSION = "business.m1.learn"
@@ -271,7 +271,7 @@ def _seed_assessment(db: Session, user: User, clock: _Clock) -> Assessment:
                                       "samples.",
                           traits=["Concrete examples", "Checks in with the listener", "Warm, curious questions"],
                           message="An early read from a few conversations — it may change as we hear more."),
-        recovery=Recovery(problem="too_little_evidence", title="Fill the gaps when you're ready", message=message,
+        recovery=Recovery(problem="too_little_evidence", title="Fill the gaps when you're ready", message=GAP_MESSAGE,
                           actions=[RecoveryAction(type="gap_fill", title="Try a short listening scenario",
                                                   activity_id="respond_to_someone"),
                                    RecoveryAction(type="gap_fill", title="Tell a short story", activity_id="tell_a_story"),
@@ -361,7 +361,7 @@ def _seed_complete_recording(db: Session, user: User, clock: _Clock) -> Recordin
                                 end_seconds=14.5, audio_url=None),
         style=StyleResult(status="not_ready", archetype=None, description=None, traits=[],
                           message="We need more conversation to describe your style."),
-        recovery=Recovery(problem="too_little_evidence", title="Fill the gaps when you're ready", message=message,
+        recovery=Recovery(problem="too_little_evidence", title="Fill the gaps when you're ready", message=GAP_MESSAGE,
                           actions=[RecoveryAction(type="gap_fill", title="Make a quick case", activity_id="make_a_case"),
                                    RecoveryAction(type="gap_fill", title="Explain something you know",
                                                   activity_id="explain_interest"),

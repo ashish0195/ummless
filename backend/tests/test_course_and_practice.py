@@ -200,7 +200,7 @@ def test_weekly_review_keeps_estimates_without_new_evidence(client, audio_dir):
     assert "stay as they were" in empty["evidence_note"]
     complete_assessment(client, headers, audio_dir, activity_ids=["tell_a_story"])
     review = client.get("/v1/review/weekly", headers=headers).json()
-    assert review["practice"]["sessions"] == 1
+    assert review["practice"]["sessions"] == 1 and review["practice"]["days"] == 1
     assert any(u["change"] == "new_estimate" for u in review["skill_updates"])
     assert review["highlights"] and review["message"]
     assert review["next_focus_options"]

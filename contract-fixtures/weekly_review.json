@@ -3,16 +3,17 @@
   "week_end": "2026-11-01",
   "practice": {
     "sessions": 7,
+    "days": 1,
     "missions_completed": 0,
     "attempts": 2,
     "retries": 1,
     "real_life_attempts": 1,
     "minutes": 9,
     "target": 3,
-    "met_target": true
+    "met_target": false
   },
   "highlights": [
-    "7 practice session(s) this week; weekly target 3.",
+    "Practised on 1 day(s) this week (7 session(s)); weekly target 3 day(s).",
     "2 mission attempt(s), 1 retry.",
     "1 real-life mission(s)."
   ],
@@ -97,49 +98,43 @@
       "id": "first_rep",
       "title": "First practice",
       "detail": "One prompt, one minute — that's how the habit starts.",
-      "achieved_at": "2026-10-27T10:18:16Z"
+      "achieved_at": "2026-10-27T11:04:25Z"
     },
     {
       "id": "first_spar",
       "title": "First spar",
       "detail": "You held your ground with an AI sparring partner.",
-      "achieved_at": "2026-10-27T10:18:15Z"
+      "achieved_at": "2026-10-27T11:04:23Z"
     },
     {
       "id": "first_real_life",
       "title": "First real-life attempt",
       "detail": "You used a skill in an actual conversation.",
-      "achieved_at": "2026-10-27T10:18:15Z"
+      "achieved_at": "2026-10-27T11:04:23Z"
     },
     {
       "id": "first_retry",
       "title": "Tried it again",
       "detail": "You retried a mission — that's how skills stick.",
-      "achieved_at": "2026-10-27T10:18:12Z"
-    },
-    {
-      "id": "weekly_target:2026-10-26",
-      "title": "Weekly target met",
-      "detail": "You hit your practice target this week.",
-      "achieved_at": "2026-10-27T10:18:09Z"
+      "achieved_at": "2026-10-27T11:04:20Z"
     },
     {
       "id": "first_upload",
       "title": "First real conversation",
       "detail": "You added a real conversation for feedback.",
-      "achieved_at": "2026-10-27T10:18:07Z"
+      "achieved_at": "2026-10-27T11:04:16Z"
     },
     {
       "id": "first_conversation",
       "title": "First conversation",
       "detail": "You finished your first AI conversation.",
-      "achieved_at": "2026-10-27T10:18:04Z"
+      "achieved_at": "2026-10-27T11:04:13Z"
     },
     {
       "id": "first_profile",
       "title": "First insight",
       "detail": "Your communication web has its first evidence-backed point.",
-      "achieved_at": "2026-10-27T10:18:04Z"
+      "achieved_at": "2026-10-27T11:04:13Z"
     }
   ],
   "message": "Next up: Make your point land. One short session is enough to keep going."

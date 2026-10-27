@@ -113,7 +113,8 @@ def test_demo_seed_v2(client, market):
 
     practice = client.get("/v1/progress", headers=headers).json()["practice"]
     assert practice["weeks_on_target"] >= 3 and practice["reps"] >= 8
-    assert practice["this_week"]["met"] is True and practice["this_week"]["days"]
+    week = practice["this_week"]
+    assert week["days"] and week["met"] is (len(week["days"]) >= week["target"])
 
     inbox = client.get("/v1/notifications", headers=headers).json()
     assert len(inbox["items"]) == 4 and inbox["unread_count"] == 2

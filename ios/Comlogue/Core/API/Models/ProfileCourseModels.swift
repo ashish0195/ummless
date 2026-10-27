@@ -404,6 +404,8 @@ struct ProgressSummary: Codable, Sendable {
 
 struct WeeklyPractice: Codable, Hashable, Sendable {
     let sessions: Int
+    /// Days practised: the unit of `target`. Older servers didn't send it.
+    let days: Int?
     let missionsCompleted: Int
     let attempts: Int
     let retries: Int

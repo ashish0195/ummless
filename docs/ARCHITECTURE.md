@@ -32,8 +32,8 @@ flowchart LR
 | Core | `Comlogue/Core` | Foundation-only. Codable models that mirror `docs/API.md`, `APIClient` (async/await, multipart, re-auth), `AudioMath` (VAD, pauses, quality issues, rhythm match). Also built as a SwiftPM package (`ios/Package.swift`) and tested on Linux. |
 | Platform | `Comlogue/Platform` | AVFoundation recorder and player, on-device speech fallback (with Indian English voices for India), Keychain identity, StoreKit 2, `NotificationManager` (permission, APNs registration, categories and actions, local scheduling, badge), `WidgetBridge`, `CalendarScanner` (EventKit), haptics. |
 | Design system | `Comlogue/DesignSystem` | Theme tokens (light/dark), pill buttons, cards, `VoiceOrb`, `CommunicationWeb`, `SuggestionTimerRing`, recording status bar. |
-| Features | `Comlogue/Features/*` | Onboarding (with the practice plan and 18+ consent), conversation engine, assessment, recordings, results, today, daily rep, inbox, course and missions, practice (spar, group discussions and panels, talks, events), you, settings (practice plan, notifications), paywall. |
-| Widgets | `ComlogueWidgets`, `Shared` | WidgetKit extension: today's rep (home and lock screen) and the week. It reads a `WidgetSnapshot` the app writes to the App Group `group.com.comlogue.app`, so it never needs the network or the token. `Shared` is compiled into both targets and tested as a SwiftPM target. |
+| Features | `Comlogue/Features/*` | Onboarding (a one-time, four-step walkthrough with the reminder routine and 18+ consent), conversation engine, assessment, recordings, results, today, daily practice, inbox, course and missions, practice (spar, group discussions and panels, talks, events), you, settings (practice plan, notifications), paywall. |
+| Widgets | `ComlogueWidgets`, `Shared` | WidgetKit extension: today's practice (home and lock screen) and the week. It reads a `WidgetSnapshot` the app writes to the App Group `group.com.comlogue.app`, so it never needs the network or the token. `Shared` is compiled into both targets and tested as a SwiftPM target. |
 
 Key behaviours:
 
@@ -41,7 +41,7 @@ Key behaviours:
 - **The timer never stops the recording.** `AudioRecorder` has no auto-stop. The ring turns into an overtime counter.
 - **Honest recovery.** Unusable turns or recordings produce specific issues and recovery actions, never a score.
 - **Configurable server.** The `API_BASE_URL` build setting (Debug defaults to `http://localhost:8000`) can be overridden at runtime in Settings → Developer → Server.
-- **Reminders are planned on the device.** `NotificationPlanner` (pure, tested on Linux) turns the practice plan, the next week's daily-rep prompts, events and settings into at most 48 local notifications:
+- **Reminders are planned on the device.** `NotificationPlanner` (pure, tested on Linux) turns the practice plan, the next week's daily-practice prompts, events and settings into at most 48 local notifications:
   - quiet hours, at most two a day, nudges that only fire if the app stays closed;
   - re-planned on every refresh.
   - When the server reports `push_enabled`, it delivers event prep, check-ins, nudges and the weekly reveal by push, and the device keeps only practice reminders.

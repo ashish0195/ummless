@@ -1143,6 +1143,7 @@ class Progress(APIModel):
 
 class WeekPractice(APIModel):
     sessions: int
+    days: int  # days practised: the unit of `target`
     missions_completed: int
     attempts: int
     retries: int

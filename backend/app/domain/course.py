@@ -136,7 +136,7 @@ def _module(track_id: str, index: int, spec: dict[str, Any]) -> ModuleDef:
             module_id=module_id,
             track_id=track_id,
             type="remix",
-            title=spec["remix"].get("title", f"Remix: {spec['title'].lower()}"),
+            title=spec["remix"].get("title", f"{spec['title']}, somewhere new"),
             minutes=5,
             context=spec["remix"]["context"],
             suggested_seconds=spec.get("seconds", 60),
@@ -224,7 +224,7 @@ _CONTENT: dict[str, list[dict[str, Any]]] = {
                 },
             },
             "remix": {
-                "title": "Remix: the hallway question",
+                "title": "The hallway question",
                 "context": "Your manager stops you in the hallway: should the team delay the launch by a week?",
                 "partner": {
                     "name": "Elena", "role": "Your manager", "voice": "sage", "symbol": "figure.walk",
@@ -275,7 +275,7 @@ _CONTENT: dict[str, list[dict[str, Any]]] = {
                 },
             },
             "remix": {
-                "title": "Remix: the worried client",
+                "title": "The worried client",
                 "context": "A worried client calls to ask whether their delivery is still on track.",
                 "partner": {
                     "name": "Tom", "role": "Client", "voice": "echo", "symbol": "phone", "color": "#FF8A3D",
@@ -325,7 +325,7 @@ _CONTENT: dict[str, list[dict[str, Any]]] = {
                 },
             },
             "remix": {
-                "title": "Remix: pushback in the room",
+                "title": "Pushback in the room",
                 "context": "A peer disagrees with your plan in front of the team.",
                 "partner": {
                     "name": "Ravi", "role": "Peer in a meeting", "voice": "ash", "symbol": "person.3",
@@ -374,7 +374,7 @@ _CONTENT: dict[str, list[dict[str, Any]]] = {
                 },
             },
             "remix": {
-                "title": "Remix: the one-to-one",
+                "title": "The one-to-one",
                 "context": "A one-to-one with a direct report who seems disengaged.",
                 "partner": {
                     "name": "Chris", "role": "Direct report", "voice": "echo",
@@ -424,7 +424,7 @@ _CONTENT: dict[str, list[dict[str, Any]]] = {
                 },
             },
             "remix": {
-                "title": "Remix: your freelance rate",
+                "title": "Your freelance rate",
                 "context": "A prospective client asks what you'd charge for a project.",
                 "partner": {
                     "name": "Sofia", "role": "Prospective client", "voice": "shimmer", "symbol": "doc.text",
@@ -471,7 +471,7 @@ _CONTENT: dict[str, list[dict[str, Any]]] = {
                 },
             },
             "remix": {
-                "title": "Remix: the vendor renewal",
+                "title": "The vendor renewal",
                 "context": "A vendor wants to raise their contract price at renewal.",
                 "partner": {
                     "name": "Mark", "role": "Vendor account manager", "voice": "ash", "symbol": "building.2",
@@ -517,7 +517,7 @@ _CONTENT: dict[str, list[dict[str, Any]]] = {
                 },
             },
             "remix": {
-                "title": "Remix: a friend's favor",
+                "title": "A friend's favor",
                 "context": "A friend asks to borrow a significant amount of money.",
                 "partner": {
                     "name": "Jess", "role": "Friend", "voice": "coral", "symbol": "heart.circle", "color": "#10B3A3",
@@ -562,7 +562,7 @@ _CONTENT: dict[str, list[dict[str, Any]]] = {
                 },
             },
             "remix": {
-                "title": "Remix: closing with your landlord",
+                "title": "Closing with your landlord",
                 "context": "You and your landlord have agreed on a smaller increase.",
                 "partner": {
                     "name": "Rosa", "role": "Landlord", "voice": "shimmer", "symbol": "house", "color": "#2F9BFF",
@@ -611,7 +611,7 @@ _CONTENT: dict[str, list[dict[str, Any]]] = {
                 },
             },
             "remix": {
-                "title": "Remix: the coffee machine",
+                "title": "The coffee machine",
                 "context": "Small talk with a colleague you don't know well, at the coffee machine.",
                 "partner": {
                     "name": "Amara", "role": "Colleague from another team", "voice": "coral",
@@ -661,7 +661,7 @@ _CONTENT: dict[str, list[dict[str, Any]]] = {
                 },
             },
             "remix": {
-                "title": "Remix: the new teammate",
+                "title": "The new teammate",
                 "context": "A new teammate asks what you do outside work.",
                 "partner": {
                     "name": "Kai", "role": "New teammate", "voice": "ash", "symbol": "person.badge.plus",
@@ -705,7 +705,7 @@ _CONTENT: dict[str, list[dict[str, Any]]] = {
                 },
             },
             "remix": {
-                "title": "Remix: \"so, what do you do?\"",
+                "title": "\"so, what do you do?\"",
                 "context": "At a networking event, someone asks what you do.",
                 "partner": {
                     "name": "Morgan", "role": "Event attendee", "voice": "sage",
@@ -749,7 +749,7 @@ _CONTENT: dict[str, list[dict[str, Any]]] = {
                 },
             },
             "remix": {
-                "title": "Remix: Monday morning",
+                "title": "Monday morning",
                 "context": "A colleague asks how your weekend went.",
                 "partner": {
                     "name": "Sam", "role": "Colleague", "voice": "ash", "symbol": "sun.horizon", "color": "#FF8A3D",
@@ -794,7 +794,7 @@ _CONTENT: dict[str, list[dict[str, Any]]] = {
                 },
             },
             "remix": {
-                "title": "Remix: the interview story",
+                "title": "The interview story",
                 "context": "An interviewer asks you to describe a challenge you faced at work.",
                 "partner": {
                     "name": "Priya", "role": "Interviewer", "voice": "sage", "symbol": "person.crop.rectangle",
@@ -836,7 +836,7 @@ _CONTENT: dict[str, list[dict[str, Any]]] = {
                 },
             },
             "remix": {
-                "title": "Remix: the trip story",
+                "title": "The trip story",
                 "context": "At a family dinner, someone asks about your recent trip.",
                 "partner": {
                     "name": "Lena", "role": "Relative at dinner", "voice": "shimmer", "symbol": "airplane",
@@ -879,7 +879,7 @@ _CONTENT: dict[str, list[dict[str, Any]]] = {
                 },
             },
             "remix": {
-                "title": "Remix: your first week",
+                "title": "Your first week",
                 "context": "A new colleague asks what your first week at the company was like.",
                 "partner": {
                     "name": "Kai", "role": "New colleague", "voice": "ash", "symbol": "building",
@@ -923,7 +923,7 @@ _CONTENT: dict[str, list[dict[str, Any]]] = {
                 },
             },
             "remix": {
-                "title": "Remix: the farewell toast",
+                "title": "The farewell toast",
                 "context": "You're giving a short toast at a colleague's farewell.",
                 "partner": {
                     "name": "Dana", "role": "Party host", "voice": "shimmer", "symbol": "wineglass",
@@ -972,7 +972,7 @@ _CONTENT: dict[str, list[dict[str, Any]]] = {
                 },
             },
             "remix": {
-                "title": "Remix: the wedding toast opener",
+                "title": "The wedding toast opener",
                 "context": "You're opening a toast at a friend's wedding.",
                 "partner": {
                     "name": "Sam", "role": "Wedding guest", "voice": "ash", "symbol": "heart.text.square",
@@ -1017,7 +1017,7 @@ _CONTENT: dict[str, list[dict[str, Any]]] = {
                 },
             },
             "remix": {
-                "title": "Remix: news for a nervous team",
+                "title": "News for a nervous team",
                 "context": "You're explaining an organizational change to a nervous team.",
                 "partner": {
                     "name": "Chris", "role": "Team member", "voice": "echo", "symbol": "person.3",
@@ -1061,7 +1061,7 @@ _CONTENT: dict[str, list[dict[str, Any]]] = {
                 },
             },
             "remix": {
-                "title": "Remix: the neighborhood pitch",
+                "title": "The neighborhood pitch",
                 "context": "Pitch a community project at a neighborhood meeting.",
                 "partner": {
                     "name": "Walter", "role": "Neighbor", "voice": "onyx", "symbol": "house.and.flag",
@@ -1108,7 +1108,7 @@ _CONTENT: dict[str, list[dict[str, Any]]] = {
                 },
             },
             "remix": {
-                "title": "Remix: the skeptical town hall",
+                "title": "The skeptical town hall",
                 "context": "A town-hall Q&A where an employee asks a skeptical question.",
                 "partner": {
                     "name": "Maria", "role": "Employee", "voice": "shimmer", "symbol": "person.wave.2",

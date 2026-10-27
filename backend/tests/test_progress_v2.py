@@ -104,10 +104,11 @@ def test_welcome_back_after_a_week_away(client):
 
 
 def test_weekly_target_and_run_milestones_use_local_weeks(client):
-    user_id = _user(client, created_at=utcnow() - timedelta(weeks=4))
+    # A one-day target, so this week is met today whatever weekday the test runs on.
+    user_id = _user(client, created_at=utcnow() - timedelta(weeks=4), practice_settings={"weekly_target": 1})
     last_monday = week_start(utcnow(), KOLKATA) - timedelta(days=7)
     with client.app.state.services.session_factory() as db:
-        for offset in (0, 2, 4):  # last week met the target; this week is met by the reps below
+        for offset in (0, 2, 4):  # last week met the target; this week is met by the practices below
             db.add(ActivityLog(user_id=user_id, type="spar_session", title="S", minutes=30,
                                created_at=local_datetime(last_monday + timedelta(days=offset), time(8, 30), KOLKATA)))
         db.commit()
@@ -117,3 +118,15 @@ def test_weekly_target_and_run_milestones_use_local_weeks(client):
         out = {m.id for m in progress.milestones_out(db, user_id)}
     assert "weeks_on_target_2" in out and "minutes_60" in out and "first_rep" in out
     assert any(m.startswith("weekly_target:") for m in out)
+
+
+def test_the_weekly_target_counts_days_not_sessions(client):
+    user_id = _user(client)
+    monday = _week(0, (0,))[0]
+    _sessions(client, user_id, [monday, monday + timedelta(hours=2), monday + timedelta(hours=4)])
+    practice = _build(client, user_id).practice
+    assert practice.this_week.sessions == 3 and practice.this_week.days == [1]
+    assert practice.this_week.met is False and practice.weeks_on_target == 0
+    _sessions(client, user_id, _week(0, (1, 2)))
+    practice = _build(client, user_id).practice
+    assert practice.this_week.days == [1, 2, 3] and practice.this_week.met is True and practice.weeks_on_target == 1

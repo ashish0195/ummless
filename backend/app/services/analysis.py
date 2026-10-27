@@ -48,6 +48,8 @@ from . import media as media_service
 log = logging.getLogger("comlogue.analysis")
 
 STYLE_NOT_READY = "We need more conversation to describe your style."
+# The recovery card stays short; the full explanation is the result summary, one tap away in the app.
+GAP_MESSAGE = "Some skills need a little more to go on. A few minutes fills the gaps, or keep what you have."
 
 
 @dataclass
@@ -354,7 +356,7 @@ def run_analysis(svc: AppServices, db: Session, inp: AnalysisInput) -> AnalysisO
         actions.append(RecoveryAction(type="upload_another", title="Upload another conversation", activity_id=None))
         actions.append(RecoveryAction(type="continue", title="Continue with my current results", activity_id=None))
         recovery = Recovery(problem="too_little_evidence", title="Fill the gaps when you're ready",
-                            message=summary, actions=actions, extra_minutes=extra or None)
+                            message=GAP_MESSAGE, actions=actions, extra_minutes=extra or None)
     else:
         status = "complete"
         headline = judgement.headline or "Your initial communication profile"

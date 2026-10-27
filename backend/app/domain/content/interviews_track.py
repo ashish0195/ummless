@@ -42,7 +42,7 @@ INTERVIEWS_TRACK: list[dict[str, Any]] = [
             },
         },
         "remix": {
-            "title": "Remix: the elevator version",
+            "title": "The elevator version",
             "context": "You bump into a senior engineer from the company at a meetup. They ask what you're about.",
             "partner": {
                 "name": "Sam", "role": "Senior engineer", "voice": "ash", "symbol": "figure.walk",
@@ -93,7 +93,7 @@ INTERVIEWS_TRACK: list[dict[str, Any]] = [
             },
         },
         "remix": {
-            "title": "Remix: the failure question",
+            "title": "The failure question",
             "context": "A different interviewer asks about a time something you owned went wrong.",
             "partner": {
                 "name": "Ben", "role": "Senior engineer", "voice": "echo", "symbol": "exclamationmark.triangle",
@@ -146,7 +146,7 @@ INTERVIEWS_TRACK: list[dict[str, Any]] = [
             },
         },
         "remix": {
-            "title": "Remix: strengths and weaknesses",
+            "title": "Strengths and weaknesses",
             "context": "A recruiter on a screening call asks for your biggest strength and a real weakness.",
             "partner": {
                 "name": "Ethan", "role": "Recruiter", "voice": "ash", "symbol": "phone", "color": "#2F9BFF",
@@ -200,7 +200,7 @@ INTERVIEWS_TRACK: list[dict[str, Any]] = [
             },
         },
         "remix": {
-            "title": "Remix: the final handshake",
+            "title": "The final handshake",
             "context": "At the end of a panel interview, the chair asks whether there's anything you'd like to add.",
             "partner": {
                 "name": "Robert", "role": "Panel chair", "voice": "onyx", "symbol": "hand.wave", "color": "#6366F1",

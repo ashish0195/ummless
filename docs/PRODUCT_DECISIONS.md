@@ -219,7 +219,8 @@ habit stick, and avoided the patterns that make people feel guilty and leave.
   a time, and an optional *anchor* ("After my morning chai", "After my morning coffee"). Tying practice to an
   existing routine is an implementation intention, one of the best-supported habit techniques. Reminders follow
   the plan.
-- **Weeks on target instead of daily streaks.** Progress is "3 of 3 this week" plus a Monday-to-Sunday dot strip.
+- **Weeks on target instead of daily streaks.** The target is a number of days ("3 days a week"), so two sessions
+  on one day count once. Progress is "2 of 3 days" plus a Monday-to-Sunday dot strip.
   The run counts consecutive weeks that met the target. A missed day never resets anything, and Monday is a
   fresh start.
 - **Planned breaks.** Exams, travel, a wedding in the family: a break of 1 or 2 weeks (or until a date) pauses

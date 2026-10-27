@@ -57,8 +57,9 @@ struct EvidenceMomentRow: View {
 /// One plain line about a set of skill results, so result screens lead with a sentence instead of a paragraph.
 /// Only skills with a level count: a skill we didn't hear is never called weak.
 enum SkillSummary {
-    /// "Strongest: Warmth and Clarity · Work on: Concision". `focus` is the skill the course is on, if any, so the
-    /// line agrees with the Course tab; otherwise "Work on" is the one lowest skill. Ties are never broken at random.
+    /// "Strongest: Warmth and Clarity" and "Work on: Concision", one per line so neither breaks mid-phrase.
+    /// `focus` is the skill the course is on, if any, so the line agrees with the Course tab; otherwise "Work on" is
+    /// the one lowest skill. Ties are never broken at random.
     static func line(_ dimensions: [DimensionResult], focus: DimensionId? = nil) -> String? {
         let leveled = dimensions.filter { $0.displayLevel != nil }
         let levels = leveled.compactMap { $0.displayLevel }
@@ -75,7 +76,7 @@ enum SkillSummary {
         } else if low < top, lowest.count == 1 {
             parts.append("Work on: " + lowest[0].title)
         }
-        return parts.isEmpty ? nil : parts.joined(separator: " · ")
+        return parts.isEmpty ? nil : parts.joined(separator: "\n")
     }
 
     /// "6 of 7 skills so far" while some skills still need evidence; nil once every skill has a level.

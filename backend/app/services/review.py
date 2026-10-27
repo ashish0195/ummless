@@ -28,7 +28,7 @@ from ..models import (
     WeeklyReviewCache,
 )
 from ..schemas import BeforeAfter, FocusOption, SkillUpdate, WeeklyReview, WeekPractice
-from ..timeutil import as_utc, week_bounds, week_start
+from ..timeutil import as_utc, local_date, week_bounds, week_start
 from . import course as course_service
 from . import progress, users
 
@@ -43,15 +43,17 @@ def build(svc: AppServices, db: Session, user: User) -> WeeklyReview:
     attempts = [a for a in db.scalars(select(MissionAttempt).where(MissionAttempt.user_id == user.id))
                 if start <= as_utc(a.created_at) < end]
     target = users.practice_settings(user)["weekly_target"]
+    days = len({local_date(entry.created_at, users.timezone(user)) for entry in sessions})
     practice = WeekPractice(
         sessions=len(sessions),
+        days=days,
         missions_completed=sum(1 for e in logs if e.type == "mission_completed"),
         attempts=len(attempts),
         retries=sum(1 for a in attempts if a.attempt_number >= 2),
         real_life_attempts=sum(1 for e in logs if e.type == "real_life"),
         minutes=int(round(sum(e.minutes for e in sessions))),
         target=target,
-        met_target=len(sessions) >= target,
+        met_target=days >= target,
     )
 
     new_estimates = [e for e in db.scalars(select(DimensionEstimate).where(DimensionEstimate.user_id == user.id))
@@ -89,7 +91,7 @@ def build(svc: AppServices, db: Session, user: User) -> WeeklyReview:
     focus_title = MODULES[course.focus_module_id].title
 
     facts = [
-        f"{practice.sessions} practice session(s) this week; weekly target {target}.",
+        f"Practised on {practice.days} day(s) this week ({practice.sessions} session(s)); weekly target {target} day(s).",
         f"{practice.attempts} mission attempt(s), {practice.retries} retr{'y' if practice.retries == 1 else 'ies'}.",
     ]
     if practice.real_life_attempts:

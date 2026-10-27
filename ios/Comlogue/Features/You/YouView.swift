@@ -434,10 +434,11 @@ struct WeeklyReviewView: View {
 
         HStack(spacing: 16) {
             ZStack {
-                ProgressRing(value: Double(review.practice.sessions) / Double(max(review.practice.target, 1)), lineWidth: 10)
+                let days = review.practice.days ?? review.practice.sessions
+                ProgressRing(value: Double(days) / Double(max(review.practice.target, 1)), lineWidth: 10)
                 VStack(spacing: 0) {
-                    Text("\(review.practice.sessions)").font(.metric).foregroundStyle(Theme.ink)
-                    Text("of \(review.practice.target)").font(.caption2).foregroundStyle(Theme.inkSecondary)
+                    Text("\(days)").font(.metric).foregroundStyle(Theme.ink)
+                    Text("of \(review.practice.target) days").font(.caption2).foregroundStyle(Theme.inkSecondary)
                 }
             }
             .frame(width: 92, height: 92)

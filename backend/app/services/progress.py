@@ -1,6 +1,7 @@
 """Practice progress, the weekly run and milestones. Practice completion is tracked separately from skill.
 
-Weeks run Monday–Sunday in the user's timezone. "Weeks on target" counts consecutive weeks that met the user's own
+Weeks run Monday–Sunday in the user's timezone. The weekly target is a number of practice days ("3 days a week"):
+several sessions on one day count once. "Weeks on target" counts consecutive weeks that met the user's own
 weekly target; weeks overlapping a planned break neither count nor break the run. Nothing here is a skill score.
 """
 
@@ -78,7 +79,7 @@ def log_activity(db: Session, user_id: str, type_: str, title: str, minutes: flo
     target = users.practice_settings(user)["weekly_target"]
     logs = _session_logs(db, user_id)
     this_week = week_start(utcnow(), tz)
-    if sum(1 for log in logs if week_start(log.created_at, tz) == this_week) >= target:
+    if practice_days(logs, tz)[this_week] >= target:
         award(db, user_id, "weekly_target", this_week.isoformat())
     current, _ = weekly_run(user, logs)
     for weeks in RUN_MILESTONES:
@@ -93,12 +94,18 @@ def log_activity(db: Session, user_id: str, type_: str, title: str, minutes: flo
                 award(db, user_id, key)
 
 
+def practice_days(logs: list[ActivityLog], tz: str | None) -> Counter[date]:
+    """Days practised per week, keyed by the week's Monday: the unit of the weekly target."""
+    days = {local_date(log.created_at, tz) for log in logs}
+    return Counter(day - timedelta(days=day.weekday()) for day in days)
+
+
 def weekly_run(user: User, logs: list[ActivityLog], now: datetime | None = None) -> tuple[int, int]:
     """(current run, best run) of weeks meeting the weekly target; planned-break weeks are skipped."""
     tz = users.timezone(user)
     target = users.practice_settings(user)["weekly_target"]
     this_week = week_start(now or utcnow(), tz)
-    per_week = Counter(week_start(log.created_at, tz) for log in logs)
+    per_week = practice_days(logs, tz)
     breaks = users.breaks(user)
     earliest = min([this_week, week_start(user.created_at, tz), *per_week.keys()])
 
@@ -172,8 +179,7 @@ def build(db: Session, user: User, now: datetime | None = None) -> Progress:
             missions_completed=int(missions_completed),
             minutes=int(round(sum(log.minutes for log in sessions))),
             weeks_active=len({week_start(log.created_at, tz) for log in sessions}),
-            this_week=ThisWeek(sessions=len(week_sessions), target=target, days=days,
-                               met=len(week_sessions) >= target),
+            this_week=ThisWeek(sessions=len(week_sessions), target=target, days=days, met=len(days) >= target),
             reps=sum(1 for log in sessions if log.type == "daily_rep"),
             weeks_on_target=current,
             best_weeks_on_target=best,

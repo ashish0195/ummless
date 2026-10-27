@@ -31,7 +31,7 @@
         {
           "id": "business.m1.remix",
           "type": "remix",
-          "title": "Remix: the hallway question",
+          "title": "The hallway question",
           "minutes": 5,
           "status": "available",
           "locked_reason": null
@@ -75,7 +75,7 @@
         {
           "id": "business.m2.remix",
           "type": "remix",
-          "title": "Remix: the worried client",
+          "title": "The worried client",
           "minutes": 5,
           "status": "available",
           "locked_reason": null
@@ -119,7 +119,7 @@
         {
           "id": "business.m3.remix",
           "type": "remix",
-          "title": "Remix: pushback in the room",
+          "title": "Pushback in the room",
           "minutes": 5,
           "status": "available",
           "locked_reason": null
@@ -163,7 +163,7 @@
         {
           "id": "business.m4.remix",
           "type": "remix",
-          "title": "Remix: the one-to-one",
+          "title": "The one-to-one",
           "minutes": 5,
           "status": "available",
           "locked_reason": null

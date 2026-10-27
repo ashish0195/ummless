@@ -313,7 +313,7 @@ COURSE_VARIANTS: dict[str, dict[str, dict[str, Any]]] = {
             "partner": _in("Anjali", "Anjali, who is hosting the town hall.", role="Town hall host"),
         },
         "public_speaking.m1.remix": {
-            "title": "Remix: the sangeet speech",
+            "title": "The sangeet speech",
             "context": "You're opening a short speech at your cousin's sangeet.",
             "partner": _in(
                 "Ritika", "Ritika, the bride's friend, cheering everyone on.",
@@ -337,7 +337,7 @@ COURSE_VARIANTS: dict[str, dict[str, dict[str, Any]]] = {
             "partner": _in("Rekha", "Rekha, a business stakeholder who wants it in plain English."),
         },
         "public_speaking.m3.remix": {
-            "title": "Remix: the society meeting pitch",
+            "title": "The society meeting pitch",
             "context": "Pitch a community project at your housing society's annual general meeting.",
             "partner": {
                 "name": "Mr Joshi",

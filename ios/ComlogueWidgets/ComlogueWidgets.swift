@@ -91,7 +91,7 @@ struct TodayRepView: View {
             HStack(alignment: .top, spacing: 14) {
                 repText
                 Spacer(minLength: 0)
-                WeekRing(sessions: weekSessions, target: snapshot.weekTarget)
+                WeekRing(done: weekDays, target: snapshot.weekTarget)
                     .frame(width: 64, height: 64)
             }
         default:
@@ -115,7 +115,8 @@ struct TodayRepView: View {
         }
     }
 
-    private var weekSessions: Int { entry.isPlaceholder ? snapshot.weekSessions : snapshot.sessions(at: entry.date) }
+    /// Days practised this week: the unit of the weekly target.
+    private var weekDays: Int { (entry.isPlaceholder ? snapshot.weekDays : snapshot.practisedDays(at: entry.date)).count }
 }
 
 // MARK: - Weekly practice
@@ -128,7 +129,7 @@ struct WeeklyPracticeWidget: Widget {
                 .widgetURL(WidgetLinks.today)
         }
         .configurationDisplayName("This week")
-        .description("Sessions this week against the target you chose.")
+        .description("The days you practised this week, against the target you chose.")
         .supportedFamilies([.systemSmall, .accessoryCircular])
     }
 }
@@ -140,21 +141,21 @@ struct WeeklyPracticeView: View {
     var body: some View {
         let snapshot = entry.snapshot
         // A new week starts from zero until the app refreshes the snapshot.
-        let sessions = entry.isPlaceholder ? snapshot.weekSessions : snapshot.sessions(at: entry.date)
+        let days = (entry.isPlaceholder ? snapshot.weekDays : snapshot.practisedDays(at: entry.date)).count
         if family == .accessoryCircular {
-            Gauge(value: Double(min(sessions, max(snapshot.weekTarget, 1))),
+            Gauge(value: Double(min(days, max(snapshot.weekTarget, 1))),
                   in: 0...Double(max(snapshot.weekTarget, 1))) {
                 Image(systemName: "waveform")
             } currentValueLabel: {
-                Text("\(sessions)")
+                Text("\(days)")
             }
             .gaugeStyle(.accessoryCircular)
         } else {
             VStack(alignment: .leading, spacing: 8) {
                 Text("This week").font(.caption.weight(.bold)).foregroundStyle(.white.opacity(0.85))
-                WeekRing(sessions: sessions, target: snapshot.weekTarget)
+                WeekRing(done: days, target: snapshot.weekTarget)
                     .frame(width: 70, height: 70)
-                Text(snapshot.weeksOnTarget > 1 ? "\(snapshot.weeksOnTarget) weeks on target" : "One session counts")
+                Text(snapshot.weeksOnTarget > 1 ? "\(snapshot.weeksOnTarget) weeks on target" : "One minute counts")
                     .font(.caption2.weight(.semibold))
                     .foregroundStyle(.white.opacity(0.9))
                     .lineLimit(1)
@@ -167,11 +168,11 @@ struct WeeklyPracticeView: View {
 // MARK: - Pieces
 
 struct WeekRing: View {
-    let sessions: Int
+    let done: Int
     let target: Int
 
     var body: some View {
-        let progress = target > 0 ? min(1, Double(sessions) / Double(target)) : 0
+        let progress = target > 0 ? min(1, Double(done) / Double(target)) : 0
         ZStack {
             Circle().stroke(Color.white.opacity(0.25), lineWidth: 7)
             Circle()
@@ -179,7 +180,7 @@ struct WeekRing: View {
                 .stroke(Color.white, style: StrokeStyle(lineWidth: 7, lineCap: .round))
                 .rotationEffect(.degrees(-90))
             VStack(spacing: 0) {
-                Text("\(sessions)").font(.system(.title3, design: .rounded).weight(.bold)).foregroundStyle(.white)
+                Text("\(done)").font(.system(.title3, design: .rounded).weight(.bold)).foregroundStyle(.white)
                 Text("of \(target)").font(.system(size: 9, weight: .semibold)).foregroundStyle(.white.opacity(0.85))
             }
         }

@@ -315,7 +315,7 @@ Progress { practice: { total_sessions: int, missions_completed: int, minutes: in
                        this_week: { sessions: int, target: int } },
            milestones: [Milestone], recent: [{ type: string, title: string, created_at: ISODate }] }
 WeeklyReview { week_start: string, week_end: string,
-               practice: { sessions, missions_completed, attempts, retries, real_life_attempts, minutes, target, met_target: bool },
+               practice: { sessions, days /* days practised */, missions_completed, attempts, retries, real_life_attempts, minutes, target, met_target: bool },
                highlights: [string], before_after: { mission_title, before_quote, after_quote, note }?,
                skill_updates: [{ dimension: DimensionId, change: "new_estimate" | "unchanged", note: string }],
                evidence_note: string, next_focus_options: [{ module_id, title, reason }],
@@ -595,8 +595,10 @@ Progress += { welcome_back: { days_away: int, message: string }? }
   is already met. A week overlapping a planned break neither counts nor breaks the run.
 - `welcome_back` is present when the user's previous session was ≥ 7 days before today. It's warm, with no guilt:
   "Welcome back — your progress is saved. Start with a 1-minute practice." It disappears once they practise today.
-- `this_week.met` is `sessions >= target`. A planned break is set with `practice_settings.paused_until`; ending it
-  early (`null`) keeps the days already on break as break days.
+- The weekly target is a number of days ("3 days a week"): several sessions on one day count once. `this_week.met`
+  is `len(days) >= target`, and weekly reviews' `met_target` is `days >= target`.
+- A planned break is set with `practice_settings.paused_until`; ending it early (`null`) keeps the days already on
+  break as break days.
 - New milestones:
   - `first_rep`, `reps_10`, `reps_30`;
   - `weeks_on_target_2`, `weeks_on_target_4`, `weeks_on_target_8`, `weeks_on_target_12`;

@@ -86,12 +86,12 @@ def test_india_variant_renames_the_partner_everywhere(client):
 
 def test_variant_titles_and_module_examples_show_in_course_and_mission(client, monkeypatch):
     monkeypatch.setitem(COURSE_VARIANTS, "in", {**COURSE_VARIANTS.get("in", {}),
-                                                "business.m1.remix": {"title": "Remix: the sangeet speech"}})
+                                                "business.m1.remix": {"title": "The sangeet speech"}})
     headers = _india(client)
     course = client.get("/v1/course", headers=headers).json()
     titles = {m["id"]: m["title"] for module in course["modules"] for m in module["missions"]}
-    assert titles["business.m1.remix"] == "Remix: the sangeet speech"
-    assert client.get("/v1/missions/business.m1.remix", headers=headers).json()["title"] == "Remix: the sangeet speech"
+    assert titles["business.m1.remix"] == "The sangeet speech"
+    assert client.get("/v1/missions/business.m1.remix", headers=headers).json()["title"] == "The sangeet speech"
     example = client.get("/v1/missions/business.m1.learn", headers=headers).json()["example"]["text"]
     assert example == COURSE_VARIANTS["in"]["business.m1"]["example"].strip('"“”')
     us_titles = {m["id"]: m["title"] for module in client.get("/v1/course", headers=signup(client)).json()["modules"]
