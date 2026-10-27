@@ -30,6 +30,16 @@ struct WidgetSnapshot: Codable, Equatable, Sendable {
     /// Today's rep is only shown on the day it was chosen for; after midnight the widget asks for a fresh one.
     func isCurrent(at date: Date = Date()) -> Bool { day == Self.dayString(date, timeZone: timeZone) }
 
+    /// The week's figures describe the Monday-to-Sunday week the snapshot was taken in; a new week starts at zero
+    /// until the app refreshes.
+    func isSameWeek(at date: Date = Date()) -> Bool {
+        guard let taken = Self.date(fromDay: day, timeZone: timeZone) else { return false }
+        return Self.weekStart(taken, timeZone: timeZone) == Self.weekStart(date, timeZone: timeZone)
+    }
+
+    func sessions(at date: Date = Date()) -> Int { isSameWeek(at: date) ? weekSessions : 0 }
+    func practisedDays(at date: Date = Date()) -> [Int] { isSameWeek(at: date) ? weekDays : [] }
+
     func isPaused(at date: Date = Date()) -> Bool {
         guard let pausedUntil else { return false }
         return Self.dayString(date, timeZone: timeZone) <= pausedUntil
@@ -40,6 +50,23 @@ struct WidgetSnapshot: Codable, Equatable, Sendable {
         calendar.timeZone = timeZone
         let parts = calendar.dateComponents([.year, .month, .day], from: date)
         return String(format: "%04d-%02d-%02d", parts.year ?? 0, parts.month ?? 0, parts.day ?? 0)
+    }
+
+    static func date(fromDay day: String, timeZone: TimeZone) -> Date? {
+        let parts = day.split(separator: "-").compactMap { Int($0) }
+        guard parts.count == 3 else { return nil }
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = timeZone
+        return calendar.date(from: DateComponents(year: parts[0], month: parts[1], day: parts[2], hour: 12))
+    }
+
+    /// Midnight at the start of the Monday of `date`'s week.
+    static func weekStart(_ date: Date, timeZone: TimeZone) -> Date {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = timeZone
+        let start = calendar.startOfDay(for: date)
+        let daysSinceMonday = (calendar.component(.weekday, from: start) + 5) % 7 // weekday: 1 = Sunday
+        return calendar.date(byAdding: .day, value: -daysSinceMonday, to: start) ?? start
     }
 
     /// The next local midnight, when the widget should roll over.

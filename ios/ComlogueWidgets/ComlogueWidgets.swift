@@ -91,7 +91,7 @@ struct TodayRepView: View {
             HStack(alignment: .top, spacing: 14) {
                 repText
                 Spacer(minLength: 0)
-                WeekRing(sessions: snapshot.weekSessions, target: snapshot.weekTarget)
+                WeekRing(sessions: weekSessions, target: snapshot.weekTarget)
                     .frame(width: 64, height: 64)
             }
         default:
@@ -111,9 +111,11 @@ struct TodayRepView: View {
                 .lineLimit(3)
                 .minimumScaleFactor(0.85)
             Spacer(minLength: 0)
-            WeekDots(days: snapshot.weekDays)
+            WeekDots(days: entry.isPlaceholder ? snapshot.weekDays : snapshot.practisedDays(at: entry.date))
         }
     }
+
+    private var weekSessions: Int { entry.isPlaceholder ? snapshot.weekSessions : snapshot.sessions(at: entry.date) }
 }
 
 // MARK: - Weekly practice
@@ -137,18 +139,20 @@ struct WeeklyPracticeView: View {
 
     var body: some View {
         let snapshot = entry.snapshot
+        // A new week starts from zero until the app refreshes the snapshot.
+        let sessions = entry.isPlaceholder ? snapshot.weekSessions : snapshot.sessions(at: entry.date)
         if family == .accessoryCircular {
-            Gauge(value: Double(min(snapshot.weekSessions, max(snapshot.weekTarget, 1))),
+            Gauge(value: Double(min(sessions, max(snapshot.weekTarget, 1))),
                   in: 0...Double(max(snapshot.weekTarget, 1))) {
                 Image(systemName: "waveform")
             } currentValueLabel: {
-                Text("\(snapshot.weekSessions)")
+                Text("\(sessions)")
             }
             .gaugeStyle(.accessoryCircular)
         } else {
             VStack(alignment: .leading, spacing: 8) {
                 Text("This week").font(.caption.weight(.bold)).foregroundStyle(.white.opacity(0.85))
-                WeekRing(sessions: snapshot.weekSessions, target: snapshot.weekTarget)
+                WeekRing(sessions: sessions, target: snapshot.weekTarget)
                     .frame(width: 70, height: 70)
                 Text(snapshot.weeksOnTarget > 1 ? "\(snapshot.weeksOnTarget) weeks on target" : "One session counts")
                     .font(.caption2.weight(.semibold))
