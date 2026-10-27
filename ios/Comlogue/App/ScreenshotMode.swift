@@ -104,7 +104,10 @@ extension AppModel {
         case .group, .groupIndia:
             if let id = seed?.panelId ?? panels.first?.id { activeFlow = .group(panelId: id) }
         case .groupReport:
-            if let id = seed?.groupConversationId { activeFlow = .report(conversationId: id, title: "Discussion report") }
+            if let id = seed?.groupConversationId {
+                let isPanel = panels.first { $0.id == seed?.panelId }?.isGroupDiscussion == false
+                activeFlow = .report(conversationId: id, title: isPanel ? "Interview report" : "Discussion report")
+            }
         }
     }
 }

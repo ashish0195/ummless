@@ -405,9 +405,10 @@ final class AppModel {
     func present(_ flow: AppFlow) {
         player.stop()
         speech.stop()
-        if activeFlow != nil {
-            // Replace the current flow after the cover dismisses.
+        if activeFlow != nil || celebration != nil {
+            // Replace the current flow (or a celebration sheet) after it dismisses; only one can be on screen.
             activeFlow = nil
+            celebration = nil
             Task { @MainActor in
                 try? await Task.sleep(nanoseconds: 450_000_000)
                 self.activeFlow = flow
