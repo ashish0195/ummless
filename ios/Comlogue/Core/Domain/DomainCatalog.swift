@@ -6,6 +6,17 @@ enum Brand {
     static let supportEmail = "support@comlogue.app"
     static let termsURL = URL(string: "https://comlogue.app/terms")!
     static let privacyURL = URL(string: "https://comlogue.app/privacy")!
+    static let websiteURL = URL(string: "https://comlogue.app")!
+
+    /// What a person sends a friend (WhatsApp is how most Indian users will share it).
+    static func inviteMessage(market: Market) -> String {
+        switch market {
+        case .in:
+            return "I've been practising how I speak with Comlogue: 60 seconds a day for interviews, GDs and work calls. Try it with me:"
+        default:
+            return "I've been practising how I speak with Comlogue: 60 seconds a day for interviews, meetings and hard conversations. Try it with me:"
+        }
+    }
 }
 
 /// Local fallbacks for UI metadata so screens render before /v1/meta arrives (or offline).

@@ -121,9 +121,17 @@ struct YouView: View {
             if let practice = app.progress?.practice {
                 HStack(spacing: 12) {
                     statTile("\(practice.totalSessions)", "sessions")
-                    statTile("\(practice.missionsCompleted)", "missions")
+                    if let reps = practice.reps {
+                        statTile("\(reps)", reps == 1 ? "daily rep" : "daily reps")
+                    } else {
+                        statTile("\(practice.missionsCompleted)", "missions")
+                    }
                     statTile("\(practice.minutes)", "minutes")
-                    statTile("\(practice.weeksActive)", "weeks")
+                    if let best = practice.bestWeeksOnTarget {
+                        statTile("\(best)", "best run")
+                    } else {
+                        statTile("\(practice.weeksActive)", "weeks")
+                    }
                 }
             }
             if let milestones = app.progress?.milestones, !milestones.isEmpty {
@@ -149,6 +157,32 @@ struct YouView: View {
                     Text("Your weekly reveal").font(.subheadline.weight(.semibold)).foregroundStyle(Theme.ink)
                     Spacer()
                     Image(systemName: "chevron.right").font(.caption.weight(.bold)).foregroundStyle(Theme.inkTertiary)
+                }
+                .card(padding: 14)
+            }
+            .buttonStyle(.pressableCard)
+            NavigationLink {
+                PracticePlanView()
+            } label: {
+                HStack {
+                    Image(systemName: "calendar.badge.clock").foregroundStyle(Theme.indigo)
+                    Text("Practice plan and reminders").font(.subheadline.weight(.semibold)).foregroundStyle(Theme.ink)
+                    Spacer()
+                    Image(systemName: "chevron.right").font(.caption.weight(.bold)).foregroundStyle(Theme.inkTertiary)
+                }
+                .card(padding: 14)
+            }
+            .buttonStyle(.pressableCard)
+            ShareLink(item: Brand.websiteURL, message: Text(Brand.inviteMessage(market: app.market))) {
+                HStack {
+                    Image(systemName: "person.2.wave.2.fill").foregroundStyle(Theme.coral)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Invite a friend").font(.subheadline.weight(.semibold)).foregroundStyle(Theme.ink)
+                        Text("Practice sticks better with someone to compare notes with.")
+                            .font(.caption).foregroundStyle(Theme.inkSecondary)
+                    }
+                    Spacer()
+                    Image(systemName: "square.and.arrow.up").font(.caption.weight(.bold)).foregroundStyle(Theme.inkTertiary)
                 }
                 .card(padding: 14)
             }

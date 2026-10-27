@@ -39,7 +39,8 @@ struct TodayView: View {
                     }
 
                     if let daily = app.daily {
-                        dailyRepCard(daily)
+                        // Until there's a profile, getting one is the hero; the rep is the quick alternative.
+                        dailyRepCard(daily, prominent: app.me?.hasResults ?? false || activeAssessment != nil)
                     }
 
                     weeklyCard
@@ -87,17 +88,23 @@ struct TodayView: View {
         }
     }
 
-    private func dailyRepCard(_ rep: DailyRep) -> some View {
-        VStack(alignment: .leading, spacing: 12) {
+    private func dailyRepCard(_ rep: DailyRep, prominent: Bool) -> some View {
+        let ink: Color = prominent ? .white : Theme.ink
+        let secondaryInk: Color = prominent ? .white.opacity(0.88) : Theme.inkSecondary
+        return VStack(alignment: .leading, spacing: 12) {
             HStack {
-                Eyebrow(rep.completed ? "Today's rep · done" : "Today's rep · \(rep.suggestedSeconds) sec", color: .white.opacity(0.85))
+                Eyebrow(rep.completed ? "Today's rep · done" : prominent ? "Today's rep · \(rep.suggestedSeconds) sec"
+                        : "Or warm up · today's \(rep.suggestedSeconds)-second rep",
+                        color: prominent ? .white.opacity(0.85) : Theme.indigo)
                 Spacer()
-                Tag(text: DimensionCatalog.title(rep.dimension), color: .white, systemImage: DimensionCatalog.symbol(rep.dimension))
+                Tag(text: DimensionCatalog.title(rep.dimension), color: prominent ? .white : Theme.color(for: rep.dimension),
+                    systemImage: DimensionCatalog.symbol(rep.dimension))
             }
-            Text(rep.title).font(.titleRounded).foregroundStyle(.white).fixedSize(horizontal: false, vertical: true)
-            Text(rep.prompt).font(.subheadline).foregroundStyle(.white.opacity(0.88)).lineLimit(3)
+            Text(rep.title).font(prominent ? .titleRounded : .title3Rounded).foregroundStyle(ink)
+                .fixedSize(horizontal: false, vertical: true)
+            Text(rep.prompt).font(.subheadline).foregroundStyle(secondaryInk).lineLimit(3)
             if rep.isProcessing {
-                Label("Feedback on the way…", systemImage: "hourglass").font(.footnote.weight(.semibold)).foregroundStyle(.white)
+                Label("Feedback on the way…", systemImage: "hourglass").font(.footnote.weight(.semibold)).foregroundStyle(ink)
             }
             Button {
                 app.present(.daily(date: nil))
@@ -108,18 +115,27 @@ struct TodayView: View {
                     Label("Start today's rep", systemImage: "mic.fill")
                 }
             }
-            .buttonStyle(.lightPill)
+            .buttonStyle(.pill(prominent ? .light : .secondary))
             if let anchor = app.me?.practiceSettings.anchor, !rep.completed {
                 Text(PracticeAnchor.secondPerson(anchor) + " is a good moment for it.")
                     .font(.caption.weight(.medium))
-                    .foregroundStyle(.white.opacity(0.85))
+                    .foregroundStyle(prominent ? .white.opacity(0.85) : Theme.inkTertiary)
                     .frame(maxWidth: .infinity)
             }
         }
         .padding(20)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Theme.aurora, in: RoundedRectangle(cornerRadius: Theme.radius, style: .continuous))
-        .shadow(color: Theme.indigo.opacity(0.25), radius: 18, y: 10)
+        .background {
+            if prominent {
+                RoundedRectangle(cornerRadius: Theme.radius, style: .continuous).fill(Theme.aurora)
+                    .shadow(color: Theme.indigo.opacity(0.25), radius: 18, y: 10)
+            } else {
+                RoundedRectangle(cornerRadius: Theme.radius, style: .continuous).fill(Theme.surface)
+                    .overlay(RoundedRectangle(cornerRadius: Theme.radius, style: .continuous)
+                        .strokeBorder(Theme.stroke.opacity(0.7), lineWidth: 0.5))
+                    .shadow(color: Color.black.opacity(0.04), radius: 12, x: 0, y: 6)
+            }
+        }
     }
 
     private func welcomeBackCard(_ welcome: WelcomeBack) -> some View {
