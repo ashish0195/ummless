@@ -24,7 +24,7 @@ from ..schemas import (
     StyleResult,
 )
 from ..timeutil import iso, iso_required, short_date, utcnow
-from . import conversations, progress, users
+from . import conversations, notifications, progress, users
 from . import media as media_service
 from .analysis import STYLE_NOT_READY, AnalysisInput, missing_dimension, run_analysis
 
@@ -187,7 +187,7 @@ def run_finalize_job(svc: AppServices, assessment_id: str) -> None:
         if user is None:
             return
         label = ("AI roleplay" if assessment.purpose == "baseline" else "Follow-up roleplay")
-        context_label = f"{label} · {short_date(assessment.created_at)}"
+        context_label = f"{label} · {short_date(assessment.created_at, users.market(user), users.timezone(user))}"
         units, pauses, notes, excluded = _units(db, assessment)
         user_speech = sum(u.duration for u in units if u.usable_user)
         assessment.stage = "assessing"
@@ -212,6 +212,7 @@ def run_finalize_job(svc: AppServices, assessment_id: str) -> None:
             assessment.error = str(exc)[:500]
             assessment.result = _failed_result(context_label)
             db.commit()
+            _notify(svc, db, assessment)
             return
         assessment.result = output.result.model_dump(mode="json")
         assessment.style_vector = output.style_vector
@@ -233,17 +234,30 @@ def run_finalize_job(svc: AppServices, assessment_id: str) -> None:
         if output.estimates:
             progress.award(db, user.id, "first_profile")
         db.commit()
+        _notify(svc, db, assessment)
     except Exception:
         db.rollback()
         assessment = db.get(Assessment, assessment_id)
         if assessment is not None and assessment.status == "processing":
             assessment.status = "needs_recovery"
             assessment.stage = None
-            assessment.result = _failed_result(f"AI roleplay · {short_date(assessment.created_at)}")
+            owner = db.get(User, assessment.user_id)
+            label_date = (short_date(assessment.created_at, users.market(owner), users.timezone(owner)) if owner
+                          else short_date(assessment.created_at))
+            assessment.result = _failed_result(f"AI roleplay · {label_date}")
             db.commit()
         raise
     finally:
         db.close()
+
+
+def _notify(svc: AppServices, db: Session, assessment: Assessment) -> None:
+    """Inbox item + push for a finished analysis. Never fails the job."""
+    try:
+        notifications.assessment_ready(svc, db, assessment)
+    except Exception:  # noqa: BLE001
+        log.exception("Couldn't create the notification for assessment %s", assessment.id)
+        db.rollback()
 
 
 def list_for(db: Session, user: User) -> list[Assessment]:

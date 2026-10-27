@@ -49,6 +49,10 @@ class User(Base):
     course_focus_module_id: Mapped[str | None] = mapped_column(String(80), nullable=True)
     free_mission_id: Mapped[str | None] = mapped_column(String(80), nullable=True)
     demo_seed: Mapped[dict[str, Any] | None] = mapped_column(JSON, nullable=True)
+    # v2: the device's IANA timezone and locale (POST /v1/devices), and notification preferences.
+    timezone: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    locale: Mapped[str | None] = mapped_column(String(20), nullable=True)
+    notification_settings: Mapped[dict[str, Any] | None] = mapped_column(JSON, nullable=True)
 
 
 class Media(Base):
@@ -104,6 +108,10 @@ class Conversation(Base):
     demo_mode: Mapped[bool] = mapped_column(Boolean, default=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)
     finished_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    # v2: daily reps and group conversations.
+    daily_date: Mapped[str | None] = mapped_column(String(10), nullable=True)
+    panel_id: Mapped[str | None] = mapped_column(String(80), nullable=True)
+    participants: Mapped[list[Any] | None] = mapped_column(JSON, nullable=True)
 
 
 class Turn(Base):
@@ -124,6 +132,7 @@ class Turn(Base):
     metrics: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict)
     segments: Mapped[list[Any]] = mapped_column(JSON, default=list)
     momentum: Mapped[float | None] = mapped_column(Float, nullable=True)
+    speaker_id: Mapped[str | None] = mapped_column(String(20), nullable=True)  # group participant id
 
 
 class Assessment(Base):
@@ -251,6 +260,8 @@ class UpcomingEvent(Base):
     notes: Mapped[str | None] = mapped_column(Text, nullable=True)
     prep: Mapped[list[Any]] = mapped_column(JSON, default=list)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)
+    time: Mapped[str | None] = mapped_column(String(5), nullable=True)  # "HH:MM" local, optional
+    reflection: Mapped[dict[str, Any] | None] = mapped_column(JSON, nullable=True)  # "How did it go?" afterwards
 
 
 class Milestone(Base):
@@ -304,3 +315,98 @@ class FeedbackReport(Base):
     reason: Mapped[str] = mapped_column(String(20))
     note: Mapped[str | None] = mapped_column(Text, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)
+
+
+# ---------------------------------------------------------------------------------------------- v2
+
+
+class Device(Base):
+    """The install's push registration. One per user (auth is per install); a token belongs to one device."""
+
+    __tablename__ = "devices"
+
+    id: Mapped[str] = mapped_column(String(40), primary_key=True)
+    user_id: Mapped[str] = mapped_column(String(40), unique=True, index=True)
+    apns_token: Mapped[str | None] = mapped_column(String(200), unique=True, nullable=True)
+    push_environment: Mapped[str | None] = mapped_column(String(12), nullable=True)
+    authorization: Mapped[str] = mapped_column(String(20), default="not_determined")
+    timezone: Mapped[str] = mapped_column(String(64), default="UTC")
+    locale: Mapped[str] = mapped_column(String(20), default="en-US")
+    app_version: Mapped[str] = mapped_column(String(40), default="")
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)
+    token_invalidated_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    last_error: Mapped[str | None] = mapped_column(String(200), nullable=True)
+
+
+class Notification(Base):
+    """An in-app inbox item; `push_state` tracks delivery to APNs. Unique per (user, dedupe_key)."""
+
+    __tablename__ = "notifications"
+    __table_args__ = (UniqueConstraint("user_id", "dedupe_key"),)
+
+    id: Mapped[str] = mapped_column(String(40), primary_key=True)
+    user_id: Mapped[str] = mapped_column(String(40), index=True)
+    category: Mapped[str] = mapped_column(String(20))
+    title: Mapped[str] = mapped_column(String(200))
+    body: Mapped[str] = mapped_column(Text)
+    deep_link: Mapped[str] = mapped_column(String(200))
+    dedupe_key: Mapped[str] = mapped_column(String(160))
+    interruption_level: Mapped[str] = mapped_column(String(20), default="active")
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)
+    read_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    opened_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    # pending → sent | skipped | failed; "none" for inbox-only items (e.g. seeded demo data).
+    push_state: Mapped[str] = mapped_column(String(10), default="pending", index=True)
+    deliver_after: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)
+    push_attempts: Mapped[int] = mapped_column(Integer, default=0)
+    pushed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    push_note: Mapped[str | None] = mapped_column(String(120), nullable=True)
+    # A push is pointless after this (e.g. "Today: interview" after it started); the inbox item stays.
+    expires_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+
+
+class DailyAssignment(Base):
+    """Which daily prompt a user gets on a local date. Stable once created (also for future dates)."""
+
+    __tablename__ = "daily_assignments"
+    __table_args__ = (UniqueConstraint("user_id", "date"),)
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    user_id: Mapped[str] = mapped_column(String(40), index=True)
+    date: Mapped[str] = mapped_column(String(10))
+    prompt_id: Mapped[str] = mapped_column(String(80))
+    shuffled: Mapped[bool] = mapped_column(Boolean, default=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)
+
+
+class DailyAttempt(Base):
+    """One attempt at a daily rep; feedback has the same shape as mission attempt feedback."""
+
+    __tablename__ = "daily_attempts"
+
+    id: Mapped[str] = mapped_column(String(40), primary_key=True)
+    user_id: Mapped[str] = mapped_column(String(40), index=True)
+    date: Mapped[str] = mapped_column(String(10), index=True)
+    prompt_id: Mapped[str] = mapped_column(String(80))
+    conversation_id: Mapped[str] = mapped_column(String(40))
+    attempt_number: Mapped[int] = mapped_column(Integer, default=1)
+    status: Mapped[str] = mapped_column(String(20), default="processing")
+    feedback: Mapped[dict[str, Any] | None] = mapped_column(JSON, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)
+
+    @property
+    def quick(self) -> bool:  # mission-attempt compatibility for shared feedback code
+        return False
+
+
+class MissionOpen(Base):
+    """First time a user opened a mission (drives the real-life mission check-in)."""
+
+    __tablename__ = "mission_opens"
+    __table_args__ = (UniqueConstraint("user_id", "mission_id"),)
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    user_id: Mapped[str] = mapped_column(String(40), index=True)
+    mission_id: Mapped[str] = mapped_column(String(80))
+    first_opened_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)

@@ -10,7 +10,9 @@ from sqlalchemy.orm import Session
 
 from ..ai.types import CustomScenarioRequest, SparRequest
 from ..core import AppServices
-from ..domain.personas import CUSTOM_PERSONA_COLOR, PERSONAS
+from ..domain.market_content import persona as find_persona
+from ..domain.market_content import personas_for
+from ..domain.personas import CUSTOM_PERSONA_COLOR
 from ..errors import AIUnavailableError, not_found, subscription_required, validation
 from ..models import Conversation, SparReport, UpcomingEvent, User
 from ..schemas import (
@@ -34,11 +36,12 @@ log = logging.getLogger("comlogue.spar")
 CUSTOM_TTS = "Voice: natural, realistic for the role. Pace: everyday conversation."
 
 
-def personas() -> PersonaList:
+def personas(user: User) -> PersonaList:
+    """The personas offered in the user's market, made-for-this-market first."""
     return PersonaList(personas=[
         Persona(id=p.id, name=p.name, title=p.title, scenario=p.scenario, description=p.description,
                 default_difficulty=p.default_difficulty, symbol=p.symbol, color_hex=p.color_hex, is_free=p.is_free)
-        for p in PERSONAS.values()
+        for p in personas_for(users.market(user))
     ])
 
 
@@ -58,7 +61,7 @@ def create(svc: AppServices, db: Session, user: User, body: ConversationCreate) 
     users.require_analysis_consent(user)
     language = users.language(user)
     if body.persona_id:
-        persona = PERSONAS.get(body.persona_id)
+        persona = find_persona(body.persona_id)
         if persona is None:
             raise not_found("Persona")
         _check_free_limits(svc, db, user, persona_free=persona.is_free)
@@ -109,11 +112,15 @@ def create(svc: AppServices, db: Session, user: User, body: ConversationCreate) 
 
 
 def sessions(db: Session, user: User) -> list[SparSession]:
-    rows = list(db.scalars(select(Conversation).where(Conversation.user_id == user.id, Conversation.kind == "spar")
+    """Spar sessions, plus group sessions that have a report (same report shape)."""
+    rows = list(db.scalars(select(Conversation).where(Conversation.user_id == user.id,
+                                                      Conversation.kind.in_(("spar", "group")))
                            .order_by(Conversation.created_at.desc()).limit(50)))
     out = []
     for conv in rows:
         report = db.get(SparReport, conv.id)
+        if conv.kind == "group" and report is None:
+            continue
         outcome = ((report.report or {}).get("outcome") or {}).get("label") if report and report.report else None
         out.append(SparSession(
             conversation_id=conv.id, title=conv.setup.get("title", "Spar"), persona_name=conv.partner.get("name", ""),
@@ -125,7 +132,7 @@ def sessions(db: Session, user: User) -> list[SparSession]:
 
 def report_out(svc: AppServices, db: Session, user: User, conversation_id: str) -> SparReportOut:
     conv = conversations.get_owned(db, user, conversation_id)
-    if conv.kind != "spar":
+    if conv.kind not in ("spar", "group"):
         raise not_found("Spar report")
     report = db.get(SparReport, conv.id)
     title = conv.setup.get("title", "Spar")
@@ -159,12 +166,24 @@ def run_report_job(svc: AppServices, conversation_id: str) -> None:
             report.status = "complete"
             db.commit()
             return
-        try:
-            judgement = svc.ai.spar_report(SparRequest(
+        if conv.kind == "group":
+            names = [p.get("name", "") for p in conv.participants or []]
+            request = SparRequest(
+                language=conv.language, persona_name=", ".join(n for n in names if n),
+                persona_title="Panel interview" if conv.state.get("panel_kind") == "panel_interview"
+                else "Group discussion",
+                scenario=title, difficulty=conv.difficulty or "real", win_condition="", units=units, momentum=[],
+                kind="group", evaluation_focus=list(conv.state.get("evaluation_focus") or []),
+                context=conv.setup.get("context", ""),
+            )
+        else:
+            request = SparRequest(
                 language=conv.language, persona_name=conv.partner.get("name", "Partner"),
                 persona_title=conv.partner.get("role", ""), scenario=title, difficulty=conv.difficulty or "real",
                 win_condition=conv.state.get("win_condition", ""), units=units, momentum=momentum,
-            ))
+            )
+        try:
+            judgement = svc.ai.spar_report(request)
         except AIUnavailableError as exc:
             log.warning("Spar report failed: %s", exc)
             report.status = "failed"
@@ -192,7 +211,7 @@ def run_report_job(svc: AppServices, conversation_id: str) -> None:
             moments=moments, observations=observations, next_step=judgement.next_step,
         ).model_dump(mode="json")
         report.status = "complete"
-        progress.award(db, conv.user_id, "first_spar")
+        progress.award(db, conv.user_id, "first_group" if conv.kind == "group" else "first_spar")
         db.commit()
     except Exception:
         db.rollback()

@@ -1,0 +1,93 @@
+{
+  "id": "cnv_51ac5c8f013f40ec9ad9",
+  "kind": "group",
+  "status": "active",
+  "partner": {
+    "name": "Meera",
+    "role": "Moderator",
+    "voice": "sage",
+    "symbol": "person.crop.circle.badge.checkmark",
+    "color_hex": "#5146E6"
+  },
+  "setup": {
+    "title": "GD: Work from home vs office",
+    "context": "Four candidates, one topic, fifteen minutes. Enter the discussion, add a fresh point, build on others and help the group reach a conclusion.",
+    "target_behavior": null,
+    "suggested_seconds": 45,
+    "tips": [
+      "Enter early with one clear point.",
+      "Build on someone by name, then add something new.",
+      "Invite a quiet voice in, and offer a summary near the end."
+    ],
+    "activity_id": null,
+    "mission_id": null,
+    "persona_id": null,
+    "difficulty": "real",
+    "quick": false
+  },
+  "turns": [
+    {
+      "index": 0,
+      "speaker": "partner",
+      "text": "Good morning, everyone. Your topic is: should Indian IT companies bring everyone back to the office? You have fifteen minutes. Anyone can begin.",
+      "audio_url": null,
+      "created_at": "2026-10-27T09:34:26Z",
+      "quality": null,
+      "coach_whisper": null,
+      "excluded": false,
+      "speaker_id": "mod"
+    },
+    {
+      "index": 1,
+      "speaker": "partner",
+      "text": "I'll start. Offices are where freshers actually learn — you can't absorb culture on a video call.",
+      "audio_url": null,
+      "created_at": "2026-10-27T09:34:26Z",
+      "quality": null,
+      "coach_whisper": null,
+      "excluded": false,
+      "speaker_id": "p1"
+    }
+  ],
+  "awaiting": "user",
+  "user_turns": 0,
+  "max_user_turns": 4,
+  "assessment_id": null,
+  "mission_id": null,
+  "demo_mode": true,
+  "created_at": "2026-10-27T09:34:26Z",
+  "participants": [
+    {
+      "id": "mod",
+      "name": "Meera",
+      "role": "Moderator",
+      "voice": "sage",
+      "symbol": "person.crop.circle.badge.checkmark",
+      "color_hex": "#5146E6"
+    },
+    {
+      "id": "p1",
+      "name": "Rohan",
+      "role": "Participant",
+      "voice": "ash",
+      "symbol": "person.fill",
+      "color_hex": "#E64980"
+    },
+    {
+      "id": "p2",
+      "name": "Ananya",
+      "role": "Participant",
+      "voice": "coral",
+      "symbol": "person.fill",
+      "color_hex": "#10B3A3"
+    },
+    {
+      "id": "p3",
+      "name": "Karthik",
+      "role": "Participant",
+      "voice": "echo",
+      "symbol": "person.fill",
+      "color_hex": "#FF8A3D"
+    }
+  ]
+}

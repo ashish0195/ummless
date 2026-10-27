@@ -24,8 +24,8 @@
   "real_life": null,
   "attempts": [
     {
-      "id": "att_62a4c31c02744d0f9c85",
-      "conversation_id": "cnv_72012cc13e794f40b800",
+      "id": "att_d5af28bcdb274f66bd65",
+      "conversation_id": "cnv_ce825d71aa47458094a4",
       "attempt_number": 1,
       "quick": false,
       "status": "complete",
@@ -37,11 +37,11 @@
           "quote": "So I think maybe we should, um, look at both options first.",
           "note": "Where your recommendation appears.",
           "source_type": "conversation",
-          "source_id": "cnv_72012cc13e794f40b800",
+          "source_id": "cnv_ce825d71aa47458094a4",
           "turn_index": 1,
           "start_seconds": 0.0,
           "end_seconds": 9.56,
-          "audio_url": "/v1/media/med_4309cbbfa0e141a3b15a?exp=1793076490&sig=2gbZiU3AgtOtuYf5Og9BFFXRuB3db56i"
+          "audio_url": "/v1/media/med_80def4c3e6d14ba8b0a6?exp=1793115261&sig=NxlwYkmr5jRzEqfo2ZyftQoNB3rlKKIU"
         },
         "what_worked": [
           "You gave a concrete reason the listener cares about."
@@ -51,11 +51,11 @@
         "comparison": null,
         "issues": []
       },
-      "created_at": "2026-10-26T22:48:08Z"
+      "created_at": "2026-10-27T09:34:18Z"
     },
     {
-      "id": "att_2f4c09d291d54efeb94d",
-      "conversation_id": "cnv_010ff24e98554f6182db",
+      "id": "att_8adb3ed2d7a24ba197e1",
+      "conversation_id": "cnv_e062649afe874cb98c33",
       "attempt_number": 2,
       "quick": false,
       "status": "complete",
@@ -67,11 +67,11 @@
           "quote": "I'd go with the second vendor.",
           "note": "Where your recommendation appears.",
           "source_type": "conversation",
-          "source_id": "cnv_010ff24e98554f6182db",
+          "source_id": "cnv_e062649afe874cb98c33",
           "turn_index": 1,
           "start_seconds": 0.0,
           "end_seconds": 9.56,
-          "audio_url": "/v1/media/med_0605779d5a2c48bd8efc?exp=1793076490&sig=TtdSWKWB-zhcW-ANw_YDciF7B_fqxH0P"
+          "audio_url": "/v1/media/med_a9c2ed83141e412a9742?exp=1793115261&sig=L2UnSxWh4tR61-c-2yLPdmsa6aLRjsG8"
         },
         "what_worked": [
           "You gave a concrete reason the listener cares about."
@@ -79,7 +79,7 @@
         "one_change": "Name the second reason before you invite a response.",
         "missing_evidence": null,
         "comparison": {
-          "previous_attempt_id": "att_62a4c31c02744d0f9c85",
+          "previous_attempt_id": "att_d5af28bcdb274f66bd65",
           "summary": "This time your first answer was 16 words (before: 12). You stated your recommendation earlier and kept both reasons.",
           "changes": [
             "Recommendation moved into the first sentence",
@@ -89,16 +89,16 @@
         },
         "issues": []
       },
-      "created_at": "2026-10-26T22:48:10Z"
+      "created_at": "2026-10-27T09:34:21Z"
     }
   ],
   "reflections": [
     {
-      "id": "rfl_481ad09b612243d79a10",
+      "id": "rfl_08573c9cc62b4543822b",
       "text": "I led with my recommendation in standup and people responded faster.",
       "went": "well",
       "coach_reply": "That's great — trying it in a real conversation is the hardest part. Next time, aim for just the first part of the target: state your recommendation first.",
-      "created_at": "2026-10-26T22:48:10Z"
+      "created_at": "2026-10-27T09:34:21Z"
     }
   ],
   "status": "available",

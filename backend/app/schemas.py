@@ -16,13 +16,39 @@ DimensionStatus = Literal["assessed", "provisional", "not_enough_evidence", "not
 Confidence = Literal["low", "moderate", "high"]
 Usable = Literal["yes", "partly", "no"]
 ActivityId = Literal["meet_someone_new", "explain_interest", "respond_to_someone", "make_a_case", "tell_a_story"]
-TrackId = Literal["negotiation", "business", "conversational", "storytelling", "public_speaking"]
+TrackId = Literal["negotiation", "business", "conversational", "storytelling", "public_speaking", "interviews"]
 ContextId = Literal["social", "networking", "meetings", "interviews"]
 EaseId = Literal["explaining", "contributing", "connecting", "persuading", "concise"]
 Difficulty = Literal["kind", "real", "brutal"]
 MissionType = Literal["learn_and_try", "remix", "real_life", "weekly_reveal"]
 SourceType = Literal["conversation", "recording"]
-EventKind = Literal["interview", "meeting", "presentation", "social", "negotiation", "other"]
+EventKind = Literal[
+    "interview", "meeting", "presentation", "social", "negotiation", "other", "placement", "group_discussion",
+    "client_call", "viva", "appraisal",
+]
+Market = Literal["us", "in", "global"]
+ConversationKind = Literal["assessment_activity", "mission", "spar", "daily", "group"]
+NotificationCategory = Literal[
+    "practice", "event_prep", "results", "check_in", "nudge", "weekly_reveal", "milestone", "tips"
+]
+DailyKind = Literal["explain", "story", "persuade", "answer", "opinion", "introduce", "summarize", "respond"]
+PanelKind = Literal["group_discussion", "panel_interview"]
+PushAuthorization = Literal["authorized", "provisional", "ephemeral", "denied", "not_determined"]
+_TIME_RE = re.compile(r"^([01]\d|2[0-3]):[0-5]\d$")
+
+
+def _check_hhmm(value: str | None, field: str) -> str | None:
+    if value is not None and not _TIME_RE.match(value):
+        raise ValueError(f"{field} must be HH:MM (24h)")
+    return value
+
+
+def _check_date(value: str | None) -> str | None:
+    if value is not None:
+        from datetime import date as _date
+
+        _date.fromisoformat(value)
+    return value
 
 
 class APIModel(BaseModel):
@@ -63,6 +89,16 @@ class Turn(APIModel):
     quality: TurnQuality | None
     coach_whisper: str | None
     excluded: bool
+    speaker_id: str | None = None  # participant id on group-conversation partner turns
+
+
+class Participant(APIModel):
+    id: str
+    name: str
+    role: str
+    voice: str
+    symbol: str
+    color_hex: str
 
 
 class EvidenceMoment(APIModel):
@@ -226,12 +262,23 @@ class ActivityInfo(APIModel):
 
 
 class Pricing(APIModel):
-    monthly_usd: float
+    monthly_usd: float  # USD reference values (unchanged from v1)
     yearly_usd: float
     trial_days: int
     monthly_product_id: str
     yearly_product_id: str
     note: str
+    currency: Literal["USD", "INR"]
+    monthly_price: float
+    yearly_price: float
+    monthly_display: str
+    yearly_display: str
+
+
+class ConsentTranslation(APIModel):
+    title: str
+    body: str
+    bullets: list[str]
 
 
 class ConsentText(APIModel):
@@ -239,6 +286,20 @@ class ConsentText(APIModel):
     title: str
     body: str
     bullets: list[str]
+    translations: dict[str, ConsentTranslation] = Field(default_factory=dict)
+
+
+class EventKindInfo(APIModel):
+    id: EventKind
+    title: str
+    symbol: str
+    markets: list[Market]
+
+
+class SupportInfo(APIModel):
+    email: str
+    grievance_email: str
+    grievance_officer: str | None
 
 
 class Consents(APIModel):
@@ -266,8 +327,11 @@ class Meta(APIModel):
     assessment_estimate_minutes: list[int]
     voice_setup_estimate_minutes: int
     pricing: Pricing
+    pricing_by_market: dict[str, Pricing]
     consents: Consents
     limits: Limits
+    event_kinds: list[EventKindInfo]
+    support: SupportInfo
 
 
 class RecordingRules(APIModel):
@@ -292,12 +356,27 @@ class Onboarding(APIModel):
     analysis_consent_version: str | None
     analysis_consented_at: str | None
     course_started: bool
+    age_confirmed: bool = False
 
 
 class PracticeSettings(APIModel):
     weekly_target: int
     reminder_time: str | None
     reminder_days: list[int]
+    anchor: str | None = None
+    paused_until: str | None = None
+
+
+class NotificationSettings(APIModel):
+    practice_reminders: bool
+    event_prep: bool
+    results: bool
+    check_ins: bool
+    nudges: bool
+    weekly_reveal: bool
+    tips: bool
+    quiet_start: str
+    quiet_end: str
 
 
 class VoiceReferenceStatus(APIModel):
@@ -324,9 +403,9 @@ class Me(APIModel):
     entitlement: Entitlement
     has_results: bool
     next_step: Literal["onboarding", "choose_input", "home"]
-
-
-_TIME_RE = re.compile(r"^([01]\d|2[0-3]):[0-5]\d$")
+    market: Market
+    timezone: str
+    notification_settings: NotificationSettings
 
 
 class OnboardingPatch(APIModel):
@@ -338,19 +417,25 @@ class OnboardingPatch(APIModel):
     region: str | None = Field(default=None, max_length=12)
     analysis_consent_version: str | None = Field(default=None, max_length=40)
     course_started: bool | None = None
+    age_confirmed: bool | None = None
 
 
 class PracticeSettingsPatch(APIModel):
     weekly_target: int | None = Field(default=None, ge=1, le=14)
     reminder_time: str | None = None
     reminder_days: list[int] | None = None
+    anchor: str | None = Field(default=None, max_length=120)
+    paused_until: str | None = None
 
     @field_validator("reminder_time")
     @classmethod
     def _time(cls, value: str | None) -> str | None:
-        if value is not None and not _TIME_RE.match(value):
-            raise ValueError("reminder_time must be HH:MM (24h)")
-        return value
+        return _check_hhmm(value, "reminder_time")
+
+    @field_validator("paused_until")
+    @classmethod
+    def _paused(cls, value: str | None) -> str | None:
+        return _check_date(value)
 
     @field_validator("reminder_days")
     @classmethod
@@ -360,9 +445,92 @@ class PracticeSettingsPatch(APIModel):
         return sorted(set(value)) if value is not None else None
 
 
+class NotificationSettingsPatch(APIModel):
+    practice_reminders: bool | None = None
+    event_prep: bool | None = None
+    results: bool | None = None
+    check_ins: bool | None = None
+    nudges: bool | None = None
+    weekly_reveal: bool | None = None
+    tips: bool | None = None
+    quiet_start: str | None = None
+    quiet_end: str | None = None
+
+    @field_validator("quiet_start", "quiet_end")
+    @classmethod
+    def _quiet(cls, value: str | None) -> str | None:
+        return _check_hhmm(value, "quiet hours")
+
+
 class MePatch(APIModel):
     onboarding: OnboardingPatch | None = None
     practice_settings: PracticeSettingsPatch | None = None
+    notification_settings: NotificationSettingsPatch | None = None
+
+
+# ---------------------------------------------------------------- devices & notifications
+
+
+class DeviceRegistration(APIModel):
+    apns_token: str | None = Field(default=None, max_length=200)
+    push_environment: Literal["sandbox", "production"] | None = None
+    authorization: PushAuthorization = "not_determined"
+    timezone: str = Field(min_length=1, max_length=64)
+    locale: str = Field(default="en-US", max_length=20)
+    app_version: str = Field(default="", max_length=40)
+
+    @field_validator("apns_token")
+    @classmethod
+    def _token(cls, value: str | None) -> str | None:
+        if value is None or value == "":
+            return None
+        if not re.fullmatch(r"[0-9a-fA-F]{32,200}", value):
+            raise ValueError("apns_token must be the hex device token")
+        return value.lower()
+
+
+class DeviceOut(APIModel):
+    id: str
+    push_enabled: bool
+
+
+class NotificationOut(APIModel):
+    id: str
+    category: NotificationCategory
+    title: str
+    body: str
+    deep_link: str
+    created_at: str
+    read: bool
+
+
+class NotificationList(APIModel):
+    items: list[NotificationOut]
+    unread_count: int
+
+
+class NotificationRead(APIModel):
+    ids: list[str] | None = None
+    all: bool = False
+
+
+class UnreadCount(APIModel):
+    unread_count: int
+
+
+# ---------------------------------------------------------------- daily rep
+
+
+class DailyRepPreview(APIModel):
+    date: str
+    prompt_id: str
+    title: str
+    prompt: str
+    dimension: DimensionId
+
+
+class DailyUpcoming(APIModel):
+    items: list[DailyRepPreview]
 
 
 class VoiceEnrollmentResult(APIModel):
@@ -390,7 +558,7 @@ class ConversationSetup(APIModel):
 
 class ConversationOut(APIModel):
     id: str
-    kind: Literal["assessment_activity", "mission", "spar"]
+    kind: ConversationKind
     status: Literal["active", "finished"]
     partner: Partner
     setup: ConversationSetup
@@ -402,11 +570,14 @@ class ConversationOut(APIModel):
     mission_id: str | None
     demo_mode: bool
     created_at: str
+    participants: list[Participant] = Field(default_factory=list)
 
 
 class ConversationCreate(APIModel):
-    kind: Literal["mission", "spar"]
+    kind: Literal["mission", "spar", "daily", "group"]
     mission_id: str | None = None
+    daily_date: str | None = None
+    panel_id: str | None = Field(default=None, max_length=80)
     quick: bool = False
     persona_id: str | None = None
     custom_scenario: str | None = Field(default=None, max_length=600)
@@ -421,10 +592,11 @@ class TurnResult(APIModel):
     partner_turn: Turn | None
     retry_suggested: bool
     done: bool
+    partner_turns: list[Turn] = Field(default_factory=list)
 
 
 class ResultRef(APIModel):
-    type: Literal["assessment", "mission_attempt", "spar_report"]
+    type: Literal["assessment", "mission_attempt", "spar_report", "daily_attempt"]
     id: str
 
 
@@ -763,6 +935,22 @@ class ReflectionCreate(APIModel):
     went: Literal["well", "mixed", "hard"] | None = None
 
 
+class DailyRep(APIModel):
+    date: str
+    prompt_id: str
+    title: str
+    prompt: str
+    kind: DailyKind
+    dimension: DimensionId
+    target_behavior: str
+    tips: list[str]
+    suggested_seconds: int
+    example: str | None
+    can_shuffle: bool
+    completed: bool
+    attempts: list[MissionAttemptOut]
+
+
 # ---------------------------------------------------------------- spar, talks, events
 
 
@@ -877,6 +1065,8 @@ class UpcomingEventOut(APIModel):
     notes: str | None
     prep: list[PrepItem]
     created_at: str
+    time: str | None = None
+    reflection: ReflectionOut | None = None
 
 
 class EventList(APIModel):
@@ -888,6 +1078,7 @@ class EventCreate(APIModel):
     kind: EventKind = "other"
     date: str
     notes: str | None = Field(default=None, max_length=2000)
+    time: str | None = None
 
     @field_validator("date")
     @classmethod
@@ -896,6 +1087,11 @@ class EventCreate(APIModel):
 
         _date.fromisoformat(value)
         return value
+
+    @field_validator("time")
+    @classmethod
+    def _time(cls, value: str | None) -> str | None:
+        return _check_hhmm(value, "time")
 
 
 # ---------------------------------------------------------------- progress & review
@@ -911,6 +1107,8 @@ class MilestoneOut(APIModel):
 class ThisWeek(APIModel):
     sessions: int
     target: int
+    days: list[int] = Field(default_factory=list)  # weekdays with a session, 1 = Monday
+    met: bool = False
 
 
 class PracticeTotals(APIModel):
@@ -919,6 +1117,15 @@ class PracticeTotals(APIModel):
     minutes: int
     weeks_active: int
     this_week: ThisWeek
+    reps: int = 0
+    weeks_on_target: int = 0
+    best_weeks_on_target: int = 0
+    paused_until: str | None = None
+
+
+class WelcomeBack(APIModel):
+    days_away: int
+    message: str
 
 
 class RecentItem(APIModel):
@@ -931,6 +1138,7 @@ class Progress(APIModel):
     practice: PracticeTotals
     milestones: list[MilestoneOut]
     recent: list[RecentItem]
+    welcome_back: WelcomeBack | None = None
 
 
 class WeekPractice(APIModel):
@@ -1005,6 +1213,7 @@ class FeedbackReportOut(APIModel):
 
 class DemoSeedRequest(APIModel):
     pro: bool = False
+    market: Literal["us", "in"] = "us"
 
 
 class DemoSeedResult(APIModel):
@@ -1014,3 +1223,31 @@ class DemoSeedResult(APIModel):
     mission_id: str | None
     spar_conversation_id: str | None
     event_id: str | None
+    daily_date: str | None = None
+    previous_daily_date: str | None = None
+    group_conversation_id: str | None = None
+    panel_id: str | None = None
+
+
+# ---------------------------------------------------------------- group conversations
+
+
+class Panel(APIModel):
+    id: str
+    kind: PanelKind
+    title: str
+    scenario: str
+    description: str
+    topic: str | None
+    user_role: str
+    participants: list[Participant]
+    minutes: int
+    markets: list[Market]
+    is_free: bool
+    symbol: str
+    color_hex: str
+    default_difficulty: Difficulty
+
+
+class PanelList(APIModel):
+    panels: list[Panel]

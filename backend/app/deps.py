@@ -49,7 +49,8 @@ def current_user(request: Request, svc: AppServices = Depends(get_services), db:
     if user is None:
         raise APIError(401, "unauthorized", "This account no longer exists.")
     now = utcnow()
-    if user.last_active_at is None or (now - as_utc(user.last_active_at)).total_seconds() > 300:
+    # Minute resolution: "is the user in the app right now?" decides whether feedback needs a push.
+    if user.last_active_at is None or (now - as_utc(user.last_active_at)).total_seconds() > 60:
         user.last_active_at = now
     return user
 

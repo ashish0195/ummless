@@ -1497,6 +1497,59 @@
         }
       }
     },
+    "/v1/events/{event_id}/reflection": {
+      "post": {
+        "tags": [
+          "events"
+        ],
+        "summary": "Reflect On Event",
+        "description": "\"How did it go?\" after the day. The first one counts as a real-life practice session.",
+        "operationId": "reflect_on_event_v1_events__event_id__reflection_post",
+        "parameters": [
+          {
+            "name": "event_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Event Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReflectionCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpcomingEventOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/events/{event_id}": {
       "delete": {
         "tags": [
@@ -1801,6 +1854,394 @@
                 "schema": {
                   "$ref": "#/components/schemas/HTTPValidationError"
                 }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/devices": {
+      "post": {
+        "tags": [
+          "notifications"
+        ],
+        "summary": "Register Device",
+        "description": "Upsert this install's push registration (token, permission, timezone). Also sets `Me.timezone`.",
+        "operationId": "register_device_v1_devices_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeviceRegistration"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeviceOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/devices/{device_id}": {
+      "delete": {
+        "tags": [
+          "notifications"
+        ],
+        "summary": "Delete Device",
+        "operationId": "delete_device_v1_devices__device_id__delete",
+        "parameters": [
+          {
+            "name": "device_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Device Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/notifications": {
+      "get": {
+        "tags": [
+          "notifications"
+        ],
+        "summary": "List Notifications",
+        "operationId": "list_notifications_v1_notifications_get",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotificationList"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/notifications/read": {
+      "post": {
+        "tags": [
+          "notifications"
+        ],
+        "summary": "Read Notifications",
+        "operationId": "read_notifications_v1_notifications_read_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NotificationRead"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnreadCount"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/notifications/test": {
+      "post": {
+        "tags": [
+          "notifications"
+        ],
+        "summary": "Test Notification",
+        "description": "\"Notifications are on\": created and pushed right away (ignores quiet hours and the daily cap).",
+        "operationId": "test_notification_v1_notifications_test_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotificationOut"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/notifications/{notification_id}/opened": {
+      "post": {
+        "tags": [
+          "notifications"
+        ],
+        "summary": "Open Notification",
+        "description": "A tap on a push or an inbox row. Marks it read and resets the nudge back-off.",
+        "operationId": "open_notification_v1_notifications__notification_id__opened_post",
+        "parameters": [
+          {
+            "name": "notification_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Notification Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/daily": {
+      "get": {
+        "tags": [
+          "daily"
+        ],
+        "summary": "Get Today",
+        "operationId": "get_today_v1_daily_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DailyRep"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/daily/upcoming": {
+      "get": {
+        "tags": [
+          "daily"
+        ],
+        "summary": "Get Upcoming",
+        "operationId": "get_upcoming_v1_daily_upcoming_get",
+        "parameters": [
+          {
+            "name": "days",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 7,
+              "title": "Days"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DailyUpcoming"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/daily/shuffle": {
+      "post": {
+        "tags": [
+          "daily"
+        ],
+        "summary": "Shuffle Today",
+        "operationId": "shuffle_today_v1_daily_shuffle_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DailyRep"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/daily/{day}": {
+      "get": {
+        "tags": [
+          "daily"
+        ],
+        "summary": "Get Day",
+        "operationId": "get_day_v1_daily__day__get",
+        "parameters": [
+          {
+            "name": "day",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Day"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DailyRep"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/group/panels": {
+      "get": {
+        "tags": [
+          "group"
+        ],
+        "summary": "Get Panels",
+        "operationId": "get_panels_v1_group_panels_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PanelList"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/me/export": {
+      "get": {
+        "tags": [
+          "me"
+        ],
+        "summary": "Export Me",
+        "operationId": "export_me_v1_me_export_get",
+        "responses": {
+          "200": {
+            "description": "Everything stored about you, without audio.",
+            "content": {
+              "application/json": {
+                "schema": {}
               }
             }
           }
@@ -2585,6 +3026,13 @@
             },
             "type": "array",
             "title": "Bullets"
+          },
+          "translations": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/ConsentTranslation"
+            },
+            "type": "object",
+            "title": "Translations"
           }
         },
         "type": "object",
@@ -2595,6 +3043,32 @@
           "bullets"
         ],
         "title": "ConsentText"
+      },
+      "ConsentTranslation": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "body": {
+            "type": "string",
+            "title": "Body"
+          },
+          "bullets": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Bullets"
+          }
+        },
+        "type": "object",
+        "required": [
+          "title",
+          "body",
+          "bullets"
+        ],
+        "title": "ConsentTranslation"
       },
       "Consents": {
         "properties": {
@@ -2622,7 +3096,9 @@
             "type": "string",
             "enum": [
               "mission",
-              "spar"
+              "spar",
+              "daily",
+              "group"
             ],
             "title": "Kind"
           },
@@ -2636,6 +3112,29 @@
               }
             ],
             "title": "Mission Id"
+          },
+          "daily_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Daily Date"
+          },
+          "panel_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 80
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Panel Id"
           },
           "quick": {
             "type": "boolean",
@@ -2721,7 +3220,9 @@
             "enum": [
               "assessment_activity",
               "mission",
-              "spar"
+              "spar",
+              "daily",
+              "group"
             ],
             "title": "Kind"
           },
@@ -2791,6 +3292,13 @@
           "created_at": {
             "type": "string",
             "title": "Created At"
+          },
+          "participants": {
+            "items": {
+              "$ref": "#/components/schemas/Participant"
+            },
+            "type": "array",
+            "title": "Participants"
           }
         },
         "type": "object",
@@ -3069,12 +3577,184 @@
         ],
         "title": "CourseModule"
       },
+      "DailyRep": {
+        "properties": {
+          "date": {
+            "type": "string",
+            "title": "Date"
+          },
+          "prompt_id": {
+            "type": "string",
+            "title": "Prompt Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "prompt": {
+            "type": "string",
+            "title": "Prompt"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "explain",
+              "story",
+              "persuade",
+              "answer",
+              "opinion",
+              "introduce",
+              "summarize",
+              "respond"
+            ],
+            "title": "Kind"
+          },
+          "dimension": {
+            "type": "string",
+            "enum": [
+              "clarity",
+              "structure",
+              "listening",
+              "warmth",
+              "persuasion",
+              "concision",
+              "storytelling"
+            ],
+            "title": "Dimension"
+          },
+          "target_behavior": {
+            "type": "string",
+            "title": "Target Behavior"
+          },
+          "tips": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Tips"
+          },
+          "suggested_seconds": {
+            "type": "integer",
+            "title": "Suggested Seconds"
+          },
+          "example": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Example"
+          },
+          "can_shuffle": {
+            "type": "boolean",
+            "title": "Can Shuffle"
+          },
+          "completed": {
+            "type": "boolean",
+            "title": "Completed"
+          },
+          "attempts": {
+            "items": {
+              "$ref": "#/components/schemas/MissionAttemptOut"
+            },
+            "type": "array",
+            "title": "Attempts"
+          }
+        },
+        "type": "object",
+        "required": [
+          "date",
+          "prompt_id",
+          "title",
+          "prompt",
+          "kind",
+          "dimension",
+          "target_behavior",
+          "tips",
+          "suggested_seconds",
+          "example",
+          "can_shuffle",
+          "completed",
+          "attempts"
+        ],
+        "title": "DailyRep"
+      },
+      "DailyRepPreview": {
+        "properties": {
+          "date": {
+            "type": "string",
+            "title": "Date"
+          },
+          "prompt_id": {
+            "type": "string",
+            "title": "Prompt Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "prompt": {
+            "type": "string",
+            "title": "Prompt"
+          },
+          "dimension": {
+            "type": "string",
+            "enum": [
+              "clarity",
+              "structure",
+              "listening",
+              "warmth",
+              "persuasion",
+              "concision",
+              "storytelling"
+            ],
+            "title": "Dimension"
+          }
+        },
+        "type": "object",
+        "required": [
+          "date",
+          "prompt_id",
+          "title",
+          "prompt",
+          "dimension"
+        ],
+        "title": "DailyRepPreview"
+      },
+      "DailyUpcoming": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/DailyRepPreview"
+            },
+            "type": "array",
+            "title": "Items"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items"
+        ],
+        "title": "DailyUpcoming"
+      },
       "DemoSeedRequest": {
         "properties": {
           "pro": {
             "type": "boolean",
             "title": "Pro",
             "default": false
+          },
+          "market": {
+            "type": "string",
+            "enum": [
+              "us",
+              "in"
+            ],
+            "title": "Market",
+            "default": "us"
           }
         },
         "type": "object",
@@ -3140,6 +3820,50 @@
               }
             ],
             "title": "Event Id"
+          },
+          "daily_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Daily Date"
+          },
+          "previous_daily_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Previous Daily Date"
+          },
+          "group_conversation_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Group Conversation Id"
+          },
+          "panel_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Panel Id"
           }
         },
         "type": "object",
@@ -3223,6 +3947,90 @@
           "is_new"
         ],
         "title": "DeviceAuthResponse"
+      },
+      "DeviceOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "push_enabled": {
+            "type": "boolean",
+            "title": "Push Enabled"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "push_enabled"
+        ],
+        "title": "DeviceOut"
+      },
+      "DeviceRegistration": {
+        "properties": {
+          "apns_token": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Apns Token"
+          },
+          "push_environment": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "sandbox",
+                  "production"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Push Environment"
+          },
+          "authorization": {
+            "type": "string",
+            "enum": [
+              "authorized",
+              "provisional",
+              "ephemeral",
+              "denied",
+              "not_determined"
+            ],
+            "title": "Authorization",
+            "default": "not_determined"
+          },
+          "timezone": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 1,
+            "title": "Timezone"
+          },
+          "locale": {
+            "type": "string",
+            "maxLength": 20,
+            "title": "Locale",
+            "default": "en-US"
+          },
+          "app_version": {
+            "type": "string",
+            "maxLength": 40,
+            "title": "App Version",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "required": [
+          "timezone"
+        ],
+        "title": "DeviceRegistration"
       },
       "DimensionInfo": {
         "properties": {
@@ -3499,7 +4307,12 @@
               "presentation",
               "social",
               "negotiation",
-              "other"
+              "other",
+              "placement",
+              "group_discussion",
+              "client_call",
+              "viva",
+              "appraisal"
             ],
             "title": "Kind",
             "default": "other"
@@ -3519,6 +4332,17 @@
               }
             ],
             "title": "Notes"
+          },
+          "time": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Time"
           }
         },
         "type": "object",
@@ -3527,6 +4351,55 @@
           "date"
         ],
         "title": "EventCreate"
+      },
+      "EventKindInfo": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "enum": [
+              "interview",
+              "meeting",
+              "presentation",
+              "social",
+              "negotiation",
+              "other",
+              "placement",
+              "group_discussion",
+              "client_call",
+              "viva",
+              "appraisal"
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "symbol": {
+            "type": "string",
+            "title": "Symbol"
+          },
+          "markets": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "us",
+                "in",
+                "global"
+              ]
+            },
+            "type": "array",
+            "title": "Markets"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "symbol",
+          "markets"
+        ],
+        "title": "EventKindInfo"
       },
       "EventList": {
         "properties": {
@@ -4061,6 +4934,22 @@
               "home"
             ],
             "title": "Next Step"
+          },
+          "market": {
+            "type": "string",
+            "enum": [
+              "us",
+              "in",
+              "global"
+            ],
+            "title": "Market"
+          },
+          "timezone": {
+            "type": "string",
+            "title": "Timezone"
+          },
+          "notification_settings": {
+            "$ref": "#/components/schemas/NotificationSettings"
           }
         },
         "type": "object",
@@ -4073,7 +4962,10 @@
           "voice_reference",
           "entitlement",
           "has_results",
-          "next_step"
+          "next_step",
+          "market",
+          "timezone",
+          "notification_settings"
         ],
         "title": "Me"
       },
@@ -4093,6 +4985,16 @@
             "anyOf": [
               {
                 "$ref": "#/components/schemas/PracticeSettingsPatch"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "notification_settings": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/NotificationSettingsPatch"
               },
               {
                 "type": "null"
@@ -4228,11 +5130,28 @@
           "pricing": {
             "$ref": "#/components/schemas/Pricing"
           },
+          "pricing_by_market": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Pricing"
+            },
+            "type": "object",
+            "title": "Pricing By Market"
+          },
           "consents": {
             "$ref": "#/components/schemas/Consents"
           },
           "limits": {
             "$ref": "#/components/schemas/Limits"
+          },
+          "event_kinds": {
+            "items": {
+              "$ref": "#/components/schemas/EventKindInfo"
+            },
+            "type": "array",
+            "title": "Event Kinds"
+          },
+          "support": {
+            "$ref": "#/components/schemas/SupportInfo"
           }
         },
         "type": "object",
@@ -4248,8 +5167,11 @@
           "assessment_estimate_minutes",
           "voice_setup_estimate_minutes",
           "pricing",
+          "pricing_by_market",
           "consents",
-          "limits"
+          "limits",
+          "event_kinds",
+          "support"
         ],
         "title": "Meta"
       },
@@ -4400,7 +5322,8 @@
               "business",
               "conversational",
               "storytelling",
-              "public_speaking"
+              "public_speaking",
+              "interviews"
             ],
             "title": "Track Id"
           },
@@ -4665,6 +5588,263 @@
         ],
         "title": "NextStep"
       },
+      "NotificationList": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/NotificationOut"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "unread_count": {
+            "type": "integer",
+            "title": "Unread Count"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "unread_count"
+        ],
+        "title": "NotificationList"
+      },
+      "NotificationOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "practice",
+              "event_prep",
+              "results",
+              "check_in",
+              "nudge",
+              "weekly_reveal",
+              "milestone",
+              "tips"
+            ],
+            "title": "Category"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "body": {
+            "type": "string",
+            "title": "Body"
+          },
+          "deep_link": {
+            "type": "string",
+            "title": "Deep Link"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          },
+          "read": {
+            "type": "boolean",
+            "title": "Read"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "category",
+          "title",
+          "body",
+          "deep_link",
+          "created_at",
+          "read"
+        ],
+        "title": "NotificationOut"
+      },
+      "NotificationRead": {
+        "properties": {
+          "ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ids"
+          },
+          "all": {
+            "type": "boolean",
+            "title": "All",
+            "default": false
+          }
+        },
+        "type": "object",
+        "title": "NotificationRead"
+      },
+      "NotificationSettings": {
+        "properties": {
+          "practice_reminders": {
+            "type": "boolean",
+            "title": "Practice Reminders"
+          },
+          "event_prep": {
+            "type": "boolean",
+            "title": "Event Prep"
+          },
+          "results": {
+            "type": "boolean",
+            "title": "Results"
+          },
+          "check_ins": {
+            "type": "boolean",
+            "title": "Check Ins"
+          },
+          "nudges": {
+            "type": "boolean",
+            "title": "Nudges"
+          },
+          "weekly_reveal": {
+            "type": "boolean",
+            "title": "Weekly Reveal"
+          },
+          "tips": {
+            "type": "boolean",
+            "title": "Tips"
+          },
+          "quiet_start": {
+            "type": "string",
+            "title": "Quiet Start"
+          },
+          "quiet_end": {
+            "type": "string",
+            "title": "Quiet End"
+          }
+        },
+        "type": "object",
+        "required": [
+          "practice_reminders",
+          "event_prep",
+          "results",
+          "check_ins",
+          "nudges",
+          "weekly_reveal",
+          "tips",
+          "quiet_start",
+          "quiet_end"
+        ],
+        "title": "NotificationSettings"
+      },
+      "NotificationSettingsPatch": {
+        "properties": {
+          "practice_reminders": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Practice Reminders"
+          },
+          "event_prep": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Event Prep"
+          },
+          "results": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Results"
+          },
+          "check_ins": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Check Ins"
+          },
+          "nudges": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nudges"
+          },
+          "weekly_reveal": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Weekly Reveal"
+          },
+          "tips": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tips"
+          },
+          "quiet_start": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quiet Start"
+          },
+          "quiet_end": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quiet End"
+          }
+        },
+        "type": "object",
+        "title": "NotificationSettingsPatch"
+      },
       "Observation": {
         "properties": {
           "dimension": {
@@ -4734,7 +5914,8 @@
                   "business",
                   "conversational",
                   "storytelling",
-                  "public_speaking"
+                  "public_speaking",
+                  "interviews"
                 ]
               },
               {
@@ -4783,6 +5964,11 @@
           "course_started": {
             "type": "boolean",
             "title": "Course Started"
+          },
+          "age_confirmed": {
+            "type": "boolean",
+            "title": "Age Confirmed",
+            "default": false
           }
         },
         "type": "object",
@@ -4862,7 +6048,8 @@
                   "business",
                   "conversational",
                   "storytelling",
-                  "public_speaking"
+                  "public_speaking",
+                  "interviews"
                 ]
               },
               {
@@ -4917,10 +6104,180 @@
               }
             ],
             "title": "Course Started"
+          },
+          "age_confirmed": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Age Confirmed"
           }
         },
         "type": "object",
         "title": "OnboardingPatch"
+      },
+      "Panel": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "group_discussion",
+              "panel_interview"
+            ],
+            "title": "Kind"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "scenario": {
+            "type": "string",
+            "title": "Scenario"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "topic": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Topic"
+          },
+          "user_role": {
+            "type": "string",
+            "title": "User Role"
+          },
+          "participants": {
+            "items": {
+              "$ref": "#/components/schemas/Participant"
+            },
+            "type": "array",
+            "title": "Participants"
+          },
+          "minutes": {
+            "type": "integer",
+            "title": "Minutes"
+          },
+          "markets": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "us",
+                "in",
+                "global"
+              ]
+            },
+            "type": "array",
+            "title": "Markets"
+          },
+          "is_free": {
+            "type": "boolean",
+            "title": "Is Free"
+          },
+          "symbol": {
+            "type": "string",
+            "title": "Symbol"
+          },
+          "color_hex": {
+            "type": "string",
+            "title": "Color Hex"
+          },
+          "default_difficulty": {
+            "type": "string",
+            "enum": [
+              "kind",
+              "real",
+              "brutal"
+            ],
+            "title": "Default Difficulty"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "kind",
+          "title",
+          "scenario",
+          "description",
+          "topic",
+          "user_role",
+          "participants",
+          "minutes",
+          "markets",
+          "is_free",
+          "symbol",
+          "color_hex",
+          "default_difficulty"
+        ],
+        "title": "Panel"
+      },
+      "PanelList": {
+        "properties": {
+          "panels": {
+            "items": {
+              "$ref": "#/components/schemas/Panel"
+            },
+            "type": "array",
+            "title": "Panels"
+          }
+        },
+        "type": "object",
+        "required": [
+          "panels"
+        ],
+        "title": "PanelList"
+      },
+      "Participant": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "role": {
+            "type": "string",
+            "title": "Role"
+          },
+          "voice": {
+            "type": "string",
+            "title": "Voice"
+          },
+          "symbol": {
+            "type": "string",
+            "title": "Symbol"
+          },
+          "color_hex": {
+            "type": "string",
+            "title": "Color Hex"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "role",
+          "voice",
+          "symbol",
+          "color_hex"
+        ],
+        "title": "Participant"
       },
       "Partner": {
         "properties": {
@@ -5052,6 +6409,28 @@
             },
             "type": "array",
             "title": "Reminder Days"
+          },
+          "anchor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Anchor"
+          },
+          "paused_until": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Paused Until"
           }
         },
         "type": "object",
@@ -5101,6 +6480,29 @@
               }
             ],
             "title": "Reminder Days"
+          },
+          "anchor": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 120
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Anchor"
+          },
+          "paused_until": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Paused Until"
           }
         },
         "type": "object",
@@ -5126,6 +6528,32 @@
           },
           "this_week": {
             "$ref": "#/components/schemas/ThisWeek"
+          },
+          "reps": {
+            "type": "integer",
+            "title": "Reps",
+            "default": 0
+          },
+          "weeks_on_target": {
+            "type": "integer",
+            "title": "Weeks On Target",
+            "default": 0
+          },
+          "best_weeks_on_target": {
+            "type": "integer",
+            "title": "Best Weeks On Target",
+            "default": 0
+          },
+          "paused_until": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Paused Until"
           }
         },
         "type": "object",
@@ -5201,6 +6629,30 @@
           "note": {
             "type": "string",
             "title": "Note"
+          },
+          "currency": {
+            "type": "string",
+            "enum": [
+              "USD",
+              "INR"
+            ],
+            "title": "Currency"
+          },
+          "monthly_price": {
+            "type": "number",
+            "title": "Monthly Price"
+          },
+          "yearly_price": {
+            "type": "number",
+            "title": "Yearly Price"
+          },
+          "monthly_display": {
+            "type": "string",
+            "title": "Monthly Display"
+          },
+          "yearly_display": {
+            "type": "string",
+            "title": "Yearly Display"
           }
         },
         "type": "object",
@@ -5210,7 +6662,12 @@
           "trial_days",
           "monthly_product_id",
           "yearly_product_id",
-          "note"
+          "note",
+          "currency",
+          "monthly_price",
+          "yearly_price",
+          "monthly_display",
+          "yearly_display"
         ],
         "title": "Pricing"
       },
@@ -5371,6 +6828,16 @@
             },
             "type": "array",
             "title": "Recent"
+          },
+          "welcome_back": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/WelcomeBack"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "type": "object",
@@ -5887,7 +7354,8 @@
             "enum": [
               "assessment",
               "mission_attempt",
-              "spar_report"
+              "spar_report",
+              "daily_attempt"
             ],
             "title": "Type"
           },
@@ -6483,6 +7951,36 @@
         ],
         "title": "StyleResult"
       },
+      "SupportInfo": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "title": "Email"
+          },
+          "grievance_email": {
+            "type": "string",
+            "title": "Grievance Email"
+          },
+          "grievance_officer": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Grievance Officer"
+          }
+        },
+        "type": "object",
+        "required": [
+          "email",
+          "grievance_email",
+          "grievance_officer"
+        ],
+        "title": "SupportInfo"
+      },
       "Talk": {
         "properties": {
           "id": {
@@ -6759,6 +8257,18 @@
           "target": {
             "type": "integer",
             "title": "Target"
+          },
+          "days": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "title": "Days"
+          },
+          "met": {
+            "type": "boolean",
+            "title": "Met",
+            "default": false
           }
         },
         "type": "object",
@@ -6805,7 +8315,8 @@
               "business",
               "conversational",
               "storytelling",
-              "public_speaking"
+              "public_speaking",
+              "interviews"
             ],
             "title": "Track"
           }
@@ -6825,7 +8336,8 @@
               "business",
               "conversational",
               "storytelling",
-              "public_speaking"
+              "public_speaking",
+              "interviews"
             ],
             "title": "Id"
           },
@@ -6974,6 +8486,17 @@
           "excluded": {
             "type": "boolean",
             "title": "Excluded"
+          },
+          "speaker_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Speaker Id"
           }
         },
         "type": "object",
@@ -7050,6 +8573,13 @@
           "done": {
             "type": "boolean",
             "title": "Done"
+          },
+          "partner_turns": {
+            "items": {
+              "$ref": "#/components/schemas/Turn"
+            },
+            "type": "array",
+            "title": "Partner Turns"
           }
         },
         "type": "object",
@@ -7151,6 +8681,19 @@
         ],
         "title": "TwinResult"
       },
+      "UnreadCount": {
+        "properties": {
+          "unread_count": {
+            "type": "integer",
+            "title": "Unread Count"
+          }
+        },
+        "type": "object",
+        "required": [
+          "unread_count"
+        ],
+        "title": "UnreadCount"
+      },
       "UpcomingEventOut": {
         "properties": {
           "id": {
@@ -7169,7 +8712,12 @@
               "presentation",
               "social",
               "negotiation",
-              "other"
+              "other",
+              "placement",
+              "group_discussion",
+              "client_call",
+              "viva",
+              "appraisal"
             ],
             "title": "Kind"
           },
@@ -7198,6 +8746,27 @@
           "created_at": {
             "type": "string",
             "title": "Created At"
+          },
+          "time": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Time"
+          },
+          "reflection": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ReflectionOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "type": "object",
@@ -7461,6 +9030,24 @@
           "message"
         ],
         "title": "WeeklyReview"
+      },
+      "WelcomeBack": {
+        "properties": {
+          "days_away": {
+            "type": "integer",
+            "title": "Days Away"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "days_away",
+          "message"
+        ],
+        "title": "WelcomeBack"
       }
     }
   }

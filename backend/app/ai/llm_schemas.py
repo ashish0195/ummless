@@ -34,6 +34,17 @@ class PartnerReply(BaseModel):
     )
 
 
+class GroupLine(BaseModel):
+    speaker_id: str = Field(description="The id of the participant speaking, exactly as listed (e.g. 'p1', 'mod').")
+    text: str = Field(description="What they say, spoken aloud. 1–2 short sentences, at most about 35 words.")
+
+
+class GroupReply(BaseModel):
+    lines: list[GroupLine] = Field(description="1–2 lines from different participants, in speaking order. Never a "
+                                   "line for the user.")
+    end_discussion: bool = Field(description="True only when the moderator's line closes the discussion.")
+
+
 class EvidenceRef(BaseModel):
     segment_id: str = Field(description="ID of a USER segment, exactly as shown, e.g. 'A2.T3' or 'R.S14'.")
     quote: str = Field(description="Verbatim excerpt from that segment, at most 25 words.")

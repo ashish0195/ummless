@@ -23,7 +23,7 @@ from ..schemas import (
     Transcript,
     TurnResult,
 )
-from ..services import assessments, conversations, recordings, spar, users
+from ..services import assessments, conversations, daily, group, recordings, spar, users
 from ..services import course as course_service
 
 router = APIRouter(prefix="/v1")
@@ -43,6 +43,10 @@ def create_conversation(body: ConversationCreate, svc: AppServices = Depends(get
         course_service.ensure_unlocked(db, user, mission)
         conv = conversations.create_mission_conversation(svc, db, user, body.mission_id, body.quick,
                                                          users.language(user), body.difficulty)
+    elif body.kind == "daily":
+        conv = daily.create_conversation(svc, db, user, body.daily_date)
+    elif body.kind == "group":
+        conv = group.create(svc, db, user, body)
     else:
         conv = spar.create(svc, db, user, body)
     return conversations.conversation_out(svc, db, conv)

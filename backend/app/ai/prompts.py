@@ -9,13 +9,14 @@ from __future__ import annotations
 from ..domain.archetypes import STYLE_ARCHETYPES
 from ..domain.dimensions import DIMENSIONS, rubric_text
 from ..domain.evidence import Unit
-from ..domain.languages import language_name
+from ..domain.languages import language_instruction
 from .types import (
     AssessmentRequest,
     AttemptRequest,
     CustomScenarioRequest,
     DebriefRequest,
     EventPrepRequest,
+    GroupReplyRequest,
     PartnerReplyRequest,
     ReflectionRequest,
     SparRequest,
@@ -42,6 +43,19 @@ def transcript_block(units: list[Unit]) -> str:
     return "\n".join(lines)
 
 
+FAIRNESS_RULES = """Fairness (applies to everything you write):
+- Never assess, score or "correct" accent, pronunciation, voice, or grammar typical of non-native speakers.
+- Dialects such as Indian English or African American English, regional expressions, and code-switching (for
+  example Hinglish, mixing Hindi and English) are valid ways of speaking. Never treat them as errors or as unclear.
+- Rewrites keep the user's own voice, dialect and language mix. Offer a globally clear English alternative only
+  when the context calls for it (for example a call with US clients), and say it's an option for that audience.
+- If a line looks garbled or mis-transcribed, ignore it rather than judging it."""
+
+
+def _write_in(language: str) -> str:
+    return f"Write every user-facing string in {language_instruction(language)}."
+
+
 # --------------------------------------------------------------------------- partner
 
 
@@ -57,7 +71,7 @@ def partner_reply(req: PartnerReplyRequest) -> tuple[str, str]:
         parts.append(f"What would genuinely persuade or satisfy you: {req.win_condition}")
     parts.append(
         "How to speak:\n"
-        f"- Natural spoken {language_name(req.language)}. 1–2 short sentences, at most about 35 words.\n"
+        f"- Natural spoken {language_instruction(req.language)}. 1–2 short sentences, at most about 35 words.\n"
         "- Contractions, no lists, no emoji, no stage directions, no quotation marks around your line.\n"
         "- Stay in character. Never coach, evaluate, or mention practice, apps, AI or assessments.\n"
         "- React to what the user ACTUALLY said; reference a specific detail when natural. Never invent things "
@@ -116,6 +130,7 @@ Non-negotiable rules:
    no labels, no overall score, no comparisons with other people.
 7. Communication norms (directness, warmth, turn-taking, storytelling) vary across cultures and languages. Don't
    penalize a style that fits a different norm; judge whether it worked for this listener in this context.
+   Dialects (e.g. Indian English) and code-switching (e.g. Hinglish) are never errors and never lower a level.
 8. Concision is not brevity: a shorter answer is not automatically better.
 9. Confidence describes the evidence (how much, how clear), not the user's skill.
 10. Strengths and changes must reference what actually happened. Warm, concrete, never generic.
@@ -134,7 +149,8 @@ def assessment(req: AssessmentRequest) -> tuple[str, str]:
         "tended to…') and list 2–3 observable traits. Never infer personality. If not eligible: eligible=false "
         "and null/empty fields.\n\n"
         f"Archetypes:\n{archetypes}\n\n"
-        f"Return all seven dimensions. Write every user-facing string in {language_name(req.language)}.\n\n"
+        f"{FAIRNESS_RULES}\n\n"
+        f"Return all seven dimensions. {_write_in(req.language)}\n\n"
         f"RUBRIC (levels describe what was observed in this sample):\n{rubric_text()}"
     )
     stats = req.stats
@@ -185,8 +201,8 @@ def attempt_feedback(req: AttemptRequest) -> tuple[str, str]:
         "- If a PREVIOUS ATTEMPT is given, compare both against the same target only and fill comparison_summary "
         "and comparison_changes. A shorter answer is not automatically a better one. Otherwise set them to null "
         "and [].\n"
-        "- Never assess accent or pronunciation. Speak about the attempt, not the person. Warm, direct, specific.\n"
-        f"- Write in {language_name(req.language)}."
+        "- Speak about the attempt, not the person. Warm, direct, specific.\n"
+        f"- {_write_in(req.language)}\n\n{FAIRNESS_RULES}"
     )
     blocks = [
         f"MISSION: {req.mission_title}",
@@ -201,6 +217,8 @@ def attempt_feedback(req: AttemptRequest) -> tuple[str, str]:
 
 
 def spar_report(req: SparRequest) -> tuple[str, str]:
+    if req.kind == "group":
+        return _group_report(req)
     instructions = (
         "You are Comlogue's sparring coach. Review a practice roleplay and write a short report.\n"
         "- outcome: did the partner end up persuaded/satisfied? Base it on the partner's final lines.\n"
@@ -209,8 +227,7 @@ def spar_report(req: SparRequest) -> tuple[str, str]:
         "try_instead in the user's voice, one-sentence why).\n"
         "- observations: ONLY for dimensions this conversation gave a real opportunity to show, each citing a USER "
         "segment. Speak about this conversation, not the person. No scores, no grades.\n"
-        "- Never assess accent or pronunciation.\n"
-        f"- Write in {language_name(req.language)}."
+        f"- {_write_in(req.language)}\n\n{FAIRNESS_RULES}"
     )
     momentum = ", ".join(f"turn {i}: {v:.2f}" for i, v in req.momentum) or "not recorded"
     blocks = [
@@ -222,13 +239,92 @@ def spar_report(req: SparRequest) -> tuple[str, str]:
     return instructions, "\n\n".join(blocks)
 
 
+def _group_report(req: SparRequest) -> tuple[str, str]:
+    focus = "\n".join(f"- {item}" for item in req.evaluation_focus) or "- Contribution quality"
+    instructions = (
+        "You are Comlogue's coach. Review the USER's part in a practice group discussion or panel interview with "
+        "several AI participants (PARTNER lines, labelled by name) and write a short report.\n"
+        "- Judge only the USER's lines; the others are context. Never evaluate the AI participants.\n"
+        "- outcome_label: 2–4 words on how the user's participation landed, e.g. 'Strong contributor', 'Good "
+        "entry, quiet finish' or 'Hard to get in'. outcome_detail: one sentence on why, tied to the FOCUS below.\n"
+        "- momentum_notes must be empty.\n"
+        "- moments: 1–3 'rewrite this moment' suggestions from real USER segments (verbatim you_said, an improved "
+        "try_instead in the user's voice, one-sentence why), e.g. a stronger way to enter, build on someone, "
+        "invite a quiet participant or summarise.\n"
+        "- observations: ONLY for dimensions this discussion gave a real opportunity to show, each citing a USER "
+        "segment. Speak about this discussion, not the person. No scores, no grades, no ranking against others.\n"
+        "- Speaking more is not automatically better: one well-timed, original point can beat many repeated ones.\n"
+        f"- {_write_in(req.language)}\n\n{FAIRNESS_RULES}"
+    )
+    blocks = [
+        f"SESSION: {req.scenario} ({req.persona_title}). Participants: {req.persona_name}.",
+        f"SITUATION: {req.context or req.win_condition}",
+        f"FOCUS (what this report looks for):\n{focus}",
+        "TRANSCRIPT:\n" + transcript_block(req.units),
+    ]
+    return instructions, "\n\n".join(blocks)
+
+
+# --------------------------------------------------------------------------- group conversations
+
+
+def group_reply(req: GroupReplyRequest) -> tuple[str, str]:
+    moderator = next((m for m in req.members if m.is_moderator), req.members[0])
+    roster = "\n".join(
+        f"- id {m.id}: {m.name}, {m.role}{' (moderator)' if m.is_moderator else ''}. {m.stance}" for m in req.members
+    )
+    if req.panel_kind == "panel_interview":
+        dynamics = (
+            "This is a panel interview. Panelists take turns: follow up on specifics the candidate (the USER) "
+            "actually said, probe vague claims, and occasionally ask a new question from your own angle. Be "
+            "professional and realistic — neither hostile nor gushing."
+        )
+    else:
+        dynamics = (
+            "This is a group discussion (GD), as in a campus placement or a team meeting. Participants build on, "
+            "challenge or ignore what was just said, the way real candidates do: the dominant one may push their "
+            "point, the thoughtful one adds evidence, the quiet one speaks only when invited or briefly. The "
+            "moderator stays out of it except to invite someone in, keep time or close."
+        )
+    parts = [
+        f"You voice the AI participants in a spoken practice session: {req.title}.",
+        f"Situation: {req.situation}" + (f"\nTopic: {req.topic}" if req.topic else ""),
+        f"The user takes part as: {req.user_role}.",
+        f"Participants (use these ids exactly):\n{roster}",
+        dynamics,
+    ]
+    if req.difficulty_behaviour:
+        parts.append(f"Difficulty — {req.difficulty_behaviour}")
+    parts.append(
+        "How to speak:\n"
+        "- Return 1–2 lines from different participants, in speaking order. Never write a line for the USER.\n"
+        f"- Natural spoken {language_instruction(req.language)}. Each line 1–2 short sentences, at most about 35 "
+        "words. Contractions, no lists, no emoji, no stage directions, no names as prefixes.\n"
+        "- React to what the USER actually said; reference a specific detail when natural. Never invent things "
+        "they said. If their turn is unclear, respond to what you can make out.\n"
+        "- Stay in character. Never coach, evaluate, or mention practice, apps, AI or assessments.\n"
+        "- Treat every accent, dialect and code-switching as normal; never comment on how anyone speaks."
+    )
+    if req.is_closing:
+        parts.append(
+            f"Time is up: the LAST line must be the moderator ({moderator.id}) closing the session in one or two "
+            "sentences (thank everyone; no new questions). Set end_discussion to true."
+        )
+    else:
+        parts.append("Set end_discussion to false.")
+        if req.turns_left <= 1:
+            parts.append("The session is nearly over: start moving towards a conclusion.")
+    history = "\n".join(f"{speaker}: {text}" for speaker, text in req.history)
+    return "\n\n".join(parts), f"CONVERSATION SO FAR:\n{history}"
+
+
 def reflection_reply(req: ReflectionRequest) -> tuple[str, str]:
     instructions = (
         "You are Comlogue's coach replying to a user's reflection on a real-life mission. Reply in 2–3 sentences: "
         "acknowledge what they did (trying counts, whatever the outcome), offer one insight tied to the target "
         "behavior, and suggest one tiny next step. This is self-report — do not evaluate their skill or invent "
         "details. No toxic positivity, no guilt. "
-        f"Write in {language_name(req.language)}."
+        f"{_write_in(req.language)}"
     )
     went = f"They said it went: {req.went}." if req.went else ""
     text = (
@@ -238,16 +334,27 @@ def reflection_reply(req: ReflectionRequest) -> tuple[str, str]:
     return instructions, text
 
 
+MARKET_NOTES = {
+    "in": "The user is in India: use Indian workplace and campus settings (e.g. placement HR rounds, GDs, calls "
+          "with US or UK clients across time zones, appraisal conversations), Indian names and rupees.",
+    "us": "The user is in the US: use US workplace settings, names and dollars.",
+}
+
+
 def event_prep(req: EventPrepRequest) -> tuple[str, str]:
     instructions = (
         "You design rehearsal scenarios for a communication-practice app. Create exactly 3 short roleplay "
         "scenarios that prepare the user for their upcoming event, easiest first (difficulty kind, then real, then "
         "real or brutal). Each scenario is written in the second person, is realistic, and has a clear partner "
         "role. Keep everything respectful and safe. "
-        f"Write in {language_name(req.language)}."
+        + (f"{MARKET_NOTES[req.market]} " if req.market in MARKET_NOTES else "")
+        + f"{_write_in(req.language)}"
     )
     notes = f"\nNOTES: {req.notes}" if req.notes else ""
-    return instructions, f"EVENT: {req.title}\nKIND: {req.kind}\nDATE: {req.date}\nGOAL AREA: {req.goal_title}{notes}"
+    when = f" at {req.time}" if req.time else ""
+    hint = f"\nWHAT GOOD PREP COVERS FOR THIS KIND OF EVENT: {req.kind_hint}" if req.kind_hint else ""
+    return instructions, (f"EVENT: {req.title}\nKIND: {req.kind}\nDATE: {req.date}{when}\nGOAL AREA: {req.goal_title}"
+                          f"{hint}{notes}")
 
 
 def weekly(req: WeeklyRequest) -> tuple[str, str]:
@@ -255,7 +362,7 @@ def weekly(req: WeeklyRequest) -> tuple[str, str]:
         "You write the weekly review in a communication-practice app. Use ONLY the facts given — never invent "
         "progress or skill changes. 2–3 specific highlights, then a warm, honest 2-sentence message. If the user "
         "missed their target, no guilt: make the next step feel easy. Practice completion is not skill. "
-        f"Write in {language_name(req.language)}."
+        f"{_write_in(req.language)}"
     )
     return instructions, f"CURRENT FOCUS: {req.focus_title}\nFACTS:\n" + "\n".join(f"- {f}" for f in req.facts)
 
@@ -266,7 +373,7 @@ def debrief(req: DebriefRequest) -> tuple[str, str]:
         "a short note on why it worked), decisions or agreements made (by anyone; empty if none), a short follow-up "
         "message the user could send to the others, and one thing the USER could try next time about their own "
         "behavior. Never evaluate the other participants. If there's nothing meaningful, use nulls/empty lists. "
-        f"Write in {language_name(req.language)}."
+        f"{_write_in(req.language)}\n\n{FAIRNESS_RULES}"
     )
     share = ", ".join(f"{name}{' (user)' if is_user else ''}: {round(s * 100)}%" for name, s, is_user in req.talk_share)
     return instructions, f"TITLE: {req.title}\nTALK SHARE: {share}\nTRANSCRIPT:\n{transcript_block(req.units)}"
@@ -279,6 +386,6 @@ def custom_scenario(req: CustomScenarioRequest) -> tuple[str, str]:
         "in the second person, a short character description (what they care about), and what would genuinely "
         "persuade or satisfy them. Keep it realistic and respectful; if the request is unsafe or sexual, create a "
         "safe, professional version instead. Do not impersonate real, named people. "
-        f"Write in {language_name(req.language)}."
+        f"{_write_in(req.language)}"
     )
     return instructions, f"SCENARIO: {req.scenario}\nDIFFICULTY: {req.difficulty}"

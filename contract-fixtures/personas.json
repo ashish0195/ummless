@@ -1,6 +1,39 @@
 {
   "personas": [
     {
+      "id": "networking_mixer_stranger",
+      "name": "Taylor",
+      "title": "Stranger at a networking mixer",
+      "scenario": "Make a real connection",
+      "description": "Taylor is standing alone near the snacks. Turn small talk into a real connection in five minutes.",
+      "default_difficulty": "kind",
+      "symbol": "wineglass",
+      "color_hex": "#10B3A3",
+      "is_free": true
+    },
+    {
+      "id": "performance_review_manager",
+      "name": "Jennifer",
+      "title": "Manager in your performance review",
+      "scenario": "Make your case for 'exceeds'",
+      "description": "Jennifer has you at 'meets expectations'. You believe you exceeded. Make your case without getting defensive.",
+      "default_difficulty": "real",
+      "symbol": "chart.bar.doc.horizontal",
+      "color_hex": "#6366F1",
+      "is_free": false
+    },
+    {
+      "id": "roommate_conflict",
+      "name": "Mike",
+      "title": "Roommate",
+      "scenario": "Sort out chores and guests",
+      "description": "Mike's girlfriend has basically moved in, and the chores have stopped. Fix it without wrecking the friendship.",
+      "default_difficulty": "real",
+      "symbol": "sofa",
+      "color_hex": "#E64980",
+      "is_free": false
+    },
+    {
       "id": "skeptical_cfo",
       "name": "Marcus",
       "title": "Skeptical CFO",

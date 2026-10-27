@@ -32,7 +32,10 @@ struct GroupFlowView: View {
                     progressLabel: panel?.isGroupDiscussion == false ? "Panel interview" : "Group discussion",
                     finishTitle: "Get my report",
                     endTitle: "End & get report",
-                    onFinished: { result in stage = .report(result?.resultRef?.id ?? conversation.id) },
+                    onFinished: { result in
+                        // Leaving before saying anything has nothing to review.
+                        if let id = result?.resultRef?.id { stage = .report(id) } else { app.dismissFlow() }
+                    },
                     onExit: { app.dismissFlow() }
                 )
                 .id(conversation.id)

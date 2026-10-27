@@ -1,77 +1,108 @@
 {
   "practice": {
-    "total_sessions": 5,
+    "total_sessions": 7,
     "missions_completed": 0,
-    "minutes": 7,
+    "minutes": 9,
     "weeks_active": 1,
     "this_week": {
-      "sessions": 5,
-      "target": 3
-    }
+      "sessions": 7,
+      "target": 3,
+      "days": [
+        2
+      ],
+      "met": true
+    },
+    "reps": 1,
+    "weeks_on_target": 1,
+    "best_weeks_on_target": 1,
+    "paused_until": null
   },
   "milestones": [
+    {
+      "id": "first_rep",
+      "title": "First daily rep",
+      "detail": "One prompt, one minute — that's how the habit starts.",
+      "achieved_at": "2026-10-27T09:34:26Z"
+    },
     {
       "id": "first_spar",
       "title": "First spar",
       "detail": "You held your ground with an AI sparring partner.",
-      "achieved_at": "2026-10-26T22:48:13Z"
+      "achieved_at": "2026-10-27T09:34:24Z"
+    },
+    {
+      "id": "first_real_life",
+      "title": "First real-life attempt",
+      "detail": "You used a skill in an actual conversation.",
+      "achieved_at": "2026-10-27T09:34:24Z"
     },
     {
       "id": "first_retry",
       "title": "Tried it again",
       "detail": "You retried a mission — that's how skills stick.",
-      "achieved_at": "2026-10-26T22:48:10Z"
+      "achieved_at": "2026-10-27T09:34:21Z"
     },
     {
       "id": "weekly_target:2026-10-26",
       "title": "Weekly target met",
       "detail": "You hit your practice target this week.",
-      "achieved_at": "2026-10-26T22:48:08Z"
+      "achieved_at": "2026-10-27T09:34:18Z"
     },
     {
       "id": "first_upload",
       "title": "First real conversation",
       "detail": "You added a real conversation for feedback.",
-      "achieved_at": "2026-10-26T22:48:06Z"
+      "achieved_at": "2026-10-27T09:34:16Z"
     },
     {
       "id": "first_conversation",
       "title": "First conversation",
       "detail": "You finished your first AI conversation.",
-      "achieved_at": "2026-10-26T22:48:03Z"
+      "achieved_at": "2026-10-27T09:34:13Z"
     },
     {
       "id": "first_profile",
       "title": "First insight",
       "detail": "Your communication web has its first evidence-backed point.",
-      "achieved_at": "2026-10-26T22:48:03Z"
+      "achieved_at": "2026-10-27T09:34:13Z"
     }
   ],
   "recent": [
     {
+      "type": "daily_rep",
+      "title": "Give directions using landmarks",
+      "created_at": "2026-10-27T09:34:26Z"
+    },
+    {
       "type": "spar_session",
       "title": "Pitch a budget increase",
-      "created_at": "2026-10-26T22:48:12Z"
+      "created_at": "2026-10-27T09:34:24Z"
+    },
+    {
+      "type": "real_life",
+      "title": "Panel interview at Northwind",
+      "created_at": "2026-10-27T09:34:24Z"
     },
     {
       "type": "mission_attempt",
       "title": "Make your point land",
-      "created_at": "2026-10-26T22:48:10Z"
+      "created_at": "2026-10-27T09:34:21Z"
     },
     {
       "type": "mission_attempt",
       "title": "Make your point land",
-      "created_at": "2026-10-26T22:48:08Z"
+      "created_at": "2026-10-27T09:34:18Z"
     },
     {
       "type": "recording",
       "title": "Team sync",
-      "created_at": "2026-10-26T22:48:06Z"
+      "created_at": "2026-10-27T09:34:16Z"
     },
     {
       "type": "assessment",
-      "title": "AI roleplay · Oct 26",
-      "created_at": "2026-10-26T22:48:03Z"
+      "title": "AI roleplay · Oct 27",
+      "created_at": "2026-10-27T09:34:13Z"
     }
-  ]
+  ],
+  "welcome_back": null
 }

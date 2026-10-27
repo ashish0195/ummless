@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session, sessionmaker
 
 from .ai.provider import AIProvider
 from .config import Settings
+from .push import NullSender, PushSender
 from .ratelimit import RateLimiter
 from .storage import Storage
 
@@ -24,6 +25,7 @@ class AppServices:
     ai: AIProvider
     limiter: RateLimiter = field(default_factory=RateLimiter)
     jobs: JobRunner | None = None
+    push: PushSender = field(default_factory=NullSender)
 
     @property
     def demo_mode(self) -> bool:

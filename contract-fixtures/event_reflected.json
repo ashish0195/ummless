@@ -1,0 +1,39 @@
+{
+  "id": "evt_1275fc979301487dad89",
+  "title": "Panel interview at Northwind",
+  "kind": "interview",
+  "date": "2026-10-20",
+  "notes": null,
+  "prep": [
+    {
+      "id": "prep_1",
+      "title": "Warm-up",
+      "scenario": "A friendly run-through of the start of 'Panel interview at Northwind'.",
+      "partner_role": "Interviewer",
+      "difficulty": "kind"
+    },
+    {
+      "id": "prep_2",
+      "title": "The realistic version",
+      "scenario": "'Panel interview at Northwind' as it will most likely go, including one tricky question.",
+      "partner_role": "Interviewer",
+      "difficulty": "real"
+    },
+    {
+      "id": "prep_3",
+      "title": "The tough moment",
+      "scenario": "The hardest part of 'Panel interview at Northwind': someone pushes back hard.",
+      "partner_role": "Interviewer",
+      "difficulty": "brutal"
+    }
+  ],
+  "created_at": "2026-10-27T09:34:24Z",
+  "time": null,
+  "reflection": {
+    "id": "rfl_1070f3b8433e4906ab4f",
+    "text": "I led with my main point and the panel followed up on it.",
+    "went": "well",
+    "coach_reply": "That's great — trying it in a real conversation is the hardest part. Next time, aim for just the first part of the target: state your recommendation first.",
+    "created_at": "2026-10-27T09:34:24Z"
+  }
+}

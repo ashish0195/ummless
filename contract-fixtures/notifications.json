@@ -1,0 +1,41 @@
+{
+  "items": [
+    {
+      "id": "ntf_4e88a9be38a44dcf9208",
+      "category": "results",
+      "title": "Notifications are on",
+      "body": "You'll hear from us about your results, the reminders you set and the moments you're preparing for.",
+      "deep_link": "comlogue://settings/notifications",
+      "created_at": "2026-10-27T09:34:29Z",
+      "read": false
+    },
+    {
+      "id": "ntf_65f2f05feb5a4d7f960d",
+      "category": "results",
+      "title": "Your feedback on “Team sync” is ready",
+      "body": "See what worked, with the moments that show it, and one thing to try next.",
+      "deep_link": "comlogue://recording/rec_c0ccb4d19cfb4f39bd14",
+      "created_at": "2026-10-27T09:34:16Z",
+      "read": false
+    },
+    {
+      "id": "ntf_0778325bab7942fba247",
+      "category": "results",
+      "title": "Which voice is yours?",
+      "body": "We separated the voices in “Team sync”. Confirm yours to see your feedback.",
+      "deep_link": "comlogue://recording/rec_c0ccb4d19cfb4f39bd14",
+      "created_at": "2026-10-27T09:34:16Z",
+      "read": false
+    },
+    {
+      "id": "ntf_c86e0da573e843ba82cc",
+      "category": "results",
+      "title": "Your communication profile is ready",
+      "body": "See what we could assess, the moments behind it, and your first small change.",
+      "deep_link": "comlogue://assessment/asm_9c353c70497349c081d0",
+      "created_at": "2026-10-27T09:34:13Z",
+      "read": true
+    }
+  ],
+  "unread_count": 3
+}

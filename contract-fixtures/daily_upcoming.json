@@ -1,0 +1,53 @@
+{
+  "items": [
+    {
+      "date": "2026-10-27",
+      "prompt_id": "explain.directions_landmarks",
+      "title": "Give directions using landmarks",
+      "prompt": "A visitor is coming to your home for the first time. Give them directions from the nearest main road.",
+      "dimension": "clarity"
+    },
+    {
+      "date": "2026-10-28",
+      "prompt_id": "respond.repeat_back_details",
+      "title": "Repeat back a tricky request",
+      "prompt": "Your teammate says: “I need the numbers by Thursday, but only the regional ones, and in the old format, not the new one.” Confirm what they need.",
+      "dimension": "listening"
+    },
+    {
+      "date": "2026-10-29",
+      "prompt_id": "respond.missed_birthday",
+      "title": "Apologize for missing a friend's dinner",
+      "prompt": "Your friend says: “You missed my birthday dinner. Everyone kept asking where you were.” Respond.",
+      "dimension": "warmth"
+    },
+    {
+      "date": "2026-10-30",
+      "prompt_id": "summarize.recruiter_voicemail",
+      "title": "Leave a crisp voicemail for a recruiter",
+      "prompt": "A recruiter called while you were busy. Leave them a voicemail.",
+      "dimension": "concision"
+    },
+    {
+      "date": "2026-10-31",
+      "prompt_id": "explain.app_to_grandparent",
+      "title": "Teach a grandparent to use an app",
+      "prompt": "Your grandparent wants to video-call the family but finds the app confusing. Talk them through it, step by step.",
+      "dimension": "clarity"
+    },
+    {
+      "date": "2026-11-01",
+      "prompt_id": "persuade.ten_minute_walk",
+      "title": "Convince a busy friend to start walking",
+      "prompt": "Your friend says they're far too busy to exercise. Convince them to try a ten-minute walk every day this week.",
+      "dimension": "persuasion"
+    },
+    {
+      "date": "2026-11-02",
+      "prompt_id": "persuade.investor_minute",
+      "title": "Pitch your idea to an investor in a minute",
+      "prompt": "You get one minute with an investor at a startup event. Pitch your idea, real or imagined.",
+      "dimension": "persuasion"
+    }
+  ]
+}

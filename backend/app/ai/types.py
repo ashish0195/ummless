@@ -105,6 +105,35 @@ class SparRequest:
     win_condition: str
     units: list[Unit]
     momentum: list[tuple[int, float]]
+    kind: str = "spar"  # spar | group
+    evaluation_focus: list[str] = field(default_factory=list)  # group: what the report looks for
+    context: str = ""  # group: the situation and what good looks like
+
+
+@dataclass
+class GroupMember:
+    id: str
+    name: str
+    role: str
+    stance: str  # who they are and how they behave in this discussion
+    is_moderator: bool = False
+
+
+@dataclass
+class GroupReplyRequest:
+    language: str
+    panel_kind: str  # group_discussion | panel_interview
+    title: str
+    topic: str | None
+    situation: str
+    user_role: str
+    members: list[GroupMember]  # moderator first
+    history: list[tuple[str, str]]  # (speaker label, text), chronological; last item is the user's turn
+    is_closing: bool
+    turns_left: int
+    fallback_lines: list[tuple[str, str]]  # (member id, line) used when the model is unavailable
+    difficulty: str | None = None
+    difficulty_behaviour: str | None = None
 
 
 @dataclass
@@ -125,6 +154,9 @@ class EventPrepRequest:
     date: str
     notes: str | None
     goal_title: str
+    kind_hint: str | None = None  # what good prep looks like for this kind of event
+    market: str = "global"
+    time: str | None = None
 
 
 @dataclass

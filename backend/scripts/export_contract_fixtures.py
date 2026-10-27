@@ -57,10 +57,16 @@ def main() -> None:
         save("auth_device.json", auth)
         headers = {"Authorization": f"Bearer {auth.json()['token']}"}
         save("profile_empty.json", client.get("/v1/profile", headers=headers))
-        client.patch("/v1/me", headers=headers, json={"onboarding": {
-            "completed": True, "contexts_ranked": ["meetings", "interviews", "social", "networking"],
-            "ease_targets": ["concise", "persuading"], "goal_track": "business", "language": "en",
-            "region": "US-CA", "analysis_consent_version": "analysis-2026-10"}})
+        client.patch("/v1/me", headers=headers, json={
+            "onboarding": {"completed": True, "contexts_ranked": ["meetings", "interviews", "social", "networking"],
+                           "ease_targets": ["concise", "persuading"], "goal_track": "business", "language": "en",
+                           "region": "US-CA", "age_confirmed": True, "analysis_consent_version": "analysis-2026-10"},
+            "practice_settings": {"weekly_target": 3, "reminder_time": "08:30", "reminder_days": [1, 2, 3, 4, 5],
+                                  "anchor": "After my morning coffee"},
+        })
+        save("device.json", client.post("/v1/devices", headers=headers, json={
+            "apns_token": "a1" * 32, "push_environment": "sandbox", "authorization": "authorized",
+            "timezone": "America/Los_Angeles", "locale": "en-US", "app_version": "2.0"}))
         save("me.json", client.get("/v1/me", headers=headers))
         save("meta.json", client.get("/v1/meta", headers=headers))
         save("recording_rules.json", client.get("/v1/meta/recording-rules", params={"region": "US-CA"},
@@ -128,9 +134,29 @@ def main() -> None:
         save("talks.json", client.get("/v1/talks", headers=headers))
         save("talk.json", client.get("/v1/talks/decision_meeting", headers=headers))
         save("event.json", client.post("/v1/events", headers=headers, json={
-            "title": "Final-round interview", "kind": "interview", "date": "2026-11-02",
+            "title": "Final-round interview", "kind": "interview", "date": "2026-11-02", "time": "10:30",
             "notes": "Product manager role"}))
         save("events.json", client.get("/v1/events", headers=headers))
+        past = client.post("/v1/events", headers=headers, json={
+            "title": "Panel interview at Northwind", "kind": "interview", "date": "2026-10-20"}).json()
+        save("event_reflected.json", client.post(f"/v1/events/{past['id']}/reflection", headers=headers, json={
+            "text": "I led with my main point and the panel followed up on it.", "went": "well"}))
+        # Daily rep (one attempt with feedback), the upcoming window, group conversations and the inbox.
+        save("daily_upcoming.json", client.get("/v1/daily/upcoming", params={"days": 7}, headers=headers))
+        dconv = client.post("/v1/conversations", json={"kind": "daily"}, headers=headers).json()
+        post_turn(client, headers, dconv["id"], speech_file(audio, "rep.m4a", seconds=14))
+        client.post(f"/v1/conversations/{dconv['id']}/finish", headers=headers)
+        save("daily_rep.json", client.get("/v1/daily", headers=headers))
+        save("panels.json", client.get("/v1/group/panels", headers=headers))
+        gconv = save("group_conversation.json", client.post("/v1/conversations", headers=headers, json={
+            "kind": "group", "panel_id": "gd.remote_work_india"}))
+        post_turn(client, headers, gconv["id"], speech_file(audio, "g0.m4a", seconds=10))
+        save("turn_result_group.json",  # the second turn: two participants respond
+             post_turn(client, headers, gconv["id"], speech_file(audio, "g1.m4a", seconds=10)))
+        client.post("/v1/notifications/test", headers=headers)
+        inbox = client.get("/v1/notifications", headers=headers).json()
+        client.post("/v1/notifications/read", headers=headers, json={"ids": [inbox["items"][-1]["id"]]})
+        save("notifications.json", client.get("/v1/notifications", headers=headers))
         save("progress.json", client.get("/v1/progress", headers=headers))
         save("weekly_review.json", client.get("/v1/review/weekly", headers=headers))
         save("feedback_report.json", client.post("/v1/feedback-reports", headers=headers, json={
@@ -147,7 +173,8 @@ def main() -> None:
         complete_assessment(client, partial_user, audio, activity_ids=["tell_a_story"])
         save("profile_partial.json", client.get("/v1/profile", headers=partial_user))
         seeded_user = signup(client, consent=False, onboard=False)
-        save("seed_demo.json", client.post("/v1/dev/seed-demo", json={"pro": False}, headers=seeded_user))
+        save("seed_demo.json", client.post("/v1/dev/seed-demo", json={"pro": False, "market": "us"},
+                                           headers=seeded_user))
 
     print(f"Wrote {len(written)} fixtures to {OUT}")
     for name in sorted(written):

@@ -10,6 +10,7 @@ from .llm_schemas import (
     CustomScenario,
     DebriefJudgement,
     EventPrep,
+    GroupReply,
     PartnerReply,
     ReflectionReply,
     SparJudgement,
@@ -23,6 +24,7 @@ from .types import (
     DebriefRequest,
     DiarizationResult,
     EventPrepRequest,
+    GroupReplyRequest,
     KnownSpeaker,
     PartnerReplyRequest,
     ReflectionRequest,
@@ -54,6 +56,10 @@ class AIProvider(ABC):
     # --- language ---
     @abstractmethod
     def partner_reply(self, req: PartnerReplyRequest) -> PartnerReply: ...
+
+    @abstractmethod
+    def group_reply(self, req: GroupReplyRequest) -> GroupReply:
+        """The next 1–2 lines from the AI participants of a group discussion or panel interview."""
 
     @abstractmethod
     def assess(self, req: AssessmentRequest) -> AssessmentJudgement: ...

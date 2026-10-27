@@ -1,6 +1,6 @@
 {
   "conversation": {
-    "id": "cnv_33ee953248004da48259",
+    "id": "cnv_65eb88bc65b942db905f",
     "kind": "assessment_activity",
     "status": "active",
     "partner": {
@@ -31,17 +31,18 @@
         "speaker": "partner",
         "text": "We've just met at a friend's gathering. What's something you've been spending time on lately?",
         "audio_url": null,
-        "created_at": "2026-10-26T22:47:47Z",
+        "created_at": "2026-10-27T09:33:53Z",
         "quality": null,
         "coach_whisper": null,
-        "excluded": false
+        "excluded": false,
+        "speaker_id": null
       },
       {
         "index": 1,
         "speaker": "user",
         "text": "Lately I've been spending a lot of time learning to bake sourdough. I started during a long winter and now I'm kind of obsessed, I bake every weekend and give most of it away to neighbors.",
-        "audio_url": "/v1/media/med_4bce0babf4d843dfb470?exp=1793076468&sig=QJxH99KKloy_xVcI66ltfthtSznB2p2D",
-        "created_at": "2026-10-26T22:47:48Z",
+        "audio_url": "/v1/media/med_c144b0905fd14f8587f9?exp=1793115234&sig=Ma5f_MXBNeiKzNPQXkOSoG2YiDFiUic0",
+        "created_at": "2026-10-27T09:33:54Z",
         "quality": {
           "usable": "yes",
           "issues": [],
@@ -49,33 +50,36 @@
           "duration_seconds": 12.0
         },
         "coach_whisper": null,
-        "excluded": false
+        "excluded": false,
+        "speaker_id": null
       },
       {
         "index": 2,
         "speaker": "partner",
         "text": "Oh nice — sourdough? What got you into that?",
         "audio_url": null,
-        "created_at": "2026-10-26T22:47:48Z",
+        "created_at": "2026-10-27T09:33:54Z",
         "quality": null,
         "coach_whisper": null,
-        "excluded": false
+        "excluded": false,
+        "speaker_id": null
       }
     ],
     "awaiting": "user",
     "user_turns": 1,
     "max_user_turns": 3,
-    "assessment_id": "asm_8ed91aed25a24ea68318",
+    "assessment_id": "asm_9044a79b0c3046289483",
     "mission_id": null,
     "demo_mode": true,
-    "created_at": "2026-10-26T22:47:47Z"
+    "created_at": "2026-10-27T09:33:53Z",
+    "participants": []
   },
   "user_turn": {
     "index": 1,
     "speaker": "user",
     "text": "Lately I've been spending a lot of time learning to bake sourdough. I started during a long winter and now I'm kind of obsessed, I bake every weekend and give most of it away to neighbors.",
-    "audio_url": "/v1/media/med_4bce0babf4d843dfb470?exp=1793076468&sig=QJxH99KKloy_xVcI66ltfthtSznB2p2D",
-    "created_at": "2026-10-26T22:47:48Z",
+    "audio_url": "/v1/media/med_c144b0905fd14f8587f9?exp=1793115234&sig=Ma5f_MXBNeiKzNPQXkOSoG2YiDFiUic0",
+    "created_at": "2026-10-27T09:33:54Z",
     "quality": {
       "usable": "yes",
       "issues": [],
@@ -83,18 +87,33 @@
       "duration_seconds": 12.0
     },
     "coach_whisper": null,
-    "excluded": false
+    "excluded": false,
+    "speaker_id": null
   },
   "partner_turn": {
     "index": 2,
     "speaker": "partner",
     "text": "Oh nice — sourdough? What got you into that?",
     "audio_url": null,
-    "created_at": "2026-10-26T22:47:48Z",
+    "created_at": "2026-10-27T09:33:54Z",
     "quality": null,
     "coach_whisper": null,
-    "excluded": false
+    "excluded": false,
+    "speaker_id": null
   },
   "retry_suggested": false,
-  "done": false
+  "done": false,
+  "partner_turns": [
+    {
+      "index": 2,
+      "speaker": "partner",
+      "text": "Oh nice — sourdough? What got you into that?",
+      "audio_url": null,
+      "created_at": "2026-10-27T09:33:54Z",
+      "quality": null,
+      "coach_whisper": null,
+      "excluded": false,
+      "speaker_id": null
+    }
+  ]
 }

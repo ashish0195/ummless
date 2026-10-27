@@ -89,12 +89,31 @@ class Settings(BaseSettings):
     rate_limit_ai_per_hour: int = 150
     rate_limit_uploads_per_hour: int = 30
 
-    # --- pricing (a hypothesis for the pilot; shown before purchase) ---
+    # --- pricing (a hypothesis for the pilot; shown before purchase; the App Store's localized price wins) ---
     price_monthly_usd: float = 14.99
     price_yearly_usd: float = 95.99
+    price_monthly_inr: float = 399
+    price_yearly_inr: float = 2499
     trial_days: int = 7
     monthly_product_id: str = "comlogue.pro.monthly"
     yearly_product_id: str = "comlogue.pro.yearly"
+
+    # --- support & grievance contacts (India's DPDP Act expects a published grievance contact) ---
+    support_email: str = "support@comlogue.app"
+    grievance_email: str = "grievance@comlogue.app"
+    grievance_officer: str | None = None
+
+    # --- notifications ---
+    # The scheduler produces event-prep, check-in, nudge and weekly-reveal notifications and delivers pushes.
+    # None ⇒ on everywhere except tests. Dedupe keys make ticks safe to run on several instances.
+    notifications_scheduler_enabled: bool | None = None
+    notifications_tick_seconds: int = 300
+    # Apple Push Notification service (token auth). Without a key, notifications go to the in-app inbox only.
+    apns_key_id: str | None = None
+    apns_team_id: str | None = None
+    apns_private_key: str | None = None  # contents of the .p8 file (PEM)
+    apns_private_key_path: str | None = None  # or a path to it
+    apns_bundle_id: str = "com.comlogue.app"
 
     @field_validator(
         "cors_origins",
@@ -136,6 +155,16 @@ class Settings(BaseSettings):
     @property
     def max_upload_bytes(self) -> int:
         return self.max_upload_mb * 1024 * 1024
+
+    @property
+    def scheduler_enabled(self) -> bool:
+        if self.notifications_scheduler_enabled is None:
+            return self.environment != "test"
+        return self.notifications_scheduler_enabled
+
+    @property
+    def apns_configured(self) -> bool:
+        return bool(self.apns_key_id and self.apns_team_id and (self.apns_private_key or self.apns_private_key_path))
 
 
 @lru_cache

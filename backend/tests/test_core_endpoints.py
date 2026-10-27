@@ -32,7 +32,8 @@ def test_me_defaults_and_onboarding_flow(client):
     me = client.get("/v1/me", headers=headers).json()
     assert me["next_step"] == "onboarding"
     assert me["onboarding"]["completed"] is False and me["onboarding"]["language"] == "en"
-    assert me["practice_settings"] == {"weekly_target": 3, "reminder_time": None, "reminder_days": []}
+    assert me["practice_settings"] == {"weekly_target": 3, "reminder_time": None, "reminder_days": [],
+                                       "anchor": None, "paused_until": None}
     assert me["entitlement"]["tier"] == "free"
     assert me["voice_reference"]["status"] == "none"
     assert me["demo_mode"] is True
@@ -47,8 +48,12 @@ def test_me_defaults_and_onboarding_flow(client):
     assert patched["onboarding"]["analysis_consented_at"] is None
     assert patched["practice_settings"]["reminder_days"] == [1, 3, 5]
 
-    consented = client.patch("/v1/me", headers=headers,
-                             json={"onboarding": {"analysis_consent_version": "analysis-2026-10"}}).json()
+    unconfirmed = client.patch("/v1/me", headers=headers,
+                               json={"onboarding": {"analysis_consent_version": "analysis-2026-10"}})
+    assert unconfirmed.status_code == 422 and "18" in unconfirmed.json()["error"]["message"]
+    consented = client.patch("/v1/me", headers=headers, json={"onboarding": {
+        "age_confirmed": True, "analysis_consent_version": "analysis-2026-10"}}).json()
+    assert consented["onboarding"]["age_confirmed"] is True
     assert consented["onboarding"]["analysis_consent_version"] == "analysis-2026-10"
     assert consented["onboarding"]["analysis_consented_at"]
 
@@ -71,7 +76,7 @@ def test_meta_describes_the_product(client):
                                                     "make_a_case", "tell_a_story"]
     assert meta["assessment_estimate_minutes"] == [10, 15]
     assert {t["id"] for t in meta["tracks"]} == {"negotiation", "business", "conversational", "storytelling",
-                                                 "public_speaking"}
+                                                 "public_speaking", "interviews"}
     assert meta["pricing"]["monthly_usd"] == 14.99
     assert meta["consents"]["voice_reference"]["version"] == VOICE_REFERENCE_VERSION
     assert any("OpenAI" in b for b in meta["consents"]["analysis"]["bullets"])

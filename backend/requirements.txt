@@ -6,7 +6,10 @@ sqlalchemy==2.1.6
 pydantic==2.14.1
 pydantic-settings==2.16.1
 python-multipart==0.0.32
-httpx==0.28.1
+httpx[http2]==0.28.1  # HTTP/2 client for APNs
+h2==4.4.1
+pyjwt[crypto]==2.15.1  # APNs provider tokens (ES256)
+cryptography==50.0.2
 numpy==2.5.4
 openai==3.39.0
 psycopg[binary]==3.3.6  # only needed for DATABASE_URL=postgresql+psycopg://…

@@ -1,8 +1,12 @@
 {
-  "assessment_id": "asm_025615bc0def4292a581",
-  "recording_needs_confirmation_id": "rec_ca51fd6a2c37482ca836",
-  "recording_complete_id": "rec_774bbf2c01774b71aa83",
+  "assessment_id": "asm_05d342feda1b4f9aa90d",
+  "recording_needs_confirmation_id": "rec_cdced9a78f9a47fd8130",
+  "recording_complete_id": "rec_407cc6fe1cfe47edaf4c",
   "mission_id": "business.m1.learn",
-  "spar_conversation_id": "cnv_e8e574bca53b4de399d0",
-  "event_id": "evt_020fd251778147d8b212"
+  "spar_conversation_id": "cnv_ba07f7dccb804a75b026",
+  "event_id": "evt_9f3864a6b41d4b71a637",
+  "daily_date": "2026-10-27",
+  "previous_daily_date": "2026-10-26",
+  "group_conversation_id": "cnv_7970a6ba284748b398d4",
+  "panel_id": "panel.swe_behavioral"
 }

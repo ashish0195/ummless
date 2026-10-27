@@ -1,5 +1,5 @@
 {
-  "id": "cnv_33ee953248004da48259",
+  "id": "cnv_65eb88bc65b942db905f",
   "kind": "assessment_activity",
   "status": "active",
   "partner": {
@@ -30,17 +30,19 @@
       "speaker": "partner",
       "text": "We've just met at a friend's gathering. What's something you've been spending time on lately?",
       "audio_url": null,
-      "created_at": "2026-10-26T22:47:47Z",
+      "created_at": "2026-10-27T09:33:53Z",
       "quality": null,
       "coach_whisper": null,
-      "excluded": false
+      "excluded": false,
+      "speaker_id": null
     }
   ],
   "awaiting": "user",
   "user_turns": 0,
   "max_user_turns": 3,
-  "assessment_id": "asm_8ed91aed25a24ea68318",
+  "assessment_id": "asm_9044a79b0c3046289483",
   "mission_id": null,
   "demo_mode": true,
-  "created_at": "2026-10-26T22:47:47Z"
+  "created_at": "2026-10-27T09:33:53Z",
+  "participants": []
 }

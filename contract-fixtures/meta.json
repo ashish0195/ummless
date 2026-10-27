@@ -35,6 +35,10 @@
       "name": "हिन्दी"
     },
     {
+      "code": "hinglish",
+      "name": "Hinglish (Hindi + English)"
+    },
+    {
       "code": "ja",
       "name": "日本語"
     },
@@ -57,6 +61,12 @@
       "title": "Business communication",
       "subtitle": "Make your point land in meetings and updates.",
       "symbol": "briefcase"
+    },
+    {
+      "id": "interviews",
+      "title": "Job interviews",
+      "subtitle": "Walk in prepared: introductions, stories and strong answers.",
+      "symbol": "person.crop.rectangle.stack"
     },
     {
       "id": "negotiation",
@@ -248,7 +258,53 @@
     "trial_days": 7,
     "monthly_product_id": "comlogue.pro.monthly",
     "yearly_product_id": "comlogue.pro.yearly",
-    "note": "Introductory pricing for our pilot. You'll always see the price and terms before you buy."
+    "note": "Introductory pricing for our pilot. You'll always see the price and terms before you buy.",
+    "currency": "USD",
+    "monthly_price": 14.99,
+    "yearly_price": 95.99,
+    "monthly_display": "$14.99",
+    "yearly_display": "$95.99"
+  },
+  "pricing_by_market": {
+    "us": {
+      "monthly_usd": 14.99,
+      "yearly_usd": 95.99,
+      "trial_days": 7,
+      "monthly_product_id": "comlogue.pro.monthly",
+      "yearly_product_id": "comlogue.pro.yearly",
+      "note": "Introductory pricing for our pilot. You'll always see the price and terms before you buy.",
+      "currency": "USD",
+      "monthly_price": 14.99,
+      "yearly_price": 95.99,
+      "monthly_display": "$14.99",
+      "yearly_display": "$95.99"
+    },
+    "in": {
+      "monthly_usd": 14.99,
+      "yearly_usd": 95.99,
+      "trial_days": 7,
+      "monthly_product_id": "comlogue.pro.monthly",
+      "yearly_product_id": "comlogue.pro.yearly",
+      "note": "Introductory pricing for our pilot. You'll always see the price and terms before you buy.",
+      "currency": "INR",
+      "monthly_price": 399.0,
+      "yearly_price": 2499.0,
+      "monthly_display": "₹399",
+      "yearly_display": "₹2,499"
+    },
+    "global": {
+      "monthly_usd": 14.99,
+      "yearly_usd": 95.99,
+      "trial_days": 7,
+      "monthly_product_id": "comlogue.pro.monthly",
+      "yearly_product_id": "comlogue.pro.yearly",
+      "note": "Introductory pricing for our pilot. You'll always see the price and terms before you buy.",
+      "currency": "USD",
+      "monthly_price": 14.99,
+      "yearly_price": 95.99,
+      "monthly_display": "$14.99",
+      "yearly_display": "$95.99"
+    }
   },
   "consents": {
     "analysis": {
@@ -260,7 +316,19 @@
         "We only assess what you say and how you structure it — never your accent or pronunciation.",
         "If audio is unclear, we tell you and skip it. Unclear audio never lowers your results.",
         "Recordings and results stay in your account until you delete them. You can delete any recording, or everything, at any time in Settings."
-      ]
+      ],
+      "translations": {
+        "hi": {
+          "title": "Comlogue आपकी आवाज़ का इस्तेमाल कैसे करता है",
+          "body": "आपको फ़ीडबैक देने के लिए, Comlogue प्रैक्टिस के दौरान आप जो बोलते हैं उसे रिकॉर्ड करता है और AI की मदद से उसका विश्लेषण करता है।",
+          "bullets": [
+            "आपका फ़ीडबैक तैयार करने के लिए हमारा AI प्रदाता (OpenAI) आपकी ऑडियो को टेक्स्ट में बदलता है और उसका विश्लेषण करता है। OpenAI इसका इस्तेमाल अपने मॉडल ट्रेन करने के लिए नहीं करता।",
+            "हम सिर्फ़ यह देखते हैं कि आप क्या कहते हैं और अपनी बात कैसे रखते हैं — आपके लहजे या उच्चारण को कभी नहीं आँकते।",
+            "अगर ऑडियो साफ़ नहीं है, तो हम आपको बताते हैं और उसे छोड़ देते हैं। साफ़ न सुनाई देने वाला ऑडियो आपके नतीजों को कभी कम नहीं करता।",
+            "रिकॉर्डिंग और नतीजे आपके अकाउंट में तब तक रहते हैं जब तक आप उन्हें डिलीट नहीं करते। आप Settings में जाकर कभी भी कोई भी रिकॉर्डिंग, या सब कुछ, डिलीट कर सकते हैं।"
+          ]
+        }
+      }
     },
     "voice_reference": {
       "version": "voice-2026-10",
@@ -272,7 +340,20 @@
         "The setup recording is never scored.",
         "Replace or delete it anytime in Settings. We also delete it after 18 months without use.",
         "Prefer not to? You can pick your voice manually in each recording instead."
-      ]
+      ],
+      "translations": {
+        "hi": {
+          "title": "अपनी आवाज़ का नमूना सेव करें?",
+          "body": "हम आपकी आवाज़ का एक छोटा-सा नमूना रखेंगे, ताकि आपकी जोड़ी गई रिकॉर्डिंग में हम पहचान सकें कि आप कब बोल रहे हैं।",
+          "bullets": [
+            "इसका इस्तेमाल सिर्फ़ आपकी अपनी रिकॉर्डिंग में आपकी आवाज़ पहचानने के लिए होता है — कहीं और आपकी पहचान करने के लिए नहीं, और न ही पासवर्ड की तरह।",
+            "हम 8 सेकंड की एक क्लिप और आवाज़ से जुड़े कुछ माप सेव करते हैं। विश्लेषण के समय यह क्लिप सिर्फ़ उसी रिकॉर्डिंग के रेफ़रेंस के तौर पर हमारे AI प्रदाता (OpenAI) को भेजी जाती है।",
+            "सेटअप के लिए की गई रिकॉर्डिंग को कभी आँका नहीं जाता।",
+            "आप इसे कभी भी Settings में बदल या डिलीट कर सकते हैं। अगर 18 महीने तक इसका इस्तेमाल नहीं होता, तो हम इसे डिलीट कर देते हैं।",
+            "नहीं करना चाहते? कोई बात नहीं — आप हर रिकॉर्डिंग में अपनी आवाज़ खुद चुन सकते हैं।"
+          ]
+        }
+      }
     },
     "recording": {
       "version": "recording-2026-10",
@@ -282,7 +363,18 @@
         "We analyze the recording to give you feedback. Only your own speaking turns are assessed.",
         "Other people's voices are used only as context. They are never added to your profile.",
         "You can delete the recording and everything derived from it at any time."
-      ]
+      ],
+      "translations": {
+        "hi": {
+          "title": "किसी बातचीत को रिकॉर्ड करने से पहले",
+          "body": "बातचीत में शामिल हर व्यक्ति को पता होना चाहिए कि रिकॉर्डिंग हो रही है, और इसके लिए उनकी सहमति होनी चाहिए।",
+          "bullets": [
+            "आपको फ़ीडबैक देने के लिए हम रिकॉर्डिंग का विश्लेषण करते हैं। सिर्फ़ आपके अपने बोले गए हिस्सों को आँका जाता है।",
+            "दूसरों की आवाज़ का इस्तेमाल सिर्फ़ संदर्भ समझने के लिए होता है। उसे कभी आपकी प्रोफ़ाइल में नहीं जोड़ा जाता।",
+            "आप कभी भी रिकॉर्डिंग और उससे बनी हर चीज़ डिलीट कर सकते हैं।"
+          ]
+        }
+      }
     }
   },
   "limits": {
@@ -290,5 +382,116 @@
     "free_talks": 1,
     "max_upload_mb": 100,
     "max_recording_minutes": 60
+  },
+  "event_kinds": [
+    {
+      "id": "interview",
+      "title": "Job interview",
+      "symbol": "person.crop.rectangle",
+      "markets": [
+        "us",
+        "in",
+        "global"
+      ]
+    },
+    {
+      "id": "placement",
+      "title": "Campus placement",
+      "symbol": "graduationcap",
+      "markets": [
+        "in"
+      ]
+    },
+    {
+      "id": "group_discussion",
+      "title": "Group discussion",
+      "symbol": "person.3",
+      "markets": [
+        "in"
+      ]
+    },
+    {
+      "id": "client_call",
+      "title": "Client call",
+      "symbol": "phone",
+      "markets": [
+        "us",
+        "in",
+        "global"
+      ]
+    },
+    {
+      "id": "viva",
+      "title": "Viva or project defence",
+      "symbol": "studentdesk",
+      "markets": [
+        "in"
+      ]
+    },
+    {
+      "id": "appraisal",
+      "title": "Appraisal or performance review",
+      "symbol": "chart.line.uptrend.xyaxis",
+      "markets": [
+        "us",
+        "in",
+        "global"
+      ]
+    },
+    {
+      "id": "meeting",
+      "title": "Important meeting",
+      "symbol": "person.2",
+      "markets": [
+        "us",
+        "in",
+        "global"
+      ]
+    },
+    {
+      "id": "presentation",
+      "title": "Presentation or talk",
+      "symbol": "chart.bar.doc.horizontal",
+      "markets": [
+        "us",
+        "in",
+        "global"
+      ]
+    },
+    {
+      "id": "negotiation",
+      "title": "Negotiation",
+      "symbol": "scalemass",
+      "markets": [
+        "us",
+        "in",
+        "global"
+      ]
+    },
+    {
+      "id": "social",
+      "title": "Social event",
+      "symbol": "party.popper",
+      "markets": [
+        "us",
+        "in",
+        "global"
+      ]
+    },
+    {
+      "id": "other",
+      "title": "Something else",
+      "symbol": "calendar",
+      "markets": [
+        "us",
+        "in",
+        "global"
+      ]
+    }
+  ],
+  "support": {
+    "email": "support@comlogue.app",
+    "grievance_email": "grievance@comlogue.app",
+    "grievance_officer": null
   }
 }

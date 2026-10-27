@@ -77,9 +77,12 @@ COUNTRIES: dict[str, tuple[str, str, str, str]] = {
     "NZ": ("New Zealand", "one_party",
            "One-party consent in New Zealand",
            "You can generally record a conversation you take part in, but privacy principles still apply."),
+    # Legal review pending (see docs/LAUNCH.md).
     "IN": ("India", "unknown",
-           "Ask first in India",
-           "There's no single clear statute; privacy rights apply. Ask everyone first."),
+           "Ask everyone first in India",
+           "India has no single law on recording conversations you take part in, but the Constitution protects "
+           "privacy and the Digital Personal Data Protection Act, 2023 covers storing and processing people's "
+           "voices. Comlogue only works with recordings everyone has agreed to."),
     "SG": ("Singapore", "mixed",
            "Ask first in Singapore",
            "Personal data protection rules can apply to recordings. Ask everyone first."),
@@ -112,6 +115,8 @@ REGIONS = _regions()
 
 def rules_for(region: str | None) -> RecordingRules:
     code = (region or "OTHER").strip().upper()
+    if code.startswith("IN-"):
+        code = "IN"  # Indian states share the national guidance
     if code.startswith("US-") and code[3:] in US_STATES:
         state = code[3:]
         name = US_STATES[state]

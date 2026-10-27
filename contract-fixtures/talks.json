@@ -133,6 +133,65 @@
         "storytelling"
       ],
       "is_free": false
+    },
+    {
+      "id": "vivekananda_chicago",
+      "title": "Address at the Parliament of Religions (excerpt)",
+      "speaker": "Swami Vivekananda",
+      "source_note": "World's Parliament of Religions, Chicago, 11 September 1893. Public domain.",
+      "year": 1893,
+      "duration_label": "2.5 min",
+      "lines_count": 10,
+      "style": {
+        "wpm": 115.0,
+        "avg_pause_seconds": 1.4,
+        "avg_sentence_words": 31.0
+      },
+      "tags": [
+        "public speaking",
+        "warmth",
+        "rhetoric"
+      ],
+      "is_free": false
+    },
+    {
+      "id": "placement_intro",
+      "title": "A placement introduction that stands out",
+      "speaker": "Comlogue exemplar · final-year engineering student",
+      "source_note": "Original script written for Comlogue.",
+      "year": null,
+      "duration_label": "1 min",
+      "lines_count": 7,
+      "style": {
+        "wpm": 140.0,
+        "avg_pause_seconds": 0.9,
+        "avg_sentence_words": 12.2
+      },
+      "tags": [
+        "interviews",
+        "structure"
+      ],
+      "is_free": false
+    },
+    {
+      "id": "client_delay_call",
+      "title": "Owning a delay on a US client call",
+      "speaker": "Comlogue exemplar · project lead at an IT services firm",
+      "source_note": "Original script written for Comlogue.",
+      "year": null,
+      "duration_label": "1 min",
+      "lines_count": 7,
+      "style": {
+        "wpm": 135.0,
+        "avg_pause_seconds": 1.0,
+        "avg_sentence_words": 11.2
+      },
+      "tags": [
+        "meetings",
+        "clarity",
+        "client calls"
+      ],
+      "is_free": false
     }
   ]
 }

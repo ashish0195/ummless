@@ -109,6 +109,10 @@ final class ContractTests: XCTestCase {
 
         let event = try decode(UpcomingEvent.self, "event.json")
         XCTAssertNotNil(HabitMath.parseTime(event.time), "event.json should exercise a start time")
+        XCTAssertNil(event.reflection)
+        let reflected = try decode(UpcomingEvent.self, "event_reflected.json")
+        XCTAssertEqual(reflected.reflection?.went, "well")
+        XCTAssertNotNil(reflected.reflection?.coachReply)
     }
 
     func testProfileNeverHasAnOverallScoreAndMissingEvidenceHasNoLevel() throws {

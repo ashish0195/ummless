@@ -38,7 +38,7 @@ TRACKS: dict[str, dict[str, str]] = {
     },
 }
 
-TRACK_ORDER = ("business", "negotiation", "conversational", "storytelling", "public_speaking")
+TRACK_ORDER = ("business", "interviews", "negotiation", "conversational", "storytelling", "public_speaking")
 
 
 @dataclass(frozen=True)
@@ -103,6 +103,7 @@ def _partner(data: dict[str, Any]) -> PartnerDef:
         opening=data["opening"],
         follow_up=data["follow_up"],
         follow_up_fallback=data["fallback"],
+        tts_instructions=data.get("tts_instructions") or PartnerDef.tts_instructions,
     )
 
 
@@ -1134,6 +1135,13 @@ _CONTENT: dict[str, list[dict[str, Any]]] = {
     ],
 }
 
+# The "Job interviews" track (US hiring and Indian campus placements) lives with the market content.
+from .content.interviews_track import INTERVIEWS_TRACK as _INTERVIEWS_TRACK  # noqa: E402
+from .content.interviews_track import TRACK as _INTERVIEWS_INFO  # noqa: E402
+
+TRACKS[_INTERVIEWS_INFO["id"]] = {k: v for k, v in _INTERVIEWS_INFO.items() if k != "id"}
+_CONTENT[_INTERVIEWS_INFO["id"]] = _INTERVIEWS_TRACK
+
 MODULES: dict[str, ModuleDef] = {}
 MODULES_BY_TRACK: dict[str, list[ModuleDef]] = {}
 MISSIONS: dict[str, MissionDef] = {}
@@ -1156,7 +1164,7 @@ EASE_TO_TRACK = {
 }
 CONTEXT_TO_TRACK = {
     "meetings": "business",
-    "interviews": "business",
+    "interviews": "interviews",
     "networking": "conversational",
     "social": "conversational",
 }

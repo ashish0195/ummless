@@ -1,0 +1,49 @@
+{
+  "date": "2026-10-27",
+  "prompt_id": "explain.directions_landmarks",
+  "title": "Give directions using landmarks",
+  "prompt": "A visitor is coming to your home for the first time. Give them directions from the nearest main road.",
+  "kind": "explain",
+  "dimension": "clarity",
+  "target_behavior": "Use landmarks rather than street names or distances.",
+  "tips": [
+    "Name what they'll see at each turn.",
+    "Tell them how they'll know they've gone too far."
+  ],
+  "suggested_seconds": 45,
+  "example": null,
+  "can_shuffle": false,
+  "completed": true,
+  "attempts": [
+    {
+      "id": "att_05ba82d88a634747a5c9",
+      "conversation_id": "cnv_4ac700d552a945aaaa31",
+      "attempt_number": 1,
+      "quick": false,
+      "status": "complete",
+      "feedback": {
+        "assessable": "yes",
+        "target_met": "partly",
+        "headline": "The target showed up in your answer — nice.",
+        "where": {
+          "quote": "Okay, so the short version: I help a team of twelve ship our app every two weeks.",
+          "note": "Where the target showed up.",
+          "source_type": "conversation",
+          "source_id": "cnv_4ac700d552a945aaaa31",
+          "turn_index": 1,
+          "start_seconds": 0.0,
+          "end_seconds": 14.0,
+          "audio_url": "/v1/media/med_c339876373f042f89d3e?exp=1793115266&sig=NZYhUtsTLEbZIbNpxrrlm2Js24G7UuFf"
+        },
+        "what_worked": [
+          "You kept it specific and easy to follow."
+        ],
+        "one_change": "Try it once more and open with your main point.",
+        "missing_evidence": null,
+        "comparison": null,
+        "issues": []
+      },
+      "created_at": "2026-10-27T09:34:26Z"
+    }
+  ]
+}

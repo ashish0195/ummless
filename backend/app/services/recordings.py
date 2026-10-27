@@ -46,7 +46,7 @@ from ..schemas import (
 )
 from ..timeutil import iso_required, short_date, utcnow
 from . import media as media_service
-from . import progress, users
+from . import notifications, progress, users
 from .analysis import AnalysisInput, run_analysis
 
 log = logging.getLogger("comlogue.recordings")
@@ -204,6 +204,7 @@ def run_process_job(svc: AppServices, recording_id: str) -> None:
             recording = db.get(Recording, recording_id)
             if recording is not None:
                 _mark_failed(db, recording, _recovery_processing(), str(exc))
+        _notify(svc, db, recording_id)
     except Exception:
         db.rollback()
         recording = db.get(Recording, recording_id)
@@ -212,6 +213,17 @@ def run_process_job(svc: AppServices, recording_id: str) -> None:
         raise
     finally:
         db.close()
+
+
+def _notify(svc: AppServices, db: Session, recording_id: str) -> None:
+    """Inbox item + push when a recording needs the user or has results. Never fails the job."""
+    try:
+        recording = db.get(Recording, recording_id)
+        if recording is not None:
+            notifications.recording_ready(svc, db, recording)
+    except Exception:  # noqa: BLE001
+        log.exception("Couldn't create the notification for recording %s", recording_id)
+        db.rollback()
 
 
 def _process(svc: AppServices, db: Session, user: User, recording: Recording, original: Media) -> None:
@@ -473,6 +485,7 @@ def run_assess_job(svc: AppServices, recording_id: str) -> None:
             recording = db.get(Recording, recording_id)
             if recording is not None:
                 _mark_failed(db, recording, _recovery_processing(), str(exc))
+        _notify(svc, db, recording_id)
     except Exception:
         db.rollback()
         recording = db.get(Recording, recording_id)
@@ -499,7 +512,7 @@ def _assess(svc: AppServices, db: Session, user: User, recording: Recording) -> 
     total_speech = sum(u.duration for u in units if not u.excluded) or 1.0
     user_speech = sum(u.duration for u in units if u.usable_user)
     pauses = _user_pauses(svc, db, recording, units)
-    context_label = f"{recording.title} · {short_date(recording.created_at)}"
+    context_label = f"{recording.title} · {short_date(recording.created_at, users.market(user), users.timezone(user))}"
     n_speakers = len(recording.speakers or [])
     inp = AnalysisInput(
         user_id=user.id, language=recording.language, source_type="recording", source_id=recording.id,

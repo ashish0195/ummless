@@ -340,7 +340,7 @@ struct NotificationPrimingView: View {
             }
             .font(.subheadline)
             .foregroundStyle(Theme.ink)
-            Text("No streak guilt, at most two a day, and never during your quiet hours. You can change any of it in Settings.")
+            Text("At most two a day, quiet at night, and no streak guilt. You can change any of it in Settings.")
                 .font(.footnote)
                 .foregroundStyle(Theme.inkSecondary)
             Spacer(minLength: 0)

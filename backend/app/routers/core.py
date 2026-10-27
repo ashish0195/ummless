@@ -33,8 +33,8 @@ def health(svc: AppServices = Depends(get_services)) -> Health:
 
 
 @router.get("/meta", response_model=Meta, tags=["meta"])
-def meta(svc: AppServices = Depends(get_services), _: User = Depends(current_user)) -> Meta:
-    return meta_service.build(svc)
+def meta(svc: AppServices = Depends(get_services), user: User = Depends(current_user)) -> Meta:
+    return meta_service.build(svc, user)
 
 
 @router.get("/meta/recording-rules", response_model=RecordingRules, tags=["meta"])

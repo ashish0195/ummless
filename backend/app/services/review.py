@@ -27,7 +27,7 @@ from ..models import (
     WeeklyReviewCache,
 )
 from ..schemas import BeforeAfter, FocusOption, SkillUpdate, WeeklyReview, WeekPractice
-from ..timeutil import as_utc, week_bounds
+from ..timeutil import as_utc, week_bounds, week_start
 from . import course as course_service
 from . import progress, users
 
@@ -35,7 +35,7 @@ log = logging.getLogger("comlogue.review")
 
 
 def build(svc: AppServices, db: Session, user: User) -> WeeklyReview:
-    start, end = week_bounds()
+    start, end = week_bounds(tz=users.timezone(user))
     logs = [log_ for log_ in db.scalars(select(ActivityLog).where(ActivityLog.user_id == user.id))
             if start <= as_utc(log_.created_at) < end]
     sessions = [entry for entry in logs if entry.type in progress.SESSION_TYPES]
@@ -99,7 +99,7 @@ def build(svc: AppServices, db: Session, user: User) -> WeeklyReview:
         facts.append("New evidence for: " + ", ".join(DIMENSIONS[s.dimension].title for s in skill_updates) + ".")
     signature = hashlib.sha256("|".join(facts + [focus_title]).encode()).hexdigest()[:40]
     cached = db.scalar(select(WeeklyReviewCache).where(WeeklyReviewCache.user_id == user.id,
-                                                       WeeklyReviewCache.week_start == start.date().isoformat()))
+                                                       WeeklyReviewCache.week_start == week_start(start, users.timezone(user)).isoformat()))
     if cached is not None and cached.signature == signature:
         highlights, message = cached.payload["highlights"], cached.payload["message"]
     else:
@@ -112,15 +112,17 @@ def build(svc: AppServices, db: Session, user: User) -> WeeklyReview:
         if not logs:
             message = "A quiet week — that's okay. One short session is all it takes to pick up again."
         if cached is None:
-            db.add(WeeklyReviewCache(user_id=user.id, week_start=start.date().isoformat(), signature=signature,
+            db.add(WeeklyReviewCache(user_id=user.id, week_start=week_start(start, users.timezone(user)).isoformat(),
+                                     signature=signature,
                                      payload={"highlights": highlights, "message": message}))
         else:
             cached.signature = signature
             cached.payload = {"highlights": highlights, "message": message}
         db.flush()
 
+    first_day = week_start(start, users.timezone(user))
     return WeeklyReview(
-        week_start=start.date().isoformat(), week_end=(end - timedelta(days=1)).date().isoformat(),
+        week_start=first_day.isoformat(), week_end=(first_day + timedelta(days=6)).isoformat(),
         practice=practice, highlights=highlights, before_after=before_after, skill_updates=skill_updates,
         evidence_note=evidence_note, next_focus_options=options,
         milestones=progress.milestones_out(db, user.id, since=start), message=message,

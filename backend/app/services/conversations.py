@@ -33,6 +33,8 @@ from ..domain.activities import (
 from ..domain.course import MISSIONS, MODULES
 from ..domain.evidence import Unit
 from ..domain.issues import issue
+from ..domain.languages import transcription_language
+from ..domain.market_content import mission_for_market
 from ..domain.personas import DIFFICULTY_BEHAVIOUR
 from ..errors import AIUnavailableError, conflict, not_found
 from ..ids import new_id
@@ -41,6 +43,7 @@ from ..schemas import (
     ConversationOut,
     ConversationSetup,
     FinishResult,
+    Participant,
     Partner,
     ResultRef,
     TurnQuality,
@@ -49,9 +52,11 @@ from ..schemas import (
 from ..schemas import Turn as TurnOut
 from ..timeutil import iso_required, utcnow
 from . import media as media_service
-from . import tts
+from . import tts, users
 
 log = logging.getLogger("comlogue.conversations")
+
+DAILY_CLOSE_LINE = "Got it — thanks. Let's see how that went."
 
 MIN_TURN_SPEECH_SECONDS = 1.5  # pilot calibration required
 LOW_CONFIDENCE_BLOCK = -1.3  # mean token logprob below this ⇒ we can't trust the transcript
@@ -61,6 +66,8 @@ BACKGROUND_MIN_SHARE = 0.15
 VERBATIM_PROMPTS = {
     # Encourages verbatim transcription (keeps disfluencies) — used for filler statistics.
     "en": "Umm, let me think, like, hmm... Okay, here's what I'm, like, thinking.",
+    # Code-mixed speech: no language hint is sent, so describe the mix and the script we want.
+    "hinglish": "Haan, so basically main yeh keh raha tha ki, umm, we should start with the export fix. Theek hai?",
 }
 GENERIC_TTS = "Voice: natural and conversational. Pace: everyday speech. Never sound like an announcer."
 
@@ -68,17 +75,25 @@ GENERIC_TTS = "Voice: natural and conversational. Pace: everyday speech. Never s
 # ------------------------------------------------------------------------- creation
 
 
-def _add_partner_turn(svc: AppServices, db: Session, conv: Conversation, text: str, *, coach_whisper: str | None = None,
-                      momentum: float | None = None) -> Turn:
-    partner = conv.partner
-    media_id = tts.speak(svc, db, text, partner.get("voice", "marin"), conv.state.get("tts_instructions"))
+def add_partner_turn(svc: AppServices, db: Session, conv: Conversation, text: str, *, coach_whisper: str | None = None,
+                     momentum: float | None = None, speaker_id: str | None = None) -> Turn:
+    """A spoken partner line. Group conversations pass the participant's id (its own voice and delivery)."""
+    voice, instructions = conv.partner.get("voice", "marin"), conv.state.get("tts_instructions")
+    if speaker_id:
+        spoken = (conv.state.get("voices") or {}).get(speaker_id) or {}
+        voice, instructions = spoken.get("voice", voice), spoken.get("tts_instructions", instructions)
+    media_id = tts.speak(svc, db, text, voice, instructions)
     index = (db.scalar(select(Turn.index).where(Turn.conversation_id == conv.id).order_by(Turn.index.desc()).limit(1))
              if conv.id else None)
     turn = Turn(conversation_id=conv.id, index=0 if index is None else index + 1, speaker="partner", text=text,
-                audio_media_id=media_id, coach_whisper=coach_whisper, momentum=momentum, metrics={}, segments=[])
+                audio_media_id=media_id, coach_whisper=coach_whisper, momentum=momentum, metrics={}, segments=[],
+                speaker_id=speaker_id)
     db.add(turn)
     db.flush()
     return turn
+
+
+_add_partner_turn = add_partner_turn
 
 
 def create_activity_conversation(svc: AppServices, db: Session, user: User, assessment: Assessment,
@@ -104,10 +119,15 @@ def create_activity_conversation(svc: AppServices, db: Session, user: User, asse
 
 def create_mission_conversation(svc: AppServices, db: Session, user: User, mission_id: str, quick: bool,
                                 language: str, difficulty: str | None = None) -> Conversation:
-    """`difficulty="brutal"` is the app's "Harder challenge": the partner raises a tougher objection."""
-    mission = MISSIONS.get(mission_id)
-    if mission is None:
+    """`difficulty="brutal"` is the app's "Harder challenge": the partner raises a tougher objection.
+
+    The mission, its partner and their delivery follow the user's market (e.g. an Indian campus-placement HR round).
+    """
+    base = MISSIONS.get(mission_id)
+    if base is None:
         raise not_found("Mission")
+    market = users.market(user)
+    mission = mission_for_market(base, market)
     if mission.partner is None:
         raise conflict("This mission doesn't include a conversation.")
     module = MODULES[mission.module_id]
@@ -127,7 +147,7 @@ def create_mission_conversation(svc: AppServices, db: Session, user: User, missi
         partner={"name": partner.name, "role": partner.role, "voice": partner.voice, "symbol": partner.symbol,
                  "color_hex": partner.color_hex},
         setup=setup.model_dump(mode="json"),
-        state={"tts_instructions": partner.tts_instructions, "character": partner.character},
+        state={"tts_instructions": partner.tts_instructions, "character": partner.character, "market": market},
         mission_id=mission_id, quick=quick, difficulty=difficulty, language=language,
         max_user_turns=1 if quick else 2, demo_mode=svc.demo_mode,
     )
@@ -181,7 +201,7 @@ def turn_out(svc: AppServices, turn: Turn) -> TurnOut:
     return TurnOut(
         index=turn.index, speaker=turn.speaker, text=turn.text, audio_url=media_service.url_for(svc, turn.audio_media_id),
         created_at=iso_required(turn.created_at), quality=quality_out, coach_whisper=turn.coach_whisper,
-        excluded=bool(turn.excluded),
+        excluded=bool(turn.excluded), speaker_id=turn.speaker_id,
     )
 
 
@@ -192,7 +212,12 @@ def conversation_out(svc: AppServices, db: Session, conv: Conversation) -> Conve
         awaiting=conv.awaiting if conv.status == "active" else "none", user_turns=conv.user_turns,
         max_user_turns=conv.max_user_turns, assessment_id=conv.assessment_id, mission_id=conv.mission_id,
         demo_mode=conv.demo_mode, created_at=iso_required(conv.created_at),
+        participants=[Participant.model_validate(p) for p in conv.participants or []],
     )
+
+
+def participant_names(conv: Conversation) -> dict[str, str]:
+    return {p["id"]: p["name"] for p in conv.participants or []}
 
 
 # ------------------------------------------------------------------------- turns
@@ -203,6 +228,10 @@ def _context_key(conv: Conversation) -> str:
         return f"assessment:{conv.activity_id}"
     if conv.kind == "mission":
         return f"mission:{conv.mission_id}"
+    if conv.kind == "daily":
+        return f"daily:{conv.state.get('prompt_id', '')}"
+    if conv.kind == "group":
+        return f"group:{conv.panel_id or ''}"
     return f"spar:{conv.persona_id or 'custom'}"
 
 
@@ -215,7 +244,7 @@ def _plan_step(conv: Conversation) -> tuple[str, str, str, bool]:
         step = steps[-1] if k >= activity.max_user_turns else steps[min(k - 1, len(steps) - 2)]
         return step.key, step.instruction, step.fallback, step.key == "close"
     if conv.kind == "mission":
-        mission = MISSIONS[conv.mission_id or ""]
+        mission = mission_for_market(MISSIONS[conv.mission_id or ""], conv.state.get("market", "us"))
         partner = mission.partner
         assert partner is not None
         if conv.quick or k >= conv.max_user_turns:
@@ -235,12 +264,13 @@ def _plan_step(conv: Conversation) -> tuple[str, str, str, bool]:
             "Go on — I'm listening.", False)
 
 
-def _history(conv: Conversation, turns: list[Turn]) -> list[tuple[str, str]]:
+def history_for(conv: Conversation, turns: list[Turn]) -> list[tuple[str, str]]:
     name = conv.partner.get("name", "Partner")
+    names = participant_names(conv)
     history: list[tuple[str, str]] = []
     for turn in turns:
         if turn.speaker == "partner":
-            history.append((name, turn.text))
+            history.append((names.get(turn.speaker_id or "", name), turn.text))
         elif not turn.excluded and turn.text:
             history.append(("USER", turn.text))
     return history
@@ -323,7 +353,8 @@ def submit_turn(svc: AppServices, db: Session, user: User, conv: Conversation, u
         with ThreadPoolExecutor(max_workers=2) as pool:
             transcription_future = pool.submit(svc.ai.transcribe, mp3, language=language, prompt=prompt, hint=hint)
             diarization_future = (
-                pool.submit(svc.ai.diarize, mp3, language=language, known_speakers=[], hint=hint)
+                pool.submit(svc.ai.diarize, mp3, language=transcription_language(language) or "", known_speakers=[],
+                            hint=hint)
                 if svc.settings.turn_background_check else None
             )
             transcription = transcription_future.result()  # AIUnavailableError ⇒ 503, audio can be resent
@@ -392,7 +423,15 @@ def submit_turn(svc: AppServices, db: Session, user: User, conv: Conversation, u
     )
     conv.user_turns += 1
 
-    partner_turn, done = _partner_respond(svc, db, conv)
+    if conv.kind == "daily":
+        partner_turns, done = [add_partner_turn(svc, db, conv, DAILY_CLOSE_LINE)], True
+    elif conv.kind == "group":
+        from . import group  # local import: group builds on this engine
+
+        partner_turns, done = group.respond(svc, db, conv)
+    else:
+        partner_turn, done = _partner_respond(svc, db, conv)
+        partner_turns = [partner_turn]
     if done:
         conv.awaiting = "none"
         if conv.kind == "assessment_activity":
@@ -400,8 +439,9 @@ def submit_turn(svc: AppServices, db: Session, user: User, conv: Conversation, u
             conv.finished_at = utcnow()
             _mark_activity(db, conv, "done")
     db.flush()
+    outs = [turn_out(svc, t) for t in partner_turns]
     return TurnResult(conversation=conversation_out(svc, db, conv), user_turn=turn_out(svc, user_turn),
-                      partner_turn=turn_out(svc, partner_turn), retry_suggested=False, done=done)
+                      partner_turn=outs[-1] if outs else None, retry_suggested=False, done=done, partner_turns=outs)
 
 
 def _partner_respond(svc: AppServices, db: Session, conv: Conversation) -> tuple[Turn, bool]:
@@ -420,7 +460,7 @@ def _partner_respond(svc: AppServices, db: Session, conv: Conversation) -> tuple
         step_instruction=instruction,
         fallback_line=fallback,
         is_closing=is_closing,
-        history=_history(conv, turns),
+        history=history_for(conv, turns),
         difficulty=difficulty,
         difficulty_behaviour=DIFFICULTY_BEHAVIOUR.get(difficulty or "") if conv.kind in ("spar", "mission") else None,
         win_condition=conv.state.get("win_condition"),
@@ -475,18 +515,28 @@ def finish(svc: AppServices, db: Session, user: User, conv: Conversation) -> Fin
             svc.jobs.submit("mission.feedback", attempt.id)
             db.refresh(attempt)
         result_ref = ResultRef(type="mission_attempt", id=attempt.id)
+    elif conv.kind == "daily":
+        from . import daily
+
+        result_ref = ResultRef(type="daily_attempt", id=daily.finish(svc, db, user, conv))
     else:
         report = db.get(SparReport, conv.id)
-        if report is None:
-            db.add(SparReport(conversation_id=conv.id, user_id=user.id, status="processing"))
-            from . import progress
+        if report is None and conv.kind == "group" and conv.user_turns == 0:
+            result_ref = None  # left before saying anything: nothing to review
+        else:
+            if report is None:
+                db.add(SparReport(conversation_id=conv.id, user_id=user.id, status="processing"))
+                from . import progress
 
-            progress.log_activity(db, user.id, "spar_session", conv.setup.get("title", "Spar"),
-                                  conversation_minutes(db, conv), conv.id)
-            db.commit()
-            assert svc.jobs is not None
-            svc.jobs.submit("spar.report", conv.id)
-        result_ref = ResultRef(type="spar_report", id=conv.id)
+                session = "group_session" if conv.kind == "group" else "spar_session"
+                progress.log_activity(db, user.id, session, conv.setup.get("title", "Spar"),
+                                      conversation_minutes(db, conv), conv.id)
+                if conv.kind == "group":
+                    progress.award(db, user.id, "first_group")
+                db.commit()
+                assert svc.jobs is not None
+                svc.jobs.submit("spar.report", conv.id)
+            result_ref = ResultRef(type="spar_report", id=conv.id)
     db.flush()
     return FinishResult(conversation=conversation_out(svc, db, conv), result_ref=result_ref)
 
@@ -507,10 +557,12 @@ def conversation_minutes(db: Session, conv: Conversation) -> float:
 def units_for(conv: Conversation, turns: list[Turn], uid_prefix: str = "") -> list[Unit]:
     units: list[Unit] = []
     partner_name = conv.partner.get("name", "Partner")
+    names = participant_names(conv)
     for turn in turns:
         uid = f"{uid_prefix}T{turn.index}"
         if turn.speaker == "partner":
-            units.append(Unit(uid=uid, role="partner", speaker_name=partner_name, text=turn.text,
+            units.append(Unit(uid=uid, role="partner", speaker_name=names.get(turn.speaker_id or "", partner_name),
+                              text=turn.text,
                               source_type="conversation", source_id=conv.id, turn_index=turn.index,
                               activity_id=conv.activity_id, duration=len(turn.text.split()) / 2.5))
             continue

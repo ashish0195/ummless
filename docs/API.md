@@ -1,4 +1,4 @@
-# Comlogue API v1 — contract
+# Comlogue API — contract (v1 + v2 additions)
 
 This is the contract between the iOS app and the backend. The backend's generated OpenAPI document
 (`docs/openapi.json`) and the contract fixtures (`contract-fixtures/*.json`, decoded by the Swift tests) are
@@ -12,7 +12,7 @@ generated from the implementation and must agree with this file.
   signed media URLs.
 - Timestamps: ISO 8601 UTC **without fractional seconds**, e.g. `"2026-10-26T21:00:00Z"`. Dates: `"2026-10-30"`.
 - IDs are opaque strings with prefixes: `usr_`, `asm_`, `cnv_`, `rec_`, `att_`, `med_`, `evt_`, `ref_`, `rfl_`,
-  `fbk_`.
+  `fbk_`, `dev_`, `ntf_`.
   Content IDs (activities, missions, personas, talks) are readable slugs (e.g. `business.m1.learn`).
 - Nullable fields are always present (`null`), never omitted. Arrays are never null.
 - Audio/media URLs are **relative** (`/v1/media/med_…?exp=…&sig=…`); the client resolves them against its base URL.
@@ -347,8 +347,10 @@ WeeklyReview { week_start: string, week_end: string,
 
 Only when dev entitlements are allowed (see Billing); otherwise `404 not_found`.
 
-- `POST /v1/dev/seed-demo` body `{ pro: bool }` → `{ assessment_id: string, recording_needs_confirmation_id: string?,
-  recording_complete_id: string?, mission_id: string?, spar_conversation_id: string?, event_id: string? }`.
+- `POST /v1/dev/seed-demo` body `{ pro: bool, market?: "us" | "in" }` → `{ assessment_id: string,
+  recording_needs_confirmation_id: string?, recording_complete_id: string?, mission_id: string?,
+  spar_conversation_id: string?, event_id: string?, daily_date: string?, previous_daily_date: string?,
+  group_conversation_id: string?, panel_id: string? }`.
   Seeds a rich, realistic state for the calling user without audio processing or AI calls: onboarding + analysis
   consent (if missing), a completed baseline with a **partial** result (5 dimensions assessed/provisional, listening
   and storytelling "Not enough evidence yet"), a recording awaiting speaker confirmation (3 speakers, one proposed;
@@ -356,6 +358,320 @@ Only when dev entitlements are allowed (see Billing); otherwise `404 not_found`.
   attempts (the second compares against the first) plus a reflection, two spar sessions with reports, an upcoming
   event with three prep items, milestones and practice for this week. `pro: true` also grants dev Pro. Idempotent
   per user: later calls return the same ids. Media URLs in seeded data are `null`.
+- v2 (`market`, default `us`): sets the region (`US-CA` or `IN`) and the market's timezone (a device-reported
+  timezone that fits the market is kept), age confirmation, and a practice plan (08:30 on weekdays, anchored to
+  "After my morning coffee" / "After my morning chai"). It also seeds the habit loop:
+  - today's rep, **not** done (`daily_date`, also `GET /v1/daily`);
+  - reps on 2–3 earlier days (this week, or the end of last week early in the week). `previous_daily_date` is the
+    most recent of them — always yesterday — with two attempts on `explain.job_to_kid`: the first `partly` met with
+    a quote and a "Try: …" change, the second `yes` with a `comparison`;
+  - three earlier weeks that met the weekly target (`weeks_on_target` ≥ 4 with today's sessions) and their
+    milestones;
+  - a finished group session with a report (`group_conversation_id`, `panel_id`: `gd.remote_work_india` for `in`,
+    a US panel interview for `us`);
+  - an event tomorrow with a time (a campus-placement HR round for `in`, a final-round interview for `us`);
+  - four inbox items (event prep and a recording waiting — unread; recording results and last week's reveal —
+    read), never pushed.
+  For `in`, names, the event, labels (`27 Oct`) and one sparring partner (Kevin, the US-client call) are Indian
+  market content. The first call's market wins.
+
+## v2 — Habit, notifications and markets (US & India)
+
+Everything below is additive: new endpoints, new fields with defaults, and new enum values. Clients must keep
+decoding unknown enum values gracefully (the app maps them to a fallback).
+
+### New and extended enums
+
+```
+Market               = "us" | "in" | "global"
+TrackId             += "interviews"
+ConversationKind     = "assessment_activity" | "mission" | "spar" | "daily" | "group"
+EventKind            = "interview" | "meeting" | "presentation" | "social" | "negotiation" | "other"
+                       | "placement" | "group_discussion" | "client_call" | "viva" | "appraisal"
+NotificationCategory = "practice" | "event_prep" | "results" | "check_in" | "nudge" | "weekly_reveal"
+                       | "milestone" | "tips"
+DailyKind            = "explain" | "story" | "persuade" | "answer" | "opinion" | "introduce" | "summarize" | "respond"
+PanelKind            = "group_discussion" | "panel_interview"
+```
+
+### Markets
+
+`Me.market` is derived (read-only) from `onboarding.region`: `IN` or `IN-*` → `in`; `US` or `US-*` → `us`;
+anything else (or unset) → `global` (US-style content, USD pricing). Note `US-IN` is Indiana, i.e. `us`.
+
+The market changes:
+- **Content.** Daily prompts, sparring personas (order and availability), group-discussion panels, course scenario
+  variants (names, places, rupees vs dollars, "12 LPA" vs "$135k"), event kinds.
+- **Formats.** Server-written labels such as `context_label` use `27 Oct` for `in` and `Oct 27` for `us`/`global`.
+- **Pricing.** See `Meta.pricing`.
+- **Default timezone** before the device reports one: `in` → `Asia/Kolkata`, `us` → `America/New_York`,
+  `global` → `UTC`.
+
+Accent, dialect (e.g. Indian English) and code-switching (e.g. Hinglish) are never scored or "corrected". A
+rewrite may offer a "global English" alternative only when the user's context calls for it (e.g. a call with US
+clients), and labels it as an option.
+
+`hinglish` conversations are transcribed without a language hint (the transcription prompt describes the
+Hindi–English mix, in Latin script), and AI partners reply in natural Hinglish. Filler and hedge statistics stay
+English-only (`speech_patterns.language_supported: false` for other languages).
+
+### Meta additions
+
+```
+Meta += { pricing: Pricing /* for the caller's market */, pricing_by_market: { us: Pricing, in: Pricing, global: Pricing },
+          event_kinds: [{ id: EventKind, title: string, symbol: string, markets: [Market] }],
+          support: { email: string, grievance_email: string, grievance_officer: string? } }
+Pricing += { currency: "USD" | "INR", monthly_price: number, yearly_price: number,
+             monthly_display: string /* "$14.99", "₹399" */, yearly_display: string }
+           // monthly_usd / yearly_usd stay as USD reference values.
+ConsentText += { translations: { [language: string]: { title: string, body: string, bullets: [string] } } }
+           // `hi` drafts for analysis, voice_reference and recording (legal review pending).
+languages  += { code: "hinglish", name: "Hinglish (Hindi + English)" }
+```
+Defaults: `us`/`global` $14.99/month, $95.99/year; `in` ₹399/month, ₹2,499/year; 7-day trial everywhere. These
+are pilot hypotheses. The App Store's localized price (StoreKit `displayPrice`) always wins in the app.
+
+### Me additions
+
+```
+Me += { market: Market, timezone: string /* IANA, last reported by the device or the market default */,
+        notification_settings: NotificationSettings }
+onboarding        += { age_confirmed: bool }
+practice_settings += { anchor: string? /* "After my morning chai or coffee" */,
+                       paused_until: string? /* YYYY-MM-DD in the user's timezone; a planned break */ }
+NotificationSettings { practice_reminders: bool, event_prep: bool, results: bool, check_ins: bool, nudges: bool,
+                       weekly_reveal: bool, tips: bool, quiet_start: "HH:MM", quiet_end: "HH:MM" }
+```
+- Defaults: every category `true` except `tips` (`false`; product news needs explicit opt-in), quiet hours
+  `22:00`–`08:00`.
+- `PATCH /v1/me` accepts `notification_settings` (partial), `practice_settings.anchor`,
+  `practice_settings.paused_until` (`null` ends a break) and `onboarding.age_confirmed`.
+- Recording analysis consent now also needs `age_confirmed: true`, in the same PATCH or an earlier one. Without it,
+  setting `analysis_consent_version` returns `422 validation_error`. Comlogue is for adults (18+), in line with
+  the DPDP Act's definition of a child in India. Accounts that consented before v2 keep their consent.
+- `quiet_start`/`quiet_end` must be `HH:MM` (`422` otherwise); equal values mean no quiet hours. `anchor` is
+  trimmed (empty → `null`, at most 120 characters).
+
+### Devices and push
+
+```
+DeviceRegistration { apns_token: string?, push_environment: "sandbox" | "production" | null,
+                     authorization: "authorized" | "provisional" | "ephemeral" | "denied" | "not_determined",
+                     timezone: string /* IANA */, locale: string /* "en-IN" */, app_version: string }
+Device { id: string /* dev_… */, push_enabled: bool }
+```
+- `POST /v1/devices` body `DeviceRegistration` → `Device`. Upserts the caller's device (one per install). It also
+  sets `Me.timezone` (an unknown IANA name → `422`). The app calls it at launch, whenever the APNs token or
+  permission changes, and when the timezone changes. `apns_token` is the hex device token (32–200 hex characters,
+  stored lowercase; `null` or `""` clears it); a token reported by another account moves to this one.
+- `push_enabled` means **the server will deliver pushes to this device**: APNs is configured on the server (not
+  inbox-only) **and** the device has a token **and** authorization is `authorized`, `provisional` or `ephemeral`.
+  So it is `false` on a server without `APNS_*` even when the device has a token and permission. When it's
+  `false`, the app schedules its own local notifications; when it's `true`, the app leaves event prep, check-ins,
+  nudges and the weekly reveal to the server. A token APNs rejects (`410`, `BadDeviceToken`,
+  `DeviceTokenNotForTopic`) is cleared, so the next registration returns `false` until the app sends a new one.
+- `DELETE /v1/devices/{id}` → `204` (`404` for another account's device). Devices are also removed with the
+  account.
+
+The server sends pushes through APNs (token auth) when `APNS_*` is configured. Otherwise notifications go to the
+in-app inbox only.
+
+**Push rules**
+- Categories follow `NotificationSettings`. With a category turned off, the server creates no inbox item for it —
+  except `results`, which always reach the inbox (only the push is skipped). `milestone` follows the `results`
+  toggle; `tips` has no server-generated items yet.
+- Quiet hours apply in the user's timezone; a push due in quiet hours is deferred to `quiet_end`.
+- At most 2 pushes per local day; further pushes that day are skipped (the inbox item stays).
+- `results` is exempt from the cap and from quiet hours when the user was active in the last 30 minutes.
+- Nothing during a planned break, except `results` and `event_prep`.
+- Every push has an expiry (e.g. event prep expires when the event starts, results after 24 hours): a push that
+  can't go out in time is dropped, never delivered late. The inbox item stays.
+- The badge is the unread count. Pushes use `thread-id` = category and `apns-collapse-id` = dedupe key (hashed to
+  64 bytes when longer). Passive items (milestones, the weekly reveal) use `apns-priority: 5`, others `10`.
+- APNs `429`/`5xx` are retried up to 3 times, 5 minutes apart.
+
+**Server-generated notifications**
+- `results`: a recording is ready or needs speaker confirmation; an assessment completes; mission or daily feedback
+  is ready. Feedback notifications are sent only if the user hasn't been active in the last 2 minutes.
+- `event_prep`:
+  - the evening before an event (19:00 local): "Tomorrow: {title}. A 5-minute warm-up tonight?"
+  - the morning of it (08:00, or 2 hours before `time` when given): "Today: {title}…"
+- `check_in`:
+  - the day after an event (19:00): "How did {title} go?" — not sent when the event already has a reflection;
+  - 2 days after a real-life mission was opened without a reflection.
+- `nudge`:
+  - after 3 quiet days and again after 8, never when no weekly target is set;
+  - at most one per 72 hours;
+  - after 2 unopened nudges, none until the user returns.
+  - "Quiet" counts from the last practice session or tapped notification (or sign-up). Nudges go out at the user's
+    `reminder_time` (18:00 if none), only after onboarding, never during a break. The first names today's rep
+    ("Your 60-second rep is ready" / "Today: {title}. One minute is plenty — whenever suits you."); the second says
+    "Pick up where you left off". No streak-loss language anywhere.
+- `weekly_reveal`: Sunday 18:00 local when the user practised that week ("{n} sessions and {m} min of practice this
+  week…").
+- `milestone`: when a milestone is earned and the app is not in use (passive).
+- The real-life check-in goes out between 10:00 and 20:00 local, 2–14 days after the mission was first opened, if
+  there's no reflection and the mission isn't completed.
+
+The scheduler runs inside the API process every `NOTIFICATIONS_TICK_SECONDS` (default 300). Producers are
+idempotent (one item per user and dedupe key), so several instances can run it.
+
+`practice` reminders are scheduled on the device (local notifications at the chosen time and days). The server
+never sends them.
+
+Deep links (`deep_link` in notifications and push payloads; the app also opens them from widgets and Shortcuts):
+`comlogue://today`, `comlogue://daily`, `comlogue://daily/{date}`, `comlogue://mission/{id}`,
+`comlogue://reflect/{mission_id}`, `comlogue://recording/{id}`, `comlogue://assessment/{id}`,
+`comlogue://event/{id}`, `comlogue://review/weekly`, `comlogue://inbox`, `comlogue://practice`,
+`comlogue://group/{panel_id}`, `comlogue://paywall`, `comlogue://settings/notifications`.
+
+APNs payload: `{ "aps": { "alert": { "title", "body" }, "sound": "default", "badge": int, "thread-id": category,
+"interruption-level": "active" | "passive" | "time-sensitive" }, "deep_link": string, "notification_id": string }`.
+
+### Inbox
+
+```
+Notification { id: string /* ntf_… */, category: NotificationCategory, title: string, body: string,
+               deep_link: string, created_at: ISODate, read: bool }
+```
+- `GET /v1/notifications?limit=50` → `{ items: [Notification] /* newest first */, unread_count: int }`
+- `POST /v1/notifications/read` body `{ ids: [string] }` or `{ all: true }` → `{ unread_count: int }`
+- `POST /v1/notifications/{id}/opened` → `204` (a tap on a push or inbox row; resets nudge back-off)
+- `POST /v1/notifications/test` → `Notification` ("Notifications are on", category `results`, deep link
+  `comlogue://settings/notifications` — pushed immediately when `push_enabled`, ignoring quiet hours and the cap)
+- `limit` is 1–200 (default 50). `POST /v1/notifications/read` with neither `ids` nor `all: true` → `422`.
+  `opened` on another account's notification → `404`.
+
+### Daily rep
+
+One short speaking prompt per day, chosen for the user's goal, focus skill and market; the core habit action.
+
+```
+DailyRep { date: string /* YYYY-MM-DD, user's timezone */, prompt_id: string, title: string, prompt: string,
+           kind: DailyKind, dimension: DimensionId, target_behavior: string, tips: [string],
+           suggested_seconds: int, example: string?, can_shuffle: bool, completed: bool,
+           attempts: [MissionAttempt] }
+DailyRepPreview { date: string, prompt_id: string, title: string, prompt: string, dimension: DimensionId }
+```
+- `GET /v1/daily` → today's `DailyRep`.
+- `GET /v1/daily/upcoming?days=7` → `{ items: [DailyRepPreview] }`, today first, `days` ≤ 14. The assignments are
+  stable, so the app can put tomorrow's actual prompt in tomorrow's reminder.
+- `GET /v1/daily/{date}` → `DailyRep` (`404` outside today − 30 … today + 14 days; `422` for a malformed date).
+  Past days are never assigned after the fact: a past date without an assignment is `404`.
+- `POST /v1/daily/shuffle` → today's new `DailyRep`. Once per day, and only before the first attempt; otherwise
+  `409 conflict`. `can_shuffle` is true only for today, before a shuffle and before any attempt.
+- Attempts:
+  - `POST /v1/conversations { kind: "daily", daily_date }` → `Conversation`. The coach reads the prompt as turn 0;
+    the user gets one turn (`max_user_turns: 1`), then the coach's short closing line and `awaiting: "none"`.
+    `daily_date` defaults to today and may be today or yesterday (a rep started just before midnight); any other
+    date → `409 conflict`. Needs analysis consent (`403`).
+  - `finish` → `result_ref { type: "daily_attempt", id }`. Feedback is generated asynchronously; poll
+    `GET /v1/daily/{date}`. `AttemptFeedback` has the same shape as missions, with `comparison` on retries.
+- Free for everyone, with unlimited retries. `completed` means at least one assessable attempt. A completed rep
+  counts as one practice session (`daily_rep`) for its day, on its first assessable attempt; retries don't add
+  sessions, so the weekly target stays honest.
+- The "feedback ready" notification is sent only when the user has left the app (no activity for 2 minutes).
+- Selection is deterministic per user and date:
+  - weighted towards the course focus dimension, the goal track and the market;
+  - lighter social prompts at weekends, seasonal prompts in season (Diwali, Thanksgiving, appraisal season…);
+  - no repeats within 30 days.
+
+### Habit and progress
+
+```
+Progress.practice += { reps: int, weeks_on_target: int, best_weeks_on_target: int, paused_until: string? }
+Progress.practice.this_week += { days: [int] /* weekdays with a session, 1 = Mon */, met: bool }
+Progress += { welcome_back: { days_away: int, message: string }? }
+```
+- Weeks run Monday to Sunday in the user's timezone, everywhere: this week, weekly reviews and milestones.
+- `weeks_on_target`: consecutive completed weeks that met `weekly_target`, ending with last week, plus 1 if this week
+  is already met. A week overlapping a planned break neither counts nor breaks the run.
+- `welcome_back` is present when the user's previous session was ≥ 7 days before today. It's warm, with no guilt:
+  "Welcome back — your progress is saved. Start with a 60-second rep." It disappears once they practise today.
+- `this_week.met` is `sessions >= target`. A planned break is set with `practice_settings.paused_until`; ending it
+  early (`null`) keeps the days already on break as break days.
+- New milestones:
+  - `first_rep`, `reps_10`, `reps_30`;
+  - `weeks_on_target_2`, `weeks_on_target_4`, `weeks_on_target_8`, `weeks_on_target_12`;
+  - `minutes_60`, `first_group`.
+- Session types are now `assessment`, `recording`, `mission_attempt`, `spar_session`, `real_life`, `daily_rep` and
+  `group_session`.
+
+### Group conversations (group discussions and panel interviews)
+
+Several AI participants and the user in one conversation, e.g. a campus-placement **group discussion** (GD) or a
+three-person **panel interview**.
+
+```
+Participant { id: string, name: string, role: string, voice: string, symbol: string, color_hex: string }
+Panel { id, kind: PanelKind, title, scenario, description, topic: string?, user_role: string,
+        participants: [Participant] /* moderator first */, minutes: int, markets: [Market], is_free: bool,
+        symbol: string, color_hex: string, default_difficulty: Difficulty }
+Conversation += { participants: [Participant] /* [] unless kind == "group" */ }
+Turn        += { speaker_id: string? /* participant id on group partner turns */ }
+TurnResult  += { partner_turns: [Turn] /* every partner line produced after the user's turn, in order;
+                                          partner_turn is the last of them (or null) */ }
+```
+- `GET /v1/group/panels` → `{ panels: [Panel] }` (market-relevant first).
+- `POST /v1/conversations { kind: "group", panel_id, difficulty? }` → `Conversation`.
+  - The moderator opens (turn 0), and up to two participants may speak before the user's first turn.
+  - After each user turn, one or two participants respond in character. They build on, challenge or ignore what
+    the user said, like a real GD.
+  - `partner` is the moderator.
+- `finish` → `result_ref { type: "spar_report", id: conversation_id }`. The report uses the `SparReport` shape
+  (`GET /v1/spar/reports/{conversation_id}`) and focuses on entering the discussion, contribution quality, building
+  on others, inclusiveness and summarising. `momentum` is empty for group reports. Finishing before the user's
+  first turn → `result_ref: null` (nothing to review, nothing logged).
+- Free users get the panels marked `is_free` (no weekly cap); locked panels return `402 subscription_required`.
+  Missing `panel_id` → `422`, unknown → `404`.
+- The session ends when the user's turns reach the panel's limit (the moderator closes), or earlier when the
+  moderator wraps up naturally after at least two user turns. Each participant speaks with their own voice and
+  delivery (`audio_url` per partner turn). Group sessions with a report also appear in `GET /v1/spar/sessions`
+  (`persona_name` = the moderator).
+
+### Events additions
+
+```
+UpcomingEvent += { time: string? /* "HH:MM" local, optional */ }
+```
+`POST /v1/events` accepts `time` and the new `EventKind` values (anything else → `422`; `time` must be `HH:MM`).
+Prep items are tailored to the kind (each kind in `Meta.event_kinds` carries guidance for the model) and market,
+e.g. a campus-placement HR round, a GD, or a late-night call with US clients.
+
+### Event reflections
+
+After an interview, pitch or hard conversation the user prepared for, the app asks "How did it go?". The check-in
+notification the day after links to the event.
+
+```
+UpcomingEvent += { reflection: Reflection? }   // null until the user reflects
+```
+- `POST /v1/events/{id}/reflection` body `{ text: string (1–4000), went?: "well" | "mixed" | "hard" }` →
+  `UpcomingEvent` with its `reflection`.
+  - The coach's reply ties what happened to the user's current course focus. Reflections inform goals, and like
+    mission reflections they are never audio evidence for skill estimates.
+  - Allowed once the event's date has come (`409 conflict` before that).
+  - Posting again replaces the text and `went` but keeps the same `id`.
+  - The first reflection counts as a `real_life` practice session. It awards `first_real_life`, and pilot
+    metrics count it as real-life application.
+- `GET /v1/events` returns past events too (newest last), so the app can show "How did it go?" for recent ones.
+
+### Data export
+
+- `GET /v1/me/export` → `application/json` attachment (`comlogue-export.json`). It contains everything stored
+  about the user:
+  - settings, profile, assessment results and transcripts;
+  - recording metadata, results and transcripts;
+  - missions, attempts and reflections;
+  - daily reps, events and notifications.
+
+  Audio files are not included, and media links are `null`. Devices are listed without the push token
+  (`push_token_registered: bool`). This covers access requests under the DPDP Act and US state privacy laws.
+- Top-level keys: `export_version`, `exported_at`, `account` (the `Me` object plus locale, age confirmation time and
+  planned breaks), `voice_reference`, `profile`, `assessments` (with conversation transcripts), `recordings` (with
+  consent and transcript), `missions` (`completed`, `attempts` with transcripts, `reflections`), `daily_reps`,
+  `spar_and_group_sessions` (transcripts and reports), `events`, `notifications` (with `opened_at` and push state),
+  `devices`, `milestones`, `practice_log`, `feedback_reports`.
 
 ## Running the server
 

@@ -303,4 +303,9 @@ TALKS: tuple[TalkDef, ...] = (
     ),
 )
 
+# Extra public-domain talks and original scripts (US & India). Imported here, after TalkDef exists, because the
+# content module builds TalkDefs.
+from .content.talks_extra import EXTRA_TALKS  # noqa: E402
+
+TALKS = TALKS + tuple(talk for talk in EXTRA_TALKS if talk.id not in {t.id for t in TALKS})
 TALKS_BY_ID: dict[str, TalkDef] = {talk.id: talk for talk in TALKS}

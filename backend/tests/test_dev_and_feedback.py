@@ -43,7 +43,8 @@ def test_seed_demo_builds_a_rich_idempotent_state(client):
 
     report = client.get(f"/v1/spar/reports/{ids['spar_conversation_id']}", headers=headers).json()
     assert report["status"] == "complete" and report["outcome"]["label"] == "Budget approved"
-    assert len(client.get("/v1/spar/sessions", headers=headers).json()["items"]) == 2
+    sessions = {s["conversation_id"] for s in client.get("/v1/spar/sessions", headers=headers).json()["items"]}
+    assert len(sessions) == 3 and ids["group_conversation_id"] in sessions  # two spars and the group discussion
     events = client.get("/v1/events", headers=headers).json()["events"]
     assert events[0]["id"] == ids["event_id"] and len(events[0]["prep"]) == 3
 

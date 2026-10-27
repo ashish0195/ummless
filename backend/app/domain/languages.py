@@ -11,6 +11,7 @@ LANGUAGES: list[tuple[str, str]] = [
     ("it", "Italiano"),
     ("nl", "Nederlands"),
     ("hi", "हिन्दी"),
+    ("hinglish", "Hinglish (Hindi + English)"),
     ("ja", "日本語"),
     ("ko", "한국어"),
     ("zh", "中文"),
@@ -27,6 +28,7 @@ LANGUAGE_NAMES_EN = {
     "it": "Italian",
     "nl": "Dutch",
     "hi": "Hindi",
+    "hinglish": "Hinglish",
     "ja": "Japanese",
     "ko": "Korean",
     "zh": "Chinese",
@@ -46,3 +48,17 @@ def normalize_language(code: str | None) -> str:
 
 def language_name(code: str) -> str:
     return LANGUAGE_NAMES_EN.get(code, "English")
+
+
+# Codes the transcription API accepts as a language hint (ISO-639-1). "hinglish" is code-mixed speech: we send no
+# language hint and describe the mix in the transcription prompt instead.
+def transcription_language(code: str) -> str | None:
+    return None if code == "hinglish" else code
+
+
+def language_instruction(code: str) -> str:
+    """How to write for this language in prompts."""
+    if code == "hinglish":
+        return ("Hinglish: natural Hindi–English code-mixing as people speak it in Indian cities, written in Latin "
+                "script (e.g. \"Theek hai, but let's fix the export first.\")")
+    return language_name(code)

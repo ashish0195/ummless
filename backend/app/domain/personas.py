@@ -22,6 +22,7 @@ class PersonaDef:
     tts_instructions: str
     is_free: bool = False
     max_user_turns: int = 6
+    markets: tuple[str, ...] = ("us", "in", "global")  # where this persona is offered (market-relevant first)
 
 
 DIFFICULTY_BEHAVIOUR: dict[str, str] = {

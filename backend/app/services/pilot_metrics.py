@@ -2,20 +2,34 @@
 
 The spec asks the pilot to test "first-task completion, voluntary retries, return for the next mission, real-life
 application, and improvement on a fresh scenario", and to "treat engagement and learning as separate outcomes".
+The habit loop adds daily-rep completion and push-to-session conversion (engagement, never learning).
 People with seeded demo data are left out. Print a report with `python scripts/pilot_metrics.py`.
 """
 
 from __future__ import annotations
 
 from collections import Counter, defaultdict
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Any
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from ..models import DimensionEstimate, FeedbackReport, MissionAttempt, MissionProgress, Reflection, User
+from ..models import (
+    ActivityLog,
+    DailyAttempt,
+    DimensionEstimate,
+    FeedbackReport,
+    MissionAttempt,
+    MissionProgress,
+    Notification,
+    Reflection,
+    UpcomingEvent,
+    User,
+)
 from ..timeutil import as_utc, iso
+
+PUSH_SESSION_WINDOW = timedelta(hours=2)
 
 
 def _rate(numerator: int, denominator: int, definition: str) -> dict[str, Any]:
@@ -45,6 +59,8 @@ def compute(db: Session, since: datetime | None = None, until: datetime | None =
     attempts = [a for a in db.scalars(select(MissionAttempt)) if a.user_id in cohort]
     completions = [p for p in db.scalars(select(MissionProgress)) if p.user_id in cohort]
     reflectors = {r.user_id for r in db.scalars(select(Reflection)) if r.user_id in cohort}
+    # "How did the interview go?" on a real event is real-life application too.
+    reflectors |= {e.user_id for e in db.scalars(select(UpcomingEvent)) if e.reflection and e.user_id in cohort}
 
     started = {a.user_id for a in attempts}
     got_feedback = {a.user_id for a in attempts if a.status == "complete"}
@@ -79,6 +95,33 @@ def compute(db: Session, since: datetime | None = None, until: datetime | None =
 
     reports = [r for r in db.scalars(select(FeedbackReport)) if r.user_id in cohort]
 
+    # Habit loop. A rep "day" is a person and a date with at least one attempt.
+    rep_days: dict[tuple[str, str], bool] = {}
+    for attempt in db.scalars(select(DailyAttempt)):
+        if attempt.user_id not in cohort:
+            continue
+        done = attempt.status == "complete" and (attempt.feedback or {}).get("assessable") not in (None, "no")
+        key = (attempt.user_id, attempt.date)
+        rep_days[key] = rep_days.get(key, False) or done
+    from .progress import SESSION_TYPES  # local import: progress pulls in the notification producers
+
+    sessions: dict[str, list[datetime]] = defaultdict(list)
+    for log in db.scalars(select(ActivityLog).where(ActivityLog.type.in_(SESSION_TYPES))):
+        if log.user_id in cohort:
+            sessions[log.user_id].append(as_utc(log.created_at))
+    pushed = opened = tapped_total = converted = 0
+    for item in db.scalars(select(Notification)):
+        if item.user_id not in cohort:
+            continue
+        if item.push_state == "sent":
+            pushed += 1
+            opened += item.opened_at is not None
+        if item.opened_at is not None:
+            tapped_total += 1
+            tapped = as_utc(item.opened_at)
+            if any(tapped <= when <= tapped + PUSH_SESSION_WINDOW for when in sessions[item.user_id]):
+                converted += 1
+
     return {
         "window": {"since": iso(since), "until": iso(until)},
         "people": len(cohort),
@@ -94,7 +137,16 @@ def compute(db: Session, since: datetime | None = None, until: datetime | None =
                 "Of people who completed a mission, the share who started a different mission on a later day."),
             "real_life_application": _rate(
                 len(reflectors & set(first_completion)), len(first_completion),
-                "Of people who completed a mission, the share who logged how the real-life version went."),
+                "Of people who completed a mission, the share who logged how a real conversation went (a real-life "
+                "mission or an event they'd prepared for)."),
+            "daily_rep_completion": _rate(
+                sum(1 for done in rep_days.values() if done), len(rep_days),
+                "Of the days someone started a daily rep, the share where they finished it and got feedback."),
+            "push_open_rate": _rate(
+                opened, pushed, "Of pushes delivered, the share the person tapped."),
+            "push_to_session": _rate(
+                converted, tapped_total,
+                "Of notifications tapped (push or inbox), the share followed by a practice session within 2 hours."),
         },
         "learning": {
             "improvement_on_fresh_scenario": {

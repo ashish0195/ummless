@@ -24,7 +24,7 @@ def signup(client, *, consent: bool = True, onboard: bool = True) -> dict[str, s
                                "ease_targets": ["concise", "persuading"], "goal_track": "business", "language": "en",
                                "region": "US-CA"}
     if consent:
-        patch.setdefault("onboarding", {})["analysis_consent_version"] = ANALYSIS_VERSION
+        patch.setdefault("onboarding", {}).update({"age_confirmed": True, "analysis_consent_version": ANALYSIS_VERSION})
     if patch:
         assert client.patch("/v1/me", json=patch, headers=headers).status_code == 200
     return headers

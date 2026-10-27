@@ -1,5 +1,5 @@
 {
-  "id": "evt_3dc33f15e19b486c8716",
+  "id": "evt_95061a4cad144e6b946b",
   "title": "Final-round interview",
   "kind": "interview",
   "date": "2026-11-02",
@@ -27,5 +27,7 @@
       "difficulty": "brutal"
     }
   ],
-  "created_at": "2026-10-26T22:48:13Z"
+  "created_at": "2026-10-27T09:34:24Z",
+  "time": "10:30",
+  "reflection": null
 }

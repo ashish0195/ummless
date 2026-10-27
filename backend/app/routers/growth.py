@@ -99,8 +99,8 @@ def add_reflection(mission_id: str, body: ReflectionCreate, svc: AppServices = D
 
 
 @router.get("/spar/personas", response_model=PersonaList, tags=["spar"])
-def get_personas(_: User = Depends(current_user)) -> PersonaList:
-    return spar.personas()
+def get_personas(user: User = Depends(current_user)) -> PersonaList:
+    return spar.personas(user)
 
 
 @router.get("/spar/sessions", response_model=SparSessionList, tags=["spar"])
@@ -140,6 +140,13 @@ def list_events(db: Session = Depends(get_db), user: User = Depends(current_user
 def create_event(body: EventCreate, svc: AppServices = Depends(get_services), db: Session = Depends(get_db),
                  user: User = Depends(current_user)) -> UpcomingEventOut:
     return events.to_out(events.create(svc, db, user, body))
+
+
+@router.post("/events/{event_id}/reflection", response_model=UpcomingEventOut, tags=["events"])
+def reflect_on_event(event_id: str, body: ReflectionCreate, svc: AppServices = Depends(get_services),
+                     db: Session = Depends(get_db), user: User = Depends(current_user)) -> UpcomingEventOut:
+    """"How did it go?" after the day. The first one counts as a real-life practice session."""
+    return events.to_out(events.reflect(svc, db, user, event_id, body))
 
 
 @router.delete("/events/{event_id}", status_code=204, tags=["events"])
@@ -215,4 +222,4 @@ def seed_demo(body: DemoSeedRequest, svc: AppServices = Depends(get_services), d
     """Seed a rich demo state for the calling user (development and screenshots only)."""
     if not svc.settings.dev_entitlements_allowed:
         raise not_found("Endpoint")
-    return demo_seed.seed(svc, db, user, body.pro)
+    return demo_seed.seed(svc, db, user, body.pro, body.market)

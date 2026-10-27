@@ -24,6 +24,8 @@ from .llm_schemas import (
     DimensionJudgement,
     EventPrep,
     EvidenceRef,
+    GroupLine,
+    GroupReply,
     MomentumNote,
     PartnerReply,
     PrepItemJudgement,
@@ -44,6 +46,7 @@ from .types import (
     DiarizationResult,
     DiarizedSegment,
     EventPrepRequest,
+    GroupReplyRequest,
     KnownSpeaker,
     PartnerReplyRequest,
     ReflectionRequest,
@@ -65,6 +68,33 @@ SPAR_ANSWERS = (
     "So I'm asking for approval of phase one today, with a review in ninety days.",
     "Yes — and I'll send you the numbers in writing this afternoon.",
     "Thanks for pushing on it. It made the plan better.",
+)
+DAILY_ANSWERS = (
+    "Okay, so the short version: I help a team of twelve ship our app every two weeks. Think of it like running a "
+    "kitchen — I make sure the right dishes go out on time, and nobody gets burned.",
+    "Let me try that again. My job is making sure our app ships on time. Every two weeks, twelve people, one "
+    "release — I'm the one who keeps it moving.",
+)
+GROUP_ANSWERS = (
+    "Can I add a different angle? I think the real question is which work needs people in the same room. "
+    "Mentoring freshers does, but focused coding often doesn't.",
+    "Building on what Ananya said about commute time — in Bengaluru that's two hours a day. A hybrid plan with "
+    "three office days for new joiners could give us both.",
+    "Karthik, you mentioned attrition earlier — what did you see in the numbers?",
+    "So to summarise: we agree freshers need office time, and most of us think a hybrid model works for "
+    "experienced staff. That's our conclusion.",
+)
+_GD_REACTIONS = (
+    "I hear you, but I'm not fully convinced — {kw} sounds good on paper, but who checks that it actually works?",
+    "Adding to that: {kw} matters, but it depends a lot on the team and the city.",
+    "Sorry, can I come in here? I see it a little differently. What about the people who've just joined?",
+    "That's a fair point about {kw}. I'd also look at what it costs the company.",
+)
+_PANEL_QUESTIONS = (
+    "Thanks. Can you give us a specific example of that?",
+    "Let me push on that a little — what was your own contribution, as opposed to the team's?",
+    "Interesting. How did you measure whether it worked?",
+    "And if you had to do it again, what would you change?",
 )
 MEETING_USER_LINES = (
     "So I think the main question today is whether we launch the new onboarding before the holidays.",
@@ -131,6 +161,10 @@ class MockProvider(AIProvider):
             text = MISSION_ANSWERS[min(hint.turn_index, len(MISSION_ANSWERS) - 1)]
         elif parts[0] == "spar":
             text = SPAR_ANSWERS[min(hint.turn_index, len(SPAR_ANSWERS) - 1)]
+        elif parts[0] == "daily":
+            text = DAILY_ANSWERS[min(hint.turn_index, len(DAILY_ANSWERS) - 1)]
+        elif parts[0] == "group":
+            text = GROUP_ANSWERS[min(hint.turn_index, len(GROUP_ANSWERS) - 1)]
         return TranscriptionResult(text=text, avg_logprob=-0.15, low_confidence_ratio=0.03, model="mock")
 
     def diarize(
@@ -271,6 +305,33 @@ class MockProvider(AIProvider):
         reply = pushback[(user_turns - 1) % len(pushback)] if user_turns else req.fallback_line
         return PartnerReply(reply=reply, end_conversation=False, coach_whisper=whisper, momentum=momentum,
                             outcome_label=None)
+
+    def group_reply(self, req: GroupReplyRequest) -> GroupReply:
+        moderator = next((m for m in req.members if m.is_moderator), req.members[0])
+        others = [m for m in req.members if not m.is_moderator] or [moderator]
+        user_turns = sum(1 for speaker, _ in req.history if speaker == "USER")
+        last_user = next((text for speaker, text in reversed(req.history) if speaker == "USER"), "")
+        word = _keyword(last_user)
+        if word:  # keep the word as they said it ("Bengaluru", not "bengaluru")
+            word = next((raw.strip(".,!?;:'\"") for raw in last_user.split()
+                         if raw.strip(".,!?;:'\"").lower() == word), word)
+        word = word or "that"
+        if req.is_closing:
+            closing = ("Thank you — that's all our questions. We'll be in touch soon."
+                       if req.panel_kind == "panel_interview" else "Thank you, everyone. Time's up — good discussion.")
+            return GroupReply(lines=[GroupLine(speaker_id=moderator.id, text=closing)], end_discussion=True)
+        first = others[(user_turns - 1) % len(others)]
+        if req.panel_kind == "panel_interview":
+            lines = [GroupLine(speaker_id=first.id, text=_PANEL_QUESTIONS[(user_turns - 1) % len(_PANEL_QUESTIONS)])]
+        else:
+            lines = [GroupLine(speaker_id=first.id,
+                               text=_GD_REACTIONS[(user_turns - 1) % len(_GD_REACTIONS)].format(kw=word))]
+            if user_turns % 2 == 0 and len(others) > 1:  # every other turn, a second voice joins in
+                second = others[user_turns % len(others)]
+                if second.id != first.id:
+                    lines.append(GroupLine(speaker_id=second.id, text="Partly agree. But let's not forget the "
+                                           "practical side — someone has to make it work day to day."))
+        return GroupReply(lines=lines, end_discussion=False)
 
     def assess(self, req: AssessmentRequest) -> AssessmentJudgement:
         user_units = [u for u in req.units if u.usable_user]
@@ -462,29 +523,41 @@ class MockProvider(AIProvider):
         text = " ".join(u.text for u in user_units).lower()
         met = "yes" if ("because" in text or "reason" in text or "," in first.text) and "?" in text else (
             "partly" if len(text.split()) >= 20 else "no")
+        # Mission copy talks about recommendations; other targets (daily reps) get neutral copy.
+        recommend = "recommend" in f"{req.target_behavior} {req.mission_title}".lower()
         comparison_summary, changes = None, []
         if req.previous_units:
             prev_first = next((u for u in req.previous_units if u.usable_user), None)
             prev_words = len(prev_first.text.split()) if prev_first else 0
             comparison_summary = (
                 f"This time your first answer was {len(first.text.split())} words (before: {prev_words}). "
-                "You stated your recommendation earlier and kept both reasons."
+                + ("You stated your recommendation earlier and kept both reasons." if recommend
+                   else "The target came through earlier and more clearly.")
             )
-            changes = ["Recommendation moved into the first sentence", "Ended with a question that invites a response"]
+            changes = (["Recommendation moved into the first sentence", "Ended with a question that invites a response"]
+                       if recommend else ["Main point moved earlier", "One concrete example instead of several"])
+        if recommend:
+            headline = ("Your recommendation came early — that's the core of this skill." if met != "no"
+                        else "Good start — now bring the recommendation forward.")
+            note, worked = "Where your recommendation appears.", "You gave a concrete reason the listener cares about."
+            change = "Name the second reason before you invite a response."
+        else:
+            headline = ("The target showed up in your answer — nice." if met != "no"
+                        else "Good start — now aim straight for the target.")
+            note, worked = "Where the target showed up.", "You kept it specific and easy to follow."
+            change = "Try it once more and open with your main point."
         return AttemptJudgement(
             assessable="yes" if all(not u.excluded for u in req.units if u.role == "user") else "partly",
-            target_met=met,
-            headline="Your recommendation came early — that's the core of this skill." if met != "no"
-            else "Good start — now bring the recommendation forward.",
-            where_segment_id=first.uid, where_quote=_first_sentence(first.text, 20),
-            where_note="Where your recommendation appears.",
-            what_worked=["You gave a concrete reason the listener cares about."],
-            one_change="Name the second reason before you invite a response.",
+            target_met=met, headline=headline,
+            where_segment_id=first.uid, where_quote=_first_sentence(first.text, 20), where_note=note,
+            what_worked=[worked], one_change=change,
             missing_evidence=None, comparison_summary=comparison_summary, comparison_changes=changes,
         )
 
     def spar_report(self, req: SparRequest) -> SparJudgement:
         user_units = [u for u in req.units if u.usable_user]
+        if req.kind == "group":
+            return self._group_report(req, user_units)
         final = req.momentum[-1][1] if req.momentum else 0.4
         label = "Agreed" if final >= 0.6 else "Not convinced yet"
         notes = [MomentumNote(turn_index=i, note="Momentum rose after you named a specific number.")
@@ -505,6 +578,34 @@ class MockProvider(AIProvider):
             next_step="Open with the number next time, then the reason.",
         )
 
+    @staticmethod
+    def _group_report(req: SparRequest, user_units: list[Unit]) -> SparJudgement:
+        text = " ".join(u.text for u in user_units).lower()
+        built_on = any(m in text for m in ("building on", "adding to", "you mentioned", "said about", "agree with"))
+        summarised = any(m in text for m in ("to summarise", "to summarize", "so to sum", "our conclusion"))
+        invited = "?" in text
+        label = "Strong contributor" if built_on and (summarised or invited) else "Good entry, room to build"
+        moments = []
+        for unit in user_units[:1]:
+            said = _first_sentence(unit.text, 25)
+            moments.append(Rewrite(segment_id=unit.uid, dimension="structure", you_said=said,
+                                   try_instead="My point is simple: " + _clean(said)[:1].lower() + _clean(said)[1:],
+                                   why="Naming your point first makes it easy for the group to build on it."))
+        observations = []
+        if built_on and user_units:
+            observations.append(SparObservation(dimension="listening", note="You built on what others said "
+                                                "instead of repeating your own point.", segment_id=user_units[-1].uid))
+        if invited and user_units:
+            observations.append(SparObservation(dimension="warmth", note="You invited a quieter participant in.",
+                                                segment_id=user_units[0].uid))
+        focus = req.evaluation_focus[0].lower() if req.evaluation_focus else "entering the discussion"
+        return SparJudgement(
+            outcome_label=label,
+            outcome_detail=f"You did well on {focus}; the group picked up your points.",
+            momentum_notes=[], moments=moments, observations=observations,
+            next_step="Next time, offer a one-sentence summary before the moderator closes.",
+        )
+
     def reflection_reply(self, req: ReflectionRequest) -> ReflectionReply:
         opener = {
             "well": "That's great — trying it in a real conversation is the hardest part.",
@@ -517,7 +618,9 @@ class MockProvider(AIProvider):
     def event_prep(self, req: EventPrepRequest) -> EventPrep:
         role = {
             "interview": "Interviewer", "meeting": "Colleague", "presentation": "Audience member",
-            "social": "New acquaintance", "negotiation": "Counterpart",
+            "social": "New acquaintance", "negotiation": "Counterpart", "placement": "HR interviewer",
+            "group_discussion": "Fellow candidate", "client_call": "Client", "viva": "Examiner",
+            "appraisal": "Your manager",
         }.get(req.kind, "Conversation partner")
         title = req.title
         return EventPrep(items=[

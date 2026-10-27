@@ -1,0 +1,465 @@
+{
+  "panels": [
+    {
+      "id": "panel.product_manager",
+      "kind": "panel_interview",
+      "title": "Panel interview: Product manager",
+      "scenario": "Final-round panel at Lumen & Pine",
+      "description": "Three interviewers test product sense, prioritization and how you handle disagreement. Structure your answers and make decisions out loud.",
+      "topic": "Senior Product Manager at Lumen & Pine, a home-goods marketplace (fictional)",
+      "user_role": "Candidate",
+      "participants": [
+        {
+          "id": "mod",
+          "name": "Carla",
+          "role": "VP of Product (chair)",
+          "voice": "shimmer",
+          "symbol": "person.crop.circle.badge.checkmark",
+          "color_hex": "#E64980"
+        },
+        {
+          "id": "p1",
+          "name": "Greg",
+          "role": "Engineering lead",
+          "voice": "cedar",
+          "symbol": "person.fill",
+          "color_hex": "#2F9BFF"
+        },
+        {
+          "id": "p2",
+          "name": "Aisha",
+          "role": "Design lead",
+          "voice": "nova",
+          "symbol": "person.fill",
+          "color_hex": "#10B3A3"
+        },
+        {
+          "id": "p3",
+          "name": "Tom",
+          "role": "Data scientist",
+          "voice": "echo",
+          "symbol": "person.fill",
+          "color_hex": "#FF8A3D"
+        }
+      ],
+      "minutes": 15,
+      "markets": [
+        "us"
+      ],
+      "is_free": false,
+      "symbol": "lightbulb",
+      "color_hex": "#E64980",
+      "default_difficulty": "real"
+    },
+    {
+      "id": "panel.swe_behavioral",
+      "kind": "panel_interview",
+      "title": "Panel interview: Software engineer",
+      "scenario": "Behavioral panel at Northwind Labs",
+      "description": "A three-person panel asks for real examples. Tell specific stories, own your part, and connect with every panelist — not just the one asking.",
+      "topic": "Software Engineer II at Northwind Labs (fictional)",
+      "user_role": "Candidate",
+      "participants": [
+        {
+          "id": "mod",
+          "name": "Rachel",
+          "role": "Engineering manager (chair)",
+          "voice": "sage",
+          "symbol": "person.crop.circle.badge.checkmark",
+          "color_hex": "#6366F1"
+        },
+        {
+          "id": "p1",
+          "name": "David",
+          "role": "Staff engineer",
+          "voice": "onyx",
+          "symbol": "person.fill",
+          "color_hex": "#E64980"
+        },
+        {
+          "id": "p2",
+          "name": "Mei",
+          "role": "Product manager",
+          "voice": "coral",
+          "symbol": "person.fill",
+          "color_hex": "#10B3A3"
+        },
+        {
+          "id": "p3",
+          "name": "Sunil",
+          "role": "Senior engineer",
+          "voice": "verse",
+          "symbol": "person.fill",
+          "color_hex": "#FF8A3D"
+        }
+      ],
+      "minutes": 15,
+      "markets": [
+        "us",
+        "in",
+        "global"
+      ],
+      "is_free": true,
+      "symbol": "laptopcomputer",
+      "color_hex": "#6366F1",
+      "default_difficulty": "real"
+    },
+    {
+      "id": "gd.remote_work_india",
+      "kind": "group_discussion",
+      "title": "GD: Work from home vs office",
+      "scenario": "Campus-placement group discussion",
+      "description": "Four candidates, one topic, fifteen minutes. Enter the discussion, add a fresh point, build on others and help the group reach a conclusion.",
+      "topic": "Should Indian IT companies bring everyone back to the office?",
+      "user_role": "Participant",
+      "participants": [
+        {
+          "id": "mod",
+          "name": "Meera",
+          "role": "Moderator",
+          "voice": "sage",
+          "symbol": "person.crop.circle.badge.checkmark",
+          "color_hex": "#5146E6"
+        },
+        {
+          "id": "p1",
+          "name": "Rohan",
+          "role": "Participant",
+          "voice": "ash",
+          "symbol": "person.fill",
+          "color_hex": "#E64980"
+        },
+        {
+          "id": "p2",
+          "name": "Ananya",
+          "role": "Participant",
+          "voice": "coral",
+          "symbol": "person.fill",
+          "color_hex": "#10B3A3"
+        },
+        {
+          "id": "p3",
+          "name": "Karthik",
+          "role": "Participant",
+          "voice": "echo",
+          "symbol": "person.fill",
+          "color_hex": "#FF8A3D"
+        }
+      ],
+      "minutes": 12,
+      "markets": [
+        "in"
+      ],
+      "is_free": true,
+      "symbol": "person.3.fill",
+      "color_hex": "#5146E6",
+      "default_difficulty": "real"
+    },
+    {
+      "id": "gd.ai_entry_level_jobs",
+      "kind": "group_discussion",
+      "title": "GD: Will AI replace entry-level IT jobs?",
+      "scenario": "Campus-placement group discussion",
+      "description": "A fast-moving GD where two strong voices take opposite sides early. Get in with evidence, respond to people by name, and help the group find a balanced conclusion.",
+      "topic": "Will AI replace entry-level jobs in Indian IT?",
+      "user_role": "Participant",
+      "participants": [
+        {
+          "id": "mod",
+          "name": "Sanjay",
+          "role": "Moderator",
+          "voice": "cedar",
+          "symbol": "person.crop.circle.badge.checkmark",
+          "color_hex": "#6366F1"
+        },
+        {
+          "id": "p1",
+          "name": "Aditya",
+          "role": "Participant",
+          "voice": "ash",
+          "symbol": "person.fill",
+          "color_hex": "#E64980"
+        },
+        {
+          "id": "p2",
+          "name": "Fatima",
+          "role": "Participant",
+          "voice": "nova",
+          "symbol": "person.fill",
+          "color_hex": "#10B3A3"
+        },
+        {
+          "id": "p3",
+          "name": "Gurpreet",
+          "role": "Participant",
+          "voice": "verse",
+          "symbol": "person.fill",
+          "color_hex": "#FF8A3D"
+        }
+      ],
+      "minutes": 12,
+      "markets": [
+        "in"
+      ],
+      "is_free": false,
+      "symbol": "cpu",
+      "color_hex": "#6366F1",
+      "default_difficulty": "real"
+    },
+    {
+      "id": "gd.cashless_india",
+      "kind": "group_discussion",
+      "title": "GD: Is India ready to go cashless?",
+      "scenario": "Campus-placement group discussion",
+      "description": "UPI is everywhere, but is the whole country ready? Balance optimism with the realities of access, trust and fraud, and bring in a perspective the others are missing.",
+      "topic": "Is India ready to become a fully cashless economy?",
+      "user_role": "Participant",
+      "participants": [
+        {
+          "id": "mod",
+          "name": "Lakshmi",
+          "role": "Moderator",
+          "voice": "shimmer",
+          "symbol": "person.crop.circle.badge.checkmark",
+          "color_hex": "#7CB518"
+        },
+        {
+          "id": "p1",
+          "name": "Vikas",
+          "role": "Participant",
+          "voice": "onyx",
+          "symbol": "person.fill",
+          "color_hex": "#E64980"
+        },
+        {
+          "id": "p2",
+          "name": "Sneha",
+          "role": "Participant",
+          "voice": "coral",
+          "symbol": "person.fill",
+          "color_hex": "#10B3A3"
+        },
+        {
+          "id": "p3",
+          "name": "Imran",
+          "role": "Participant",
+          "voice": "echo",
+          "symbol": "person.fill",
+          "color_hex": "#FF8A3D"
+        }
+      ],
+      "minutes": 12,
+      "markets": [
+        "in"
+      ],
+      "is_free": false,
+      "symbol": "indianrupeesign.circle",
+      "color_hex": "#7CB518",
+      "default_difficulty": "real"
+    },
+    {
+      "id": "gd.coding_in_schools",
+      "kind": "group_discussion",
+      "title": "GD: Should coding be compulsory in school?",
+      "scenario": "MBA admissions group discussion",
+      "description": "Nobody has spoken yet. You can open and frame the discussion — or wait, listen, and come in with the point everyone missed.",
+      "topic": "Should coding be a compulsory subject from Class 6?",
+      "user_role": "Participant",
+      "participants": [
+        {
+          "id": "mod",
+          "name": "Joseph",
+          "role": "Moderator",
+          "voice": "onyx",
+          "symbol": "person.crop.circle.badge.checkmark",
+          "color_hex": "#2F9BFF"
+        },
+        {
+          "id": "p1",
+          "name": "Priyanka",
+          "role": "Participant",
+          "voice": "shimmer",
+          "symbol": "person.fill",
+          "color_hex": "#E64980"
+        },
+        {
+          "id": "p2",
+          "name": "Arjun",
+          "role": "Participant",
+          "voice": "ash",
+          "symbol": "person.fill",
+          "color_hex": "#10B3A3"
+        },
+        {
+          "id": "p3",
+          "name": "Divya",
+          "role": "Participant",
+          "voice": "nova",
+          "symbol": "person.fill",
+          "color_hex": "#FF8A3D"
+        }
+      ],
+      "minutes": 10,
+      "markets": [
+        "in"
+      ],
+      "is_free": false,
+      "symbol": "chevron.left.forwardslash.chevron.right",
+      "color_hex": "#2F9BFF",
+      "default_difficulty": "real"
+    },
+    {
+      "id": "gd.ev_city_pollution",
+      "kind": "group_discussion",
+      "title": "GD: Are EVs the answer to city pollution?",
+      "scenario": "Campus-placement group discussion",
+      "description": "One participant thinks electric vehicles solve everything. Add nuance with evidence — power sources, public transport, dust — without dismissing anyone.",
+      "topic": "Are electric vehicles the answer to air pollution in Indian cities?",
+      "user_role": "Participant",
+      "participants": [
+        {
+          "id": "mod",
+          "name": "Farah",
+          "role": "Moderator",
+          "voice": "sage",
+          "symbol": "person.crop.circle.badge.checkmark",
+          "color_hex": "#10B3A3"
+        },
+        {
+          "id": "p1",
+          "name": "Rahul",
+          "role": "Participant",
+          "voice": "cedar",
+          "symbol": "person.fill",
+          "color_hex": "#E64980"
+        },
+        {
+          "id": "p2",
+          "name": "Nandini",
+          "role": "Participant",
+          "voice": "coral",
+          "symbol": "person.fill",
+          "color_hex": "#10B3A3"
+        },
+        {
+          "id": "p3",
+          "name": "Kiran",
+          "role": "Participant",
+          "voice": "verse",
+          "symbol": "person.fill",
+          "color_hex": "#FF8A3D"
+        }
+      ],
+      "minutes": 12,
+      "markets": [
+        "in"
+      ],
+      "is_free": false,
+      "symbol": "bolt.car",
+      "color_hex": "#10B3A3",
+      "default_difficulty": "real"
+    },
+    {
+      "id": "panel.campus_tech_hr",
+      "kind": "panel_interview",
+      "title": "Campus placement: technical + HR panel",
+      "scenario": "Final round at Zenith Systems",
+      "description": "A technical lead, a delivery manager and HR interview you together. Explain your project clearly, stay calm under rapid follow-ups, and answer honestly about shifts, relocation and the bond.",
+      "topic": "Graduate Engineer Trainee at Zenith Systems, an IT services company (fictional)",
+      "user_role": "Candidate",
+      "participants": [
+        {
+          "id": "mod",
+          "name": "Venkatesh",
+          "role": "HR manager (chair)",
+          "voice": "cedar",
+          "symbol": "person.crop.circle.badge.checkmark",
+          "color_hex": "#FF8A3D"
+        },
+        {
+          "id": "p1",
+          "name": "Pooja",
+          "role": "Technical lead",
+          "voice": "nova",
+          "symbol": "person.fill",
+          "color_hex": "#6366F1"
+        },
+        {
+          "id": "p2",
+          "name": "Harish",
+          "role": "Delivery manager",
+          "voice": "echo",
+          "symbol": "person.fill",
+          "color_hex": "#10B3A3"
+        },
+        {
+          "id": "p3",
+          "name": "Swati",
+          "role": "HR executive",
+          "voice": "shimmer",
+          "symbol": "person.fill",
+          "color_hex": "#E64980"
+        }
+      ],
+      "minutes": 15,
+      "markets": [
+        "in"
+      ],
+      "is_free": false,
+      "symbol": "graduationcap.fill",
+      "color_hex": "#FF8A3D",
+      "default_difficulty": "real"
+    },
+    {
+      "id": "panel.mba_personal_interview",
+      "kind": "panel_interview",
+      "title": "MBA admissions personal interview",
+      "scenario": "PI round at Meridian Institute of Management",
+      "description": "A three-member panel tests your 'why MBA', your work experience and your awareness of the world. Give honest, specific answers and hold your ground politely.",
+      "topic": "MBA admissions at Meridian Institute of Management (fictional)",
+      "user_role": "Candidate",
+      "participants": [
+        {
+          "id": "mod",
+          "name": "Dr Iyer",
+          "role": "Professor of strategy (chair)",
+          "voice": "onyx",
+          "symbol": "person.crop.circle.badge.checkmark",
+          "color_hex": "#9B5DE5"
+        },
+        {
+          "id": "p1",
+          "name": "Nisha Kapoor",
+          "role": "Alumna, consulting partner",
+          "voice": "shimmer",
+          "symbol": "person.fill",
+          "color_hex": "#E64980"
+        },
+        {
+          "id": "p2",
+          "name": "Dr Menon",
+          "role": "Faculty, finance",
+          "voice": "sage",
+          "symbol": "person.fill",
+          "color_hex": "#10B3A3"
+        },
+        {
+          "id": "p3",
+          "name": "Rohit",
+          "role": "Student representative",
+          "voice": "verse",
+          "symbol": "person.fill",
+          "color_hex": "#7CB518"
+        }
+      ],
+      "minutes": 15,
+      "markets": [
+        "in"
+      ],
+      "is_free": false,
+      "symbol": "building.columns",
+      "color_hex": "#9B5DE5",
+      "default_difficulty": "real"
+    }
+  ]
+}

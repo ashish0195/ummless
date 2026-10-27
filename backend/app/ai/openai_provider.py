@@ -18,6 +18,7 @@ import openai
 from pydantic import BaseModel
 
 from ..config import Settings
+from ..domain.languages import transcription_language
 from ..errors import AIUnavailableError
 from . import prompts
 from .llm_schemas import (
@@ -26,6 +27,7 @@ from .llm_schemas import (
     CustomScenario,
     DebriefJudgement,
     EventPrep,
+    GroupReply,
     PartnerReply,
     ReflectionReply,
     SparJudgement,
@@ -41,6 +43,7 @@ from .types import (
     DiarizationResult,
     DiarizedSegment,
     EventPrepRequest,
+    GroupReplyRequest,
     KnownSpeaker,
     PartnerReplyRequest,
     ReflectionRequest,
@@ -137,9 +140,13 @@ class OpenAIProvider(AIProvider):
     # ------------------------------------------------------------------ audio
 
     def transcribe(self, audio_path: str, *, language: str, prompt: str | None, hint: AudioHint) -> TranscriptionResult:
+        hint_language = transcription_language(language)  # None for code-mixed speech such as Hinglish
+
         def call(model: str) -> TranscriptionResult:
             with open(audio_path, "rb") as handle:
-                kwargs: dict = {"model": model, "file": handle, "response_format": "json", "language": language}
+                kwargs: dict = {"model": model, "file": handle, "response_format": "json"}
+                if hint_language:
+                    kwargs["language"] = hint_language
                 if prompt:
                     kwargs["prompt"] = prompt
                 if model in {"gpt-4o-transcribe", "gpt-4o-mini-transcribe", "gpt-4o-mini-transcribe-2025-12-15"}:
@@ -156,6 +163,7 @@ class OpenAIProvider(AIProvider):
     def diarize(
         self, audio_path: str, *, language: str, known_speakers: list[KnownSpeaker], hint: AudioHint
     ) -> DiarizationResult:
+        hint_language = transcription_language(language) if language else None
         references: list[str] = []
         names: list[str] = []
         for speaker in known_speakers[:4]:
@@ -171,8 +179,8 @@ class OpenAIProvider(AIProvider):
                     "response_format": "diarized_json",
                     "chunking_strategy": "auto",
                 }
-                if with_language:
-                    kwargs["language"] = language
+                if with_language and hint_language:
+                    kwargs["language"] = hint_language
                 if with_references and references:
                     kwargs["known_speaker_names"] = names
                     kwargs["known_speaker_references"] = references
@@ -232,6 +240,10 @@ class OpenAIProvider(AIProvider):
         if reply.momentum is not None:
             reply.momentum = max(0.0, min(1.0, reply.momentum)) if not math.isnan(reply.momentum) else None
         return reply
+
+    def group_reply(self, req: GroupReplyRequest) -> GroupReply:
+        instructions, text = prompts.group_reply(req)
+        return self._conversation_llm("group_reply", instructions, text, GroupReply)
 
     def assess(self, req: AssessmentRequest) -> AssessmentJudgement:
         instructions, text = prompts.assessment(req)

@@ -1,6 +1,6 @@
 {
-  "user_id": "usr_a4eb8738069b4c87b41d",
-  "created_at": "2026-10-26T22:47:46Z",
+  "user_id": "usr_905ef792bff04f15be3b",
+  "created_at": "2026-10-27T09:33:52Z",
   "demo_mode": true,
   "onboarding": {
     "completed": true,
@@ -18,13 +18,22 @@
     "language": "en",
     "region": "US-CA",
     "analysis_consent_version": "analysis-2026-10",
-    "analysis_consented_at": "2026-10-26T22:47:46Z",
-    "course_started": false
+    "analysis_consented_at": "2026-10-27T09:33:52Z",
+    "course_started": false,
+    "age_confirmed": true
   },
   "practice_settings": {
     "weekly_target": 3,
-    "reminder_time": null,
-    "reminder_days": []
+    "reminder_time": "08:30",
+    "reminder_days": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "anchor": "After my morning coffee",
+    "paused_until": null
   },
   "voice_reference": {
     "status": "none",
@@ -39,5 +48,18 @@
     "product_id": null
   },
   "has_results": false,
-  "next_step": "choose_input"
+  "next_step": "choose_input",
+  "market": "us",
+  "timezone": "America/Los_Angeles",
+  "notification_settings": {
+    "practice_reminders": true,
+    "event_prep": true,
+    "results": true,
+    "check_ins": true,
+    "nudges": true,
+    "weekly_reveal": true,
+    "tips": false,
+    "quiet_start": "22:00",
+    "quiet_end": "08:00"
+  }
 }

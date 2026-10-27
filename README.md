@@ -2,7 +2,8 @@
 
 **An AI communication coach.** Talk with an AI partner, upload real conversations, or record one. Comlogue
 checks the audio, makes sure it's assessing *your* voice, and gives feedback on seven communication skills
-only where there's real evidence. Then it coaches you one small change at a time.
+only where there's real evidence. Then it coaches you one small change at a time, with a 60-second speaking rep
+each day that turns practice into a habit. Built for the US and India.
 
 <p align="center"><img src="ios/Comlogue/Resources/Assets.xcassets/AppIcon.appiconset/AppIcon-1024.png" width="120" alt="Comlogue app icon"></p>
 
@@ -32,8 +33,49 @@ whose message starts with `[screenshots]` to refresh them.
 | :---: | :---: | :---: | :---: |
 | <img src="docs/screenshots/practice.png" width="190" alt="Practice hub"> | <img src="docs/screenshots/you.png" width="190" alt="Profile"> | <img src="docs/screenshots/paywall.png" width="190" alt="Paywall"> | <img src="docs/screenshots/dark-results.png" width="190" alt="Results in dark mode"> |
 
+**The daily habit**
+
+| Today's rep | Rep feedback | Practice plan | Notifications |
+| :---: | :---: | :---: | :---: |
+| <img src="docs/screenshots/daily.png" width="190" alt="Today's 60-second rep"> | <img src="docs/screenshots/dailyFeedback.png" width="190" alt="Feedback on a daily rep"> | <img src="docs/screenshots/plan.png" width="190" alt="Practice plan with days, time and an anchor"> | <img src="docs/screenshots/notifications.png" width="190" alt="Notification settings"> |
+
+| Inbox | Panel interview | Interview report | Dark mode |
+| :---: | :---: | :---: | :---: |
+| <img src="docs/screenshots/inbox.png" width="190" alt="In-app inbox"> | <img src="docs/screenshots/group.png" width="190" alt="A panel interview with several AI voices"> | <img src="docs/screenshots/groupReport.png" width="190" alt="Report after a group conversation"> | <img src="docs/screenshots/dark-daily.png" width="190" alt="Daily rep in dark mode"> |
+
+**Built for India**
+
+| Today | Group discussion | Practice | Pro in ₹ |
+| :---: | :---: | :---: | :---: |
+| <img src="docs/screenshots/todayIndia.png" width="190" alt="Today for an Indian account"> | <img src="docs/screenshots/groupIndia.png" width="190" alt="A campus placement group discussion"> | <img src="docs/screenshots/practiceIndia.png" width="190" alt="Practice with placement scenarios"> | <img src="docs/screenshots/paywallIndia.png" width="190" alt="Paywall in rupees"> |
+
+| Plan with an anchor | Consent in Hindi |
+| :---: | :---: |
+| <img src="docs/screenshots/planIndia.png" width="190" alt="Practice plan anchored to morning chai"> | <img src="docs/screenshots/consentIndia.png" width="190" alt="Analysis consent with a Hindi option"> |
+
 ## What's inside
 
+- **A daily 60-second rep:**
+  - one short speaking prompt a day, picked for the user's goal, focus skill and market;
+  - feedback on one target behaviour, with unlimited retries;
+  - free for everyone.
+- **A habit that sticks, with no guilt:**
+  - a practice plan (sessions per week, days, time and an anchor such as "after my morning chai");
+  - "weeks on target" instead of streaks;
+  - planned breaks, a warm welcome back, and milestone celebrations.
+- **Notifications that bring people back and know when to stop:**
+  - practice reminders, event prep the evening before and the morning of, results, check-ins and the weekly
+    reveal;
+  - quiet hours, at most two a day, and nudges that give up after two;
+  - push via APNs plus on-device reminders, an in-app inbox, a badge, and deep links;
+  - home and lock screen widgets.
+- **Group discussions and panel interviews:** a moderator and 2–3 AI participants with distinct voices and
+  behaviours (one dominant, one thoughtful, one quiet), then a report.
+- **Made for India and the US:**
+  - India gets campus placements, HR rounds, GDs, viva, client calls with US teams, Hinglish, ₹ pricing and
+    Hindi consent text;
+  - the US gets behavioural interviews, performance reviews and networking;
+  - accents and dialects are never scored.
 - **Three ways to start:** a guided AI conversation (five short activities, 10–15 min), uploading recordings,
   or recording a live conversation. Each one passes audio-quality, speaker-attribution and evidence checks.
 - **An evidence-gated communication profile** across Clarity, Structure, Listening, Warmth, Persuasion,
@@ -42,7 +84,7 @@ whose message starts with `[screenshots]` to refresh them.
   - Skills without enough evidence show "Not enough evidence yet". There is no overall score.
 - **Voice matching that asks first:** an optional, consented voice sample, and confirmation of which speaker
   is you ("Yes, that's me" / "Choose another speaker" / "I'm not in this recording").
-- **A course that adapts:** five goal tracks of four weekly modules each. Every module has Learn & try,
+- **A course that adapts:** six goal tracks (including job interviews) of four weekly modules each. Every module has Learn & try,
   Remix, a Real-life mission and a Weekly reveal. Missions are AI conversations with feedback tied to one
   target behaviour, retries, and before/after comparisons.
 - **Practice tools:**
@@ -53,7 +95,8 @@ whose message starts with `[screenshots]` to refresh them.
   - Get a debrief of a recorded meeting.
 - **Privacy built in:** just-in-time recording consent with regional rules, and deletion of each recording,
   the voice sample, or everything.
-- **Siri and Shortcuts:** "Start today's mission", "Quick practice" and "Record a conversation".
+- **Siri and Shortcuts:** "Start today's rep", "Start today's mission", "Quick practice" and "Record a
+  conversation".
 - **Honest when things go wrong:** unclear audio, an uncertain speaker or a server-side failure leads to a
   specific next step ("Try again", "Choose another speaker", a short gap-filling scenario), never a low score.
 
@@ -109,8 +152,10 @@ docs/               Spec, decisions, API contract, architecture
 ios/
   Comlogue.xcodeproj
   Comlogue/         App sources (App, Core, Platform, DesignSystem, Features, Resources)
+  ComlogueWidgets/  Home and lock screen widgets (WidgetKit extension)
+  Shared/           Code shared by the app and the widgets (the App Group snapshot)
   CoreTests/        SwiftPM tests for the platform-independent core
-  Package.swift     Builds Comlogue/Core as a package for testing
+  Package.swift     Builds Comlogue/Core and Shared as packages for testing
 ```
 
 ## Not in this version

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import date, datetime, timedelta
 
 from sqlalchemy import exists, select
 from sqlalchemy.orm import Session
@@ -10,18 +10,20 @@ from sqlalchemy.orm import Session
 from ..core import AppServices
 from ..domain.course import suggest_track
 from ..domain.languages import normalize_language
-from ..errors import consent_required
+from ..domain.markets import default_timezone, market_for
+from ..errors import consent_required, validation
 from ..ids import new_id
 from ..models import DimensionEstimate, User, VoiceReference
 from ..schemas import (
     Entitlement,
     Me,
     MePatch,
+    NotificationSettings,
     Onboarding,
     PracticeSettings,
     VoiceReferenceStatus,
 )
-from ..timeutil import as_utc, iso, utcnow
+from ..timeutil import as_utc, iso, local_date, utcnow
 
 DEFAULT_ONBOARDING = {
     "completed": False,
@@ -31,8 +33,16 @@ DEFAULT_ONBOARDING = {
     "language": "en",
     "region": None,
     "course_started": False,
+    "age_confirmed": False,
 }
-DEFAULT_PRACTICE = {"weekly_target": 3, "reminder_time": None, "reminder_days": []}
+# `breaks` (internal, not in the API) keeps every planned break as {"start", "end"} so past weeks inside a break
+# neither count nor break the weekly run.
+DEFAULT_PRACTICE = {"weekly_target": 3, "reminder_time": None, "reminder_days": [], "anchor": None,
+                    "paused_until": None, "breaks": []}
+DEFAULT_NOTIFICATIONS = {
+    "practice_reminders": True, "event_prep": True, "results": True, "check_ins": True, "nudges": True,
+    "weekly_reveal": True, "tips": False, "quiet_start": "22:00", "quiet_end": "08:00",
+}
 DEFAULT_ENTITLEMENT = {"tier": "free", "expires_at": None, "source": "none", "product_id": None}
 
 
@@ -63,6 +73,49 @@ def onboarding(user: User) -> dict:
 
 def practice_settings(user: User) -> dict:
     return {**DEFAULT_PRACTICE, **(user.practice_settings or {})}
+
+
+def notification_settings(user: User) -> dict:
+    return {**DEFAULT_NOTIFICATIONS, **(user.notification_settings or {})}
+
+
+def market(user: User) -> str:
+    return market_for(onboarding(user).get("region"))
+
+
+def timezone(user: User) -> str:
+    """The device-reported IANA timezone, or the market default until the device reports one."""
+    return user.timezone or default_timezone(market(user))
+
+
+def today(user: User, now: datetime | None = None) -> date:
+    return local_date(now or utcnow(), timezone(user))
+
+
+def breaks(user: User) -> list[tuple[date, date]]:
+    out: list[tuple[date, date]] = []
+    for item in practice_settings(user).get("breaks") or []:
+        try:
+            out.append((date.fromisoformat(item["start"]), date.fromisoformat(item["end"])))
+        except (KeyError, TypeError, ValueError):
+            continue
+    return out
+
+
+def paused_until(user: User, day: date | None = None) -> str | None:
+    """The end of the current planned break, or None when the user isn't on one."""
+    value = practice_settings(user).get("paused_until")
+    if not value:
+        return None
+    try:
+        end = date.fromisoformat(value)
+    except ValueError:
+        return None
+    return value if end >= (day or today(user)) else None
+
+
+def is_paused(user: User, day: date | None = None) -> bool:
+    return paused_until(user, day) is not None
 
 
 def language(user: User) -> str:
@@ -130,14 +183,26 @@ def build_me(svc: AppServices, db: Session, user: User) -> Me:
             analysis_consent_version=user.analysis_consent_version,
             analysis_consented_at=iso(user.analysis_consented_at),
             course_started=bool(data.get("course_started")),
+            age_confirmed=bool(data.get("age_confirmed")),
         ),
-        practice_settings=PracticeSettings(**practice_settings(user)),
+        practice_settings=practice_settings_out(user),
         voice_reference=voice_reference_status(db, user),
         entitlement=Entitlement(tier=ent["tier"], expires_at=ent.get("expires_at"), source=ent.get("source", "none"),
                                 product_id=ent.get("product_id")),
         has_results=results,
         next_step=next_step,
+        market=market(user),
+        timezone=timezone(user),
+        notification_settings=NotificationSettings(**{k: v for k, v in notification_settings(user).items()
+                                                      if k in NotificationSettings.model_fields}),
     )
+
+
+def practice_settings_out(user: User) -> PracticeSettings:
+    data = practice_settings(user)
+    return PracticeSettings(weekly_target=data["weekly_target"], reminder_time=data.get("reminder_time"),
+                            reminder_days=list(data.get("reminder_days") or []), anchor=data.get("anchor"),
+                            paused_until=paused_until(user))
 
 
 def apply_patch(user: User, patch: MePatch) -> None:
@@ -152,12 +217,54 @@ def apply_patch(user: User, patch: MePatch) -> None:
         if "goal_track" in provided and patch.onboarding.goal_track:
             user.course_track = patch.onboarding.goal_track
             user.course_focus_module_id = None
+        if "age_confirmed" in provided and patch.onboarding.age_confirmed is not None:
+            data["age_confirmed"] = bool(patch.onboarding.age_confirmed)
+            data["age_confirmed_at"] = iso(utcnow()) if patch.onboarding.age_confirmed else None
         if "analysis_consent_version" in provided and patch.onboarding.analysis_consent_version:
+            if not data.get("age_confirmed"):
+                raise validation("Please confirm you're 18 or older to continue (onboarding.age_confirmed).")
             user.analysis_consent_version = patch.onboarding.analysis_consent_version
             user.analysis_consented_at = utcnow()
         user.onboarding = data
     if patch.practice_settings is not None:
         data = practice_settings(user)
-        for field in patch.practice_settings.model_fields_set:
-            data[field] = getattr(patch.practice_settings, field)
+        provided = patch.practice_settings.model_fields_set
+        for field in ("weekly_target", "reminder_time", "reminder_days"):
+            if field in provided:
+                data[field] = getattr(patch.practice_settings, field)
+        if "anchor" in provided:
+            anchor = (patch.practice_settings.anchor or "").strip()
+            data["anchor"] = anchor or None
+        if "paused_until" in provided:
+            data["breaks"] = _updated_breaks(user, data, patch.practice_settings.paused_until)
+            data["paused_until"] = patch.practice_settings.paused_until
         user.practice_settings = data
+    if patch.notification_settings is not None:
+        data = notification_settings(user)
+        for field in patch.notification_settings.model_fields_set:
+            value = getattr(patch.notification_settings, field)
+            if value is not None:
+                data[field] = value
+        user.notification_settings = data
+
+
+def _updated_breaks(user: User, data: dict, new_until: str | None) -> list[dict]:
+    """Start, extend or end the current planned break, keeping earlier breaks for the weekly run."""
+    day = today(user)
+    items = [dict(item) for item in data.get("breaks") or []]
+    active = next((item for item in items if item.get("start", "") <= day.isoformat() <= item.get("end", "")), None)
+    if new_until is None:
+        if active is not None:
+            active["end"] = day.isoformat()  # the break covered today; it ends now
+        return items
+    if active is not None:
+        active["end"] = new_until
+    elif new_until >= day.isoformat():
+        items.append({"start": day.isoformat(), "end": new_until})
+    return items[-50:]
+
+
+def was_active_within(user: User, seconds: float, now: datetime | None = None) -> bool:
+    if user.last_active_at is None:
+        return False
+    return ((now or utcnow()) - as_utc(user.last_active_at)) <= timedelta(seconds=seconds)
