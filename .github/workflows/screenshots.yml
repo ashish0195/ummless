@@ -73,10 +73,16 @@ jobs:
           # Grant the microphone up front so the permission alert doesn't cover the conversation screens.
           xcrun simctl privacy "$DEVICE" grant microphone com.comlogue.app || true
           mkdir -p docs/screenshots
+          crashed=""
           capture() {
-            xcrun simctl launch --terminate-running-process "$DEVICE" com.comlogue.app -ComlogueScreenshotScene "$1"
+            # simctl prints "com.comlogue.app: <pid>"; the simulated app is a host process, so kill -0 checks it.
+            pid=$(xcrun simctl launch --terminate-running-process "$DEVICE" com.comlogue.app -ComlogueScreenshotScene "$1" | awk '{print $NF}') || pid=""
             sleep "${3:-10}"
             xcrun simctl io "$DEVICE" screenshot "docs/screenshots/$2.png"
+            if ! kill -0 "$pid" 2>/dev/null; then
+              echo "::error title=App crashed::The app was not running after opening the $1 scene"
+              crashed="$crashed $1"
+            fi
           }
           xcrun simctl ui "$DEVICE" appearance light
           for scene in welcome getStarted activity spar results recording debrief today course mission practice you paywall \
@@ -91,6 +97,7 @@ jobs:
           for scene in today results you daily; do
             capture "$scene" "dark-$scene"
           done
+          echo "crashed=$crashed" >> "$GITHUB_ENV"
 
       - name: Commit screenshots
         run: |
@@ -117,3 +124,24 @@ jobs:
         with:
           name: backend-log
           path: ${{ runner.temp }}/backend.log
+
+      - name: Collect crash reports
+        if: always()
+        run: |
+          mkdir -p "$RUNNER_TEMP/crashes"
+          find ~/Library/Logs/DiagnosticReports -name 'Comlogue*' -exec cp {} "$RUNNER_TEMP/crashes/" \; 2>/dev/null || true
+          ls "$RUNNER_TEMP/crashes"
+
+      - name: Upload crash reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: crash-reports
+          path: ${{ runner.temp }}/crashes
+          if-no-files-found: ignore
+
+      - name: Fail if the app crashed
+        if: env.crashed != ''
+        run: |
+          echo "The app crashed in:${crashed}"
+          exit 1

@@ -84,6 +84,23 @@ struct GetStartedView: View {
                     }
                     .buttonStyle(.plain)
                     .foregroundStyle(Theme.indigo)
+
+                    Button {
+                        LocalFlags.hasSeenFirstRun = true
+                        app.present(.daily(date: nil))
+                    } label: {
+                        VStack(spacing: 4) {
+                            Text("Short on time? Try today's 60-second rep")
+                                .font(.subheadline.weight(.semibold))
+                            Text("A quick first win. Your profile can wait until you have 10 minutes.")
+                                .font(.caption)
+                                .foregroundStyle(Theme.inkTertiary)
+                        }
+                        .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.plain)
+                    .foregroundStyle(Theme.indigo)
+                    .padding(.top, 6)
                 }
                 .padding(Theme.gutter)
             }

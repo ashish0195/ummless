@@ -165,6 +165,7 @@ struct MissionAttempt: Codable, Hashable, Sendable, Identifiable {
     let createdAt: Date
 
     var isProcessing: Bool { status == "processing" }
+    var isFailed: Bool { status == "failed" }
 }
 
 struct Reflection: Codable, Hashable, Sendable, Identifiable {

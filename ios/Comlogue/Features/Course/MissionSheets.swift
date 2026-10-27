@@ -99,6 +99,17 @@ struct AttemptFeedbackContent: View {
                     }
                     .card()
                 }
+            } else if attempt.isFailed {
+                VStack(alignment: .leading, spacing: 8) {
+                    Label("We couldn't write feedback for this one", systemImage: "exclamationmark.bubble.fill")
+                        .font(.headlineRounded)
+                        .foregroundStyle(Theme.ink)
+                    Text("Something went wrong on our side, not yours. Give it another go when you're ready.")
+                        .font(.subheadline)
+                        .foregroundStyle(Theme.inkSecondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                .card()
             } else {
                 LoadingStateView(title: "Feedback on the way…")
             }
