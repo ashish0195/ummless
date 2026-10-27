@@ -93,7 +93,7 @@ struct TodayView: View {
         let week = app.progress?.practice.thisWeek
         let target = max(week?.target ?? app.me?.practiceSettings.weeklyTarget ?? 3, 1)
         // The target is a number of days ("3 days a week"): two sessions on one day count once.
-        let days = week?.days.count ?? 0
+        let days = week?.days?.count ?? 0
         let met = days >= target
         let run = app.progress?.practice.weeksOnTarget ?? 0
         let summary: String = {
