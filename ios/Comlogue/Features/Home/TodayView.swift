@@ -298,7 +298,8 @@ struct TodayView: View {
                 ProgressRing(value: Double(sessions) / Double(target), lineWidth: 9)
                 VStack(spacing: 0) {
                     Text("\(sessions)").font(.title3.weight(.bold).monospacedDigit()).foregroundStyle(Theme.ink)
-                    Text("of \(target)").font(.caption2.weight(.semibold)).foregroundStyle(Theme.inkSecondary)
+                    Text(sessions > target ? "target \(target)" : "of \(target)")
+                        .font(.caption2.weight(.semibold)).foregroundStyle(Theme.inkSecondary)
                 }
             }
             .frame(width: 70, height: 70)

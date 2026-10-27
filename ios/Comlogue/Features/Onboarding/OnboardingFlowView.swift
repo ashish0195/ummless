@@ -562,17 +562,17 @@ private struct AnalysisConsentStep: View {
                         .font(.subheadline.weight(.semibold))
                         .tint(Theme.indigo)
                     }
-                    Toggle(isOn: $model.ageConfirmed) {
-                        Text("I'm 18 or older").font(.subheadline.weight(.semibold)).foregroundStyle(Theme.ink)
-                    }
-                    .toggleStyle(CheckboxToggleStyle())
-                    .padding(.top, 4)
-                    if let error = model.error { InlineErrorBanner(message: error) }
                 }
                 .padding(.horizontal, Theme.gutter)
                 .padding(.vertical, 24)
             }
+            // The age check sits with the button it unlocks, so long (e.g. Hindi) text never hides it.
             VStack(spacing: 8) {
+                Toggle(isOn: $model.ageConfirmed) {
+                    Text("I'm 18 or older").font(.subheadline.weight(.semibold)).foregroundStyle(Theme.ink)
+                }
+                .toggleStyle(CheckboxToggleStyle())
+                if let error = model.error { InlineErrorBanner(message: error) }
                 Button {
                     Task { await agree() }
                 } label: {

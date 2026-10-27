@@ -6,7 +6,7 @@
       "title": "Panel interview: Product manager",
       "scenario": "Final-round panel at Lumen & Pine",
       "description": "Three interviewers test product sense, prioritization and how you handle disagreement. Structure your answers and make decisions out loud.",
-      "topic": "Senior Product Manager at Lumen & Pine, a home-goods marketplace (fictional)",
+      "topic": "Senior Product Manager at Lumen & Pine, a home-goods marketplace",
       "user_role": "Candidate",
       "participants": [
         {
@@ -56,8 +56,8 @@
       "kind": "panel_interview",
       "title": "Panel interview: Software engineer",
       "scenario": "Behavioral panel at Northwind Labs",
-      "description": "A three-person panel asks for real examples. Tell specific stories, own your part, and connect with every panelist — not just the one asking.",
-      "topic": "Software Engineer II at Northwind Labs (fictional)",
+      "description": "A chair and three panelists ask for real examples. Tell specific stories, own your part, and connect with every panelist — not just the one asking.",
+      "topic": "Software Engineer II at Northwind Labs",
       "user_role": "Candidate",
       "participants": [
         {
@@ -365,7 +365,7 @@
       "title": "Campus placement: technical + HR panel",
       "scenario": "Final round at Zenith Systems",
       "description": "A technical lead, a delivery manager and HR interview you together. Explain your project clearly, stay calm under rapid follow-ups, and answer honestly about shifts, relocation and the bond.",
-      "topic": "Graduate Engineer Trainee at Zenith Systems, an IT services company (fictional)",
+      "topic": "Graduate Engineer Trainee at Zenith Systems, an IT services company",
       "user_role": "Candidate",
       "participants": [
         {
@@ -416,7 +416,7 @@
       "title": "MBA admissions personal interview",
       "scenario": "PI round at Meridian Institute of Management",
       "description": "A three-member panel tests your 'why MBA', your work experience and your awareness of the world. Give honest, specific answers and hold your ground politely.",
-      "topic": "MBA admissions at Meridian Institute of Management (fictional)",
+      "topic": "MBA admissions at Meridian Institute of Management",
       "user_role": "Candidate",
       "participants": [
         {

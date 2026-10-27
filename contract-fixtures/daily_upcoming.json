@@ -2,51 +2,51 @@
   "items": [
     {
       "date": "2026-10-27",
-      "prompt_id": "story.first_day",
-      "title": "Your first day at a new job or college",
-      "prompt": "Describe your first day at a new job or college. Take us back to one moment from that day.",
-      "dimension": "storytelling"
-    },
-    {
-      "date": "2026-10-28",
-      "prompt_id": "summarize.movie_three_sentences",
-      "title": "Sum up a movie or show in three sentences",
-      "prompt": "Pick a movie or show you've watched recently. Summarize it in three sentences for someone deciding whether to watch it.",
-      "dimension": "concision"
-    },
-    {
-      "date": "2026-10-29",
-      "prompt_id": "respond.repeat_back_details",
-      "title": "Repeat back a tricky request",
-      "prompt": "Your teammate says: “I need the numbers by Thursday, but only the regional ones, and in the old format, not the new one.” Confirm what they need.",
-      "dimension": "listening"
-    },
-    {
-      "date": "2026-10-30",
-      "prompt_id": "persuade.school_carpool",
-      "title": "Pitch a school carpool to your neighbors",
-      "prompt": "Convince two neighbors to start a carpool for school drop-off.",
-      "dimension": "persuasion"
-    },
-    {
-      "date": "2026-10-31",
-      "prompt_id": "summarize.meeting_recap",
-      "title": "Recap a meeting in 30 seconds",
-      "prompt": "Your colleague missed today's meeting and asks what happened. Give them the recap.",
-      "dimension": "concision"
-    },
-    {
-      "date": "2026-11-01",
-      "prompt_id": "explain.job_at_thanksgiving",
-      "title": "Explain your job at Thanksgiving dinner",
-      "prompt": "At Thanksgiving dinner, your uncle asks what you actually do all day. Explain it so the whole table gets it.",
-      "dimension": "clarity"
-    },
-    {
-      "date": "2026-11-02",
       "prompt_id": "persuade.cold_call_opener",
       "title": "Open a cold call in 20 seconds",
       "prompt": "You're calling a small business owner you've never spoken to about your service. Open the call.",
+      "dimension": "concision"
+    },
+    {
+      "date": "2026-10-28",
+      "prompt_id": "story.road_trip",
+      "title": "Tell a road trip story",
+      "prompt": "Tell a story from a road trip: the best moment, the worst moment, or the weirdest gas station.",
+      "dimension": "storytelling"
+    },
+    {
+      "date": "2026-10-29",
+      "prompt_id": "respond.missed_birthday",
+      "title": "Apologize for missing a friend's dinner",
+      "prompt": "Your friend says: “You missed my birthday dinner. Everyone kept asking where you were.” Respond.",
+      "dimension": "warmth"
+    },
+    {
+      "date": "2026-10-30",
+      "prompt_id": "story.mentor_who_changed_you",
+      "title": "The teacher or mentor who changed you",
+      "prompt": "Tell a story about a teacher, coach or mentor who changed how you think.",
+      "dimension": "storytelling"
+    },
+    {
+      "date": "2026-10-31",
+      "prompt_id": "persuade.halftime_pep_talk",
+      "title": "Give a halftime pep talk to a kids' team",
+      "prompt": "You're coaching your kid's soccer team, and they're down two goals at halftime. Give them a pep talk.",
+      "dimension": "warmth"
+    },
+    {
+      "date": "2026-11-01",
+      "prompt_id": "persuade.heating_repair",
+      "title": "Get your landlord to fix the heat this week",
+      "prompt": "Your heating stopped working and it's freezing. Call your landlord and get it fixed this week.",
+      "dimension": "concision"
+    },
+    {
+      "date": "2026-11-02",
+      "prompt_id": "summarize.your_week",
+      "title": "Your week in three sentences",
+      "prompt": "Someone asks how your week has been. Sum it up in three sentences, with one highlight.",
       "dimension": "concision"
     }
   ]

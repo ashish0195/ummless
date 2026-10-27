@@ -52,6 +52,19 @@ struct PracticePlanEditor: View {
             }
 
             VStack(alignment: .leading, spacing: 10) {
+                Text("Right after…").font(.headlineRounded).foregroundStyle(Theme.ink)
+                Text("Tie practice to something you already do every day.")
+                    .font(.footnote).foregroundStyle(Theme.inkSecondary)
+                FlowLayout(spacing: 8) {
+                    ForEach(PracticeAnchor.presets(for: market), id: \.self) { preset in
+                        SelectableChip(title: preset, isSelected: anchor == preset) {
+                            anchor = anchor == preset ? nil : preset
+                        }
+                    }
+                }
+            }
+
+            VStack(alignment: .leading, spacing: 10) {
                 Text("What time?").font(.headlineRounded).foregroundStyle(Theme.ink)
                 FlowLayout(spacing: 8) {
                     ForEach(PracticeTime.allCases) { preset in
@@ -68,19 +81,6 @@ struct PracticePlanEditor: View {
                 if customTime || PracticeTime.matching(time) == nil {
                     DatePicker("Time", selection: timeBinding, displayedComponents: .hourAndMinute)
                         .datePickerStyle(.compact)
-                }
-            }
-
-            VStack(alignment: .leading, spacing: 10) {
-                Text("Right after…").font(.headlineRounded).foregroundStyle(Theme.ink)
-                Text("Tie practice to something you already do every day.")
-                    .font(.footnote).foregroundStyle(Theme.inkSecondary)
-                FlowLayout(spacing: 8) {
-                    ForEach(PracticeAnchor.presets(for: market), id: \.self) { preset in
-                        SelectableChip(title: preset, isSelected: anchor == preset) {
-                            anchor = anchor == preset ? nil : preset
-                        }
-                    }
                 }
             }
 

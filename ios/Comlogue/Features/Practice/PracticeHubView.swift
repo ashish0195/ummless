@@ -70,7 +70,8 @@ struct PracticeHubView: View {
     private var sparSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             SectionHeader("Spar with an AI", subtitle: "Rehearse a hard conversation before it's real.")
-            LazyVGrid(columns: [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)], spacing: 12) {
+            LazyVGrid(columns: [GridItem(.flexible(), spacing: 12, alignment: .top),
+                                GridItem(.flexible(), spacing: 12, alignment: .top)], spacing: 12) {
                 ForEach(personas) { persona in
                     Button {
                         start(SparLaunch(title: persona.title, personaId: persona.id, customScenario: nil,
@@ -362,9 +363,11 @@ private struct PersonaCard: View {
             }
             Text(persona.title).font(.headlineRounded).foregroundStyle(Theme.ink).lineLimit(2).multilineTextAlignment(.leading)
             Text(persona.scenario).font(.caption).foregroundStyle(Theme.inkSecondary).lineLimit(2).multilineTextAlignment(.leading)
+            Spacer(minLength: 0)
             Tag(text: DifficultyCatalog.title(persona.defaultDifficulty).uppercased(), color: color)
         }
-        .frame(maxWidth: .infinity, minHeight: 150, alignment: .topLeading)
+        // Cards in a row share the tallest one's height, with their tags lined up along the bottom.
+        .frame(maxWidth: .infinity, minHeight: 150, maxHeight: .infinity, alignment: .topLeading)
         .card(padding: 14)
     }
 }

@@ -1,5 +1,5 @@
 {
-  "id": "cnv_4376af85058b47689d55",
+  "id": "cnv_046f619e5ce94e97bf3d",
   "kind": "group",
   "status": "active",
   "partner": {
@@ -31,7 +31,7 @@
       "speaker": "partner",
       "text": "Good morning, everyone. Your topic is: should Indian IT companies bring everyone back to the office? You have twelve minutes. Anyone can begin.",
       "audio_url": null,
-      "created_at": "2026-10-27T09:43:00Z",
+      "created_at": "2026-10-27T09:55:03Z",
       "quality": null,
       "coach_whisper": null,
       "excluded": false,
@@ -42,7 +42,7 @@
       "speaker": "partner",
       "text": "I'll start. Offices are where freshers actually learn — you can't absorb culture on a video call.",
       "audio_url": null,
-      "created_at": "2026-10-27T09:43:00Z",
+      "created_at": "2026-10-27T09:55:03Z",
       "quality": null,
       "coach_whisper": null,
       "excluded": false,
@@ -55,7 +55,7 @@
   "assessment_id": null,
   "mission_id": null,
   "demo_mode": true,
-  "created_at": "2026-10-27T09:43:00Z",
+  "created_at": "2026-10-27T09:55:03Z",
   "participants": [
     {
       "id": "mod",

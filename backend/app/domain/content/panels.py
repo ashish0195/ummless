@@ -302,9 +302,9 @@ PANELS: tuple[PanelDef, ...] = (
         kind="panel_interview",
         title="Panel interview: Software engineer",
         scenario="Behavioral panel at Northwind Labs",
-        description="A three-person panel asks for real examples. Tell specific stories, own your part, and connect "
-        "with every panelist — not just the one asking.",
-        topic="Software Engineer II at Northwind Labs (fictional)",
+        description="A chair and three panelists ask for real examples. Tell specific stories, own your part, and "
+        "connect with every panelist — not just the one asking.",
+        topic="Software Engineer II at Northwind Labs",
         user_role="Candidate",
         moderator=ParticipantDef(
             id="mod", name="Rachel", role="Engineering manager (chair)", voice="sage",
@@ -362,7 +362,7 @@ PANELS: tuple[PanelDef, ...] = (
         scenario="Final-round panel at Lumen & Pine",
         description="Three interviewers test product sense, prioritization and how you handle disagreement. "
         "Structure your answers and make decisions out loud.",
-        topic="Senior Product Manager at Lumen & Pine, a home-goods marketplace (fictional)",
+        topic="Senior Product Manager at Lumen & Pine, a home-goods marketplace",
         user_role="Candidate",
         moderator=ParticipantDef(
             id="mod", name="Carla", role="VP of Product (chair)", voice="shimmer",
@@ -419,7 +419,7 @@ PANELS: tuple[PanelDef, ...] = (
         scenario="Final round at Zenith Systems",
         description="A technical lead, a delivery manager and HR interview you together. Explain your project "
         "clearly, stay calm under rapid follow-ups, and answer honestly about shifts, relocation and the bond.",
-        topic="Graduate Engineer Trainee at Zenith Systems, an IT services company (fictional)",
+        topic="Graduate Engineer Trainee at Zenith Systems, an IT services company",
         user_role="Candidate",
         moderator=ParticipantDef(
             id="mod", name="Venkatesh", role="HR manager (chair)", voice="cedar",
@@ -475,7 +475,7 @@ PANELS: tuple[PanelDef, ...] = (
         scenario="PI round at Meridian Institute of Management",
         description="A three-member panel tests your 'why MBA', your work experience and your awareness of the "
         "world. Give honest, specific answers and hold your ground politely.",
-        topic="MBA admissions at Meridian Institute of Management (fictional)",
+        topic="MBA admissions at Meridian Institute of Management",
         user_role="Candidate",
         moderator=ParticipantDef(
             id="mod", name="Dr Iyer", role="Professor of strategy (chair)", voice="onyx",
