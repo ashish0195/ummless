@@ -174,9 +174,11 @@ def test_daily_rep_flow_feedback_comparison_and_one_session_per_day(client, audi
         logs = list(db.scalars(select(ActivityLog).where(ActivityLog.user_id == user_id,
                                                          ActivityLog.type == "daily_rep")))
         assert len(logs) == 1 and logs[0].ref_id == f"daily:{rep['date']}"
-        # They were in the app when feedback landed: no "feedback ready" notification.
-        assert db.scalar(select(Notification.id).where(Notification.user_id == user_id,
-                                                       Notification.category == "results")) is None
+        # They were in the app when feedback landed, so its push waits (and is dropped if they stay).
+        ready = db.scalar(select(Notification).where(Notification.user_id == user_id,
+                                                     Notification.category == "results"))
+        assert ready is not None and ready.push_state == "pending" and ready.deep_link == f"comlogue://daily/{rep['date']}"
+        assert ready.deliver_after > ready.created_at
 
 
 def test_yesterdays_rep_is_allowed_older_ones_are_not(client, audio_dir):

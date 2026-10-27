@@ -226,6 +226,10 @@ habit stick, and avoided the patterns that make people feel guilty and leave.
   reminders and nudges, and a week overlapping a break neither counts nor breaks the run.
 - **Welcome back, no guilt.** After 7 or more quiet days, Today opens with "Welcome back — your progress is
   saved. Start with a 60-second rep." instead of what was missed.
+- **Close the loop on real conversations.** The day after an interview, pitch or hard talk the user added, a
+  check-in asks "How did it go?" (Today shows the same prompt). A tap and a sentence get a coach reply tied to the
+  current course focus, and the reflection counts as real-life practice. Transfer to real life is what the course
+  is for, and the spec's pilot metric for it now includes these reflections.
 - **Celebrate real progress.** Milestones such as the first rep, 10 and 30 reps, and 2, 4, 8 and 12 weeks on
   target get a one-time celebration with a share option. There's still no XP, no leaderboard and no league.
 - **The rep is everywhere the user already is:** the Today screen's first card, home and lock screen widgets

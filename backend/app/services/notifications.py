@@ -66,6 +66,9 @@ PUSHABLE_AUTHORIZATIONS = {"authorized", "provisional", "ephemeral"}
 PUSHES_PER_DAY = 2
 RESULTS_ACTIVE_WINDOW = 30 * 60
 FEEDBACK_IDLE_SECONDS = 120
+# Feedback is usually ready within seconds, often while the person is still in the app. Its push waits this long
+# and is dropped if they've been back in the app since (they've seen it); otherwise it brings them back.
+FEEDBACK_PUSH_DELAY = timedelta(seconds=90)
 MAX_PUSH_ATTEMPTS = 3
 NUDGE_DAYS = (3, 8)
 NUDGE_GAP = timedelta(hours=72)
@@ -84,7 +87,7 @@ REAL_LIFE_CHECK_IN_UNTIL = timedelta(days=14)
 
 def notify(db: Session, user: User, *, category: str, title: str, body: str, deep_link: str, dedupe_key: str,
            now: datetime | None = None, interruption: str = "active",
-           expires_at: datetime | None = None) -> Notification | None:
+           expires_at: datetime | None = None, deliver_after: datetime | None = None) -> Notification | None:
     """Create an inbox item (and queue its push). Returns None when the toggle is off or it already exists."""
     now = now or utcnow()
     settings = users.notification_settings(user)
@@ -97,7 +100,8 @@ def notify(db: Session, user: User, *, category: str, title: str, body: str, dee
         return None
     item = Notification(
         id=new_id("ntf"), user_id=user.id, category=category, title=title[:200], body=body, deep_link=deep_link,
-        dedupe_key=dedupe_key[:160], interruption_level=interruption, created_at=now, deliver_after=now,
+        dedupe_key=dedupe_key[:160], interruption_level=interruption, created_at=now,
+        deliver_after=deliver_after or now,
         push_state="pending" if enabled else "skipped", push_note=None if enabled else "category off",
         expires_at=expires_at,
     )
@@ -249,6 +253,11 @@ def _deliver(svc: AppServices, db: Session, item: Notification, now: datetime, f
     if user is None:
         _skip(item, "no user")
         return
+    if (item.dedupe_key.startswith("feedback:") and user.last_active_at is not None
+            and as_utc(user.last_active_at) > as_utc(item.created_at)):
+        item.read_at = item.read_at or now  # they were back in the app and saw it: not unread either
+        _skip(item, "seen in the app")
+        return
     device = device_for(db, user.id)
     if not push_enabled(svc, device):
         _skip(item, "no push device")
@@ -385,15 +394,18 @@ def assessment_ready(svc: AppServices, db: Session, assessment: Assessment) -> N
 
 def feedback_ready(svc: AppServices, db: Session, user_id: str, *, attempt_id: str, title: str,
                    deep_link: str) -> None:
-    """Mission or daily-rep feedback. Skipped when the user is still in the app (they'll see it there)."""
+    """Mission or daily-rep feedback. The push waits FEEDBACK_PUSH_DELAY and is dropped if the user has been in the
+    app since (they've seen it there); the scheduler delivers it otherwise."""
     user = db.get(User, user_id)
-    if user is None or users.was_active_within(user, FEEDBACK_IDLE_SECONDS):
+    if user is None:
         return
+    now = utcnow()
     made = notify(db, user, category="results", title=title,
                   body="Where the target showed up, what worked, and one change for next time.",
-                  deep_link=deep_link, dedupe_key=f"feedback:{attempt_id}", expires_at=utcnow() + timedelta(hours=24))
+                  deep_link=deep_link, dedupe_key=f"feedback:{attempt_id}", now=now,
+                  deliver_after=now + FEEDBACK_PUSH_DELAY, expires_at=now + timedelta(hours=24))
     if made is not None:
-        _commit_and_push(svc, db, user.id)
+        db.commit()
 
 
 def milestone_earned(db: Session, user_id: str, milestone_id: str, title: str, detail: str) -> None:

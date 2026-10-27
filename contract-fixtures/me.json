@@ -1,6 +1,6 @@
 {
-  "user_id": "usr_905ef792bff04f15be3b",
-  "created_at": "2026-10-27T09:33:52Z",
+  "user_id": "usr_c83e1e27474c4d1bae92",
+  "created_at": "2026-10-27T09:42:28Z",
   "demo_mode": true,
   "onboarding": {
     "completed": true,
@@ -18,7 +18,7 @@
     "language": "en",
     "region": "US-CA",
     "analysis_consent_version": "analysis-2026-10",
-    "analysis_consented_at": "2026-10-27T09:33:52Z",
+    "analysis_consented_at": "2026-10-27T09:42:28Z",
     "course_started": false,
     "age_confirmed": true
   },

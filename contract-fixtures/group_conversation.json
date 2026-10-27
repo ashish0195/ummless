@@ -1,5 +1,5 @@
 {
-  "id": "cnv_51ac5c8f013f40ec9ad9",
+  "id": "cnv_4376af85058b47689d55",
   "kind": "group",
   "status": "active",
   "partner": {
@@ -11,7 +11,7 @@
   },
   "setup": {
     "title": "GD: Work from home vs office",
-    "context": "Four candidates, one topic, fifteen minutes. Enter the discussion, add a fresh point, build on others and help the group reach a conclusion.",
+    "context": "Four candidates, one topic, twelve minutes. Enter the discussion, add a fresh point, build on others and help the group reach a conclusion.",
     "target_behavior": null,
     "suggested_seconds": 45,
     "tips": [
@@ -29,9 +29,9 @@
     {
       "index": 0,
       "speaker": "partner",
-      "text": "Good morning, everyone. Your topic is: should Indian IT companies bring everyone back to the office? You have fifteen minutes. Anyone can begin.",
+      "text": "Good morning, everyone. Your topic is: should Indian IT companies bring everyone back to the office? You have twelve minutes. Anyone can begin.",
       "audio_url": null,
-      "created_at": "2026-10-27T09:34:26Z",
+      "created_at": "2026-10-27T09:43:00Z",
       "quality": null,
       "coach_whisper": null,
       "excluded": false,
@@ -42,7 +42,7 @@
       "speaker": "partner",
       "text": "I'll start. Offices are where freshers actually learn — you can't absorb culture on a video call.",
       "audio_url": null,
-      "created_at": "2026-10-27T09:34:26Z",
+      "created_at": "2026-10-27T09:43:00Z",
       "quality": null,
       "coach_whisper": null,
       "excluded": false,
@@ -55,7 +55,7 @@
   "assessment_id": null,
   "mission_id": null,
   "demo_mode": true,
-  "created_at": "2026-10-27T09:34:26Z",
+  "created_at": "2026-10-27T09:43:00Z",
   "participants": [
     {
       "id": "mod",

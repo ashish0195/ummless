@@ -1,5 +1,5 @@
 {
-  "id": "evt_1275fc979301487dad89",
+  "id": "evt_8006b3f87a244de38c33",
   "title": "Panel interview at Northwind",
   "kind": "interview",
   "date": "2026-10-20",
@@ -27,13 +27,13 @@
       "difficulty": "brutal"
     }
   ],
-  "created_at": "2026-10-27T09:34:24Z",
+  "created_at": "2026-10-27T09:42:59Z",
   "time": null,
   "reflection": {
-    "id": "rfl_1070f3b8433e4906ab4f",
+    "id": "rfl_4a8950b467da43ebb950",
     "text": "I led with my main point and the panel followed up on it.",
     "went": "well",
     "coach_reply": "That's great — trying it in a real conversation is the hardest part. Next time, aim for just the first part of the target: state your recommendation first.",
-    "created_at": "2026-10-27T09:34:24Z"
+    "created_at": "2026-10-27T09:42:59Z"
   }
 }

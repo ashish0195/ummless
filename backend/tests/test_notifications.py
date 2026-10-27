@@ -9,7 +9,7 @@ from sqlalchemy import select
 from app.models import ActivityLog, Device, MissionOpen, Notification, Recording, Reflection, UpcomingEvent, User
 from app.push import PushResult, RecordingSender
 from app.services import notifications, progress
-from app.timeutil import local_datetime, utcnow
+from app.timeutil import as_utc, local_datetime, utcnow
 from tests.helpers import signup
 
 TOKEN = "ab" * 32
@@ -469,27 +469,50 @@ def test_weekly_reveal_on_sunday_evening_when_they_practised(client):
 # ------------------------------------------------------------------ result producers
 
 
-def test_feedback_and_milestones_notify_only_when_the_app_is_not_in_use(client):
+def test_feedback_push_waits_and_is_dropped_when_seen_in_the_app(client):
+    _, user_id, sender = _push_user(client)
+    svc = _svc(client)
+    _update_user(client, user_id, last_active_at=utcnow())  # in the app when the feedback lands
+    with svc.session_factory() as db:
+        notifications.feedback_ready(svc, db, user_id, attempt_id="att_1", title="Feedback ready",
+                                     deep_link="comlogue://daily")
+    item = _by_key(client, user_id, "feedback:att_1")
+    created = as_utc(item.created_at)
+    assert item.push_state == "pending" and as_utc(item.deliver_after) == created + notifications.FEEDBACK_PUSH_DELAY
+    _deliver(client, created + timedelta(seconds=30))
+    assert sender.sent == []  # not due yet
+    # They stayed in the app and saw it: no push, and it doesn't count as unread.
+    _update_user(client, user_id, last_active_at=created + timedelta(seconds=70))
+    _deliver(client, created + timedelta(minutes=2))
+    item = _by_key(client, user_id, "feedback:att_1")
+    assert sender.sent == [] and item.push_state == "skipped" and item.read_at is not None
+
+    # They left right after finishing: the push brings them back.
+    with svc.session_factory() as db:
+        notifications.feedback_ready(svc, db, user_id, attempt_id="att_2", title="Feedback ready",
+                                     deep_link="comlogue://daily/2026-11-04")
+    item = _by_key(client, user_id, "feedback:att_2")
+    _update_user(client, user_id, last_active_at=as_utc(item.created_at) - timedelta(seconds=20))
+    _deliver(client, as_utc(item.created_at) + timedelta(minutes=2))
+    assert [m.deep_link for m in sender.sent] == ["comlogue://daily/2026-11-04"]
+
+
+def test_milestones_notify_only_when_the_app_is_not_in_use(client):
     headers = signup(client)
     user_id = _user_id(client, headers)
     svc = _svc(client)
     _update_user(client, user_id, last_active_at=utcnow())
     with svc.session_factory() as db:
-        notifications.feedback_ready(svc, db, user_id, attempt_id="att_1", title="Feedback ready",
-                                     deep_link="comlogue://daily")
         progress.award(db, user_id, "first_rep")
         db.commit()
     assert _items(client, user_id) == []
 
     _update_user(client, user_id, last_active_at=utcnow() - timedelta(minutes=5))
     with svc.session_factory() as db:
-        notifications.feedback_ready(svc, db, user_id, attempt_id="att_2", title="Feedback ready",
-                                     deep_link="comlogue://daily/2026-11-04")
         progress.award(db, user_id, "reps_10")
         db.commit()
-    items = {n.category: n for n in _items(client, user_id)}
-    assert items["results"].deep_link == "comlogue://daily/2026-11-04"
-    assert items["milestone"].title == "Milestone: 10 daily reps" and items["milestone"].interruption_level == "passive"
+    milestone = _items(client, user_id, "milestone")[0]
+    assert milestone.title == "Milestone: 10 daily reps" and milestone.interruption_level == "passive"
 
 
 def test_recording_states_produce_results_notifications(client):

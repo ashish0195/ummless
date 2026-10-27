@@ -18,7 +18,7 @@ PANELS: tuple[PanelDef, ...] = (
         kind="group_discussion",
         title="GD: Work from home vs office",
         scenario="Campus-placement group discussion",
-        description="Four candidates, one topic, fifteen minutes. Enter the discussion, add a fresh point, build on "
+        description="Four candidates, one topic, twelve minutes. Enter the discussion, add a fresh point, build on "
         "others and help the group reach a conclusion.",
         topic="Should Indian IT companies bring everyone back to the office?",
         user_role="Participant",
@@ -50,7 +50,7 @@ PANELS: tuple[PanelDef, ...] = (
             ),
         ),
         opening="Good morning, everyone. Your topic is: should Indian IT companies bring everyone back to the "
-        "office? You have fifteen minutes. Anyone can begin.",
+        "office? You have twelve minutes. Anyone can begin.",
         pre_user_lines=(
             ("p1", "I'll start. Offices are where freshers actually learn — you can't absorb culture on a video "
              "call."),

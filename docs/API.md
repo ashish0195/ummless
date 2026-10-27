@@ -463,7 +463,9 @@ Device { id: string /* dev_… */, push_enabled: bool }
 - `POST /v1/devices` body `DeviceRegistration` → `Device`. Upserts the caller's device (one per install). It also
   sets `Me.timezone` (an unknown IANA name → `422`). The app calls it at launch, whenever the APNs token or
   permission changes, and when the timezone changes. `apns_token` is the hex device token (32–200 hex characters,
-  stored lowercase; `null` or `""` clears it); a token reported by another account moves to this one.
+  stored lowercase; `null` or `""` clears it); a token reported by another account moves to this one. Omitted
+  fields default to `authorization: "not_determined"`, `locale: "en-US"`, `app_version: ""` and
+  `push_environment: "production"` when a token is sent.
 - `push_enabled` means **the server will deliver pushes to this device**: APNs is configured on the server (not
   inbox-only) **and** the device has a token **and** authorization is `authorized`, `provisional` or `ephemeral`.
   So it is `false` on a server without `APNS_*` even when the device has a token and permission. When it's
@@ -491,8 +493,13 @@ in-app inbox only.
 - APNs `429`/`5xx` are retried up to 3 times, 5 minutes apart.
 
 **Server-generated notifications**
-- `results`: a recording is ready or needs speaker confirmation; an assessment completes; mission or daily feedback
-  is ready. Feedback notifications are sent only if the user hasn't been active in the last 2 minutes.
+- `results`:
+  - a recording is ready or needs speaker confirmation; an assessment completes; mission or daily feedback is
+    ready;
+  - a recording or analysis that couldn't be finished (`needs_recovery`, `failed`) also gets one ("We couldn't
+    finish …"), linking to the next step;
+  - feedback is usually ready within seconds, so its push waits 90 seconds. It's dropped, and marked read, if the
+    user has been back in the app since the feedback was ready. Otherwise the push brings them back to it.
 - `event_prep`:
   - the evening before an event (19:00 local): "Tomorrow: {title}. A 5-minute warm-up tonight?"
   - the morning of it (08:00, or 2 hours before `time` when given): "Today: {title}…"

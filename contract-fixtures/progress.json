@@ -22,86 +22,86 @@
       "id": "first_rep",
       "title": "First daily rep",
       "detail": "One prompt, one minute — that's how the habit starts.",
-      "achieved_at": "2026-10-27T09:34:26Z"
+      "achieved_at": "2026-10-27T09:43:00Z"
     },
     {
       "id": "first_spar",
       "title": "First spar",
       "detail": "You held your ground with an AI sparring partner.",
-      "achieved_at": "2026-10-27T09:34:24Z"
+      "achieved_at": "2026-10-27T09:42:59Z"
     },
     {
       "id": "first_real_life",
       "title": "First real-life attempt",
       "detail": "You used a skill in an actual conversation.",
-      "achieved_at": "2026-10-27T09:34:24Z"
+      "achieved_at": "2026-10-27T09:42:59Z"
     },
     {
       "id": "first_retry",
       "title": "Tried it again",
       "detail": "You retried a mission — that's how skills stick.",
-      "achieved_at": "2026-10-27T09:34:21Z"
+      "achieved_at": "2026-10-27T09:42:56Z"
     },
     {
       "id": "weekly_target:2026-10-26",
       "title": "Weekly target met",
       "detail": "You hit your practice target this week.",
-      "achieved_at": "2026-10-27T09:34:18Z"
+      "achieved_at": "2026-10-27T09:42:53Z"
     },
     {
       "id": "first_upload",
       "title": "First real conversation",
       "detail": "You added a real conversation for feedback.",
-      "achieved_at": "2026-10-27T09:34:16Z"
+      "achieved_at": "2026-10-27T09:42:52Z"
     },
     {
       "id": "first_conversation",
       "title": "First conversation",
       "detail": "You finished your first AI conversation.",
-      "achieved_at": "2026-10-27T09:34:13Z"
+      "achieved_at": "2026-10-27T09:42:49Z"
     },
     {
       "id": "first_profile",
       "title": "First insight",
       "detail": "Your communication web has its first evidence-backed point.",
-      "achieved_at": "2026-10-27T09:34:13Z"
+      "achieved_at": "2026-10-27T09:42:49Z"
     }
   ],
   "recent": [
     {
       "type": "daily_rep",
-      "title": "Give directions using landmarks",
-      "created_at": "2026-10-27T09:34:26Z"
+      "title": "Your first day at a new job or college",
+      "created_at": "2026-10-27T09:43:00Z"
     },
     {
       "type": "spar_session",
       "title": "Pitch a budget increase",
-      "created_at": "2026-10-27T09:34:24Z"
+      "created_at": "2026-10-27T09:42:59Z"
     },
     {
       "type": "real_life",
       "title": "Panel interview at Northwind",
-      "created_at": "2026-10-27T09:34:24Z"
+      "created_at": "2026-10-27T09:42:59Z"
     },
     {
       "type": "mission_attempt",
       "title": "Make your point land",
-      "created_at": "2026-10-27T09:34:21Z"
+      "created_at": "2026-10-27T09:42:56Z"
     },
     {
       "type": "mission_attempt",
       "title": "Make your point land",
-      "created_at": "2026-10-27T09:34:18Z"
+      "created_at": "2026-10-27T09:42:53Z"
     },
     {
       "type": "recording",
       "title": "Team sync",
-      "created_at": "2026-10-27T09:34:16Z"
+      "created_at": "2026-10-27T09:42:52Z"
     },
     {
       "type": "assessment",
       "title": "AI roleplay · Oct 27",
-      "created_at": "2026-10-27T09:34:13Z"
+      "created_at": "2026-10-27T09:42:48Z"
     }
   ],
   "welcome_back": null

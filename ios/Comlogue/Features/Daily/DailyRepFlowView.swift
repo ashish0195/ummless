@@ -26,7 +26,24 @@ final class DailyRepModel {
         self.app = app
     }
 
-    var isToday: Bool { requestedDate == nil || requestedDate == app.daily?.date }
+    /// A reminder for today links to today's date, which may arrive before the app has loaded today's rep.
+    var isToday: Bool {
+        requestedDate == nil || requestedDate == app.daily?.date
+            || requestedDate == HabitMath.dayString(Date(), timeZone: .current)
+    }
+
+    /// The server takes attempts for today's rep, or yesterday's just after midnight.
+    var canPractise: Bool {
+        guard let date = rep?.date ?? requestedDate else { return true }
+        let yesterday = HabitMath.dayString(HabitMath.adding(days: -1, to: Date(), timeZone: .current), timeZone: .current)
+        return isToday || date >= yesterday
+    }
+
+    /// "Mon, 26 Oct" in the person's locale.
+    static func displayDay(_ day: String) -> String {
+        guard let date = HabitMath.date(fromDay: day, timeZone: .current) else { return day }
+        return date.formatted(.dateTime.weekday(.abbreviated).day().month(.abbreviated))
+    }
 
     func load() async {
         if isToday, let today = app.daily {
@@ -207,7 +224,8 @@ private struct DailyRepIntro: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 18) {
                     HStack(spacing: 8) {
-                        Eyebrow(model.isToday ? "Today's rep · about \(rep.suggestedSeconds) sec" : "Rep for \(rep.date)", color: color)
+                        Eyebrow(model.isToday ? "Today's rep · about \(rep.suggestedSeconds) sec"
+                                : "Rep for \(DailyRepModel.displayDay(rep.date))", color: color)
                         Spacer()
                         DimensionTag(dimension: rep.dimension)
                     }
@@ -273,12 +291,22 @@ private struct DailyRepIntro: View {
                 .padding(Theme.gutter)
             }
             VStack(spacing: 8) {
-                Button {
-                    Task { await model.start() }
-                } label: {
-                    Label(rep.attempts.isEmpty ? "I'm ready" : "Try it again", systemImage: "mic.fill")
+                if model.canPractise {
+                    Button {
+                        Task { await model.start() }
+                    } label: {
+                        Label(rep.attempts.isEmpty ? "I'm ready" : "Try it again", systemImage: "mic.fill")
+                    }
+                    .buttonStyle(.primaryPill)
+                } else {
+                    // An old reminder: that day's rep has closed, today's is waiting.
+                    Button {
+                        app.present(.daily(date: nil))
+                    } label: {
+                        Label("Go to today's rep", systemImage: "arrow.right.circle.fill")
+                    }
+                    .buttonStyle(.primaryPill)
                 }
-                .buttonStyle(.primaryPill)
                 if rep.canShuffle && rep.attempts.isEmpty {
                     Button {
                         Task { await model.shuffle() }
@@ -325,14 +353,19 @@ private struct DailyRepFeedback: View {
                 .padding(Theme.gutter)
             }
             VStack(spacing: 8) {
-                Button {
-                    Task { await model.start() }
-                } label: {
-                    Label("Try again with that change", systemImage: "arrow.counterclockwise")
+                if model.canPractise {
+                    Button {
+                        Task { await model.start() }
+                    } label: {
+                        Label("Try again with that change", systemImage: "arrow.counterclockwise")
+                    }
+                    .buttonStyle(.primaryPill)
+                    Button("Done for today") { app.dismissFlow() }
+                        .buttonStyle(.ghostPill)
+                } else {
+                    Button("Done") { app.dismissFlow() }
+                        .buttonStyle(.primaryPill)
                 }
-                .buttonStyle(.primaryPill)
-                Button("Done for today") { app.dismissFlow() }
-                    .buttonStyle(.ghostPill)
             }
             .padding(.horizontal, Theme.gutter)
             .padding(.bottom, 12)

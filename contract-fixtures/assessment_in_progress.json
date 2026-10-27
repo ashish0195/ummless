@@ -1,5 +1,5 @@
 {
-  "id": "asm_9044a79b0c3046289483",
+  "id": "asm_d191c5b36d7b4921be3c",
   "route": "roleplay",
   "purpose": "baseline",
   "status": "in_progress",
@@ -18,7 +18,7 @@
         "concision"
       ],
       "status": "in_progress",
-      "conversation_id": "cnv_65eb88bc65b942db905f"
+      "conversation_id": "cnv_d0717fb5adb34a11afa8"
     },
     {
       "id": "explain_interest",
@@ -83,6 +83,6 @@
   ],
   "target_dimensions": [],
   "result": null,
-  "created_at": "2026-10-27T09:33:53Z",
+  "created_at": "2026-10-27T09:42:29Z",
   "completed_at": null
 }

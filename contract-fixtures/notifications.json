@@ -1,41 +1,68 @@
 {
   "items": [
     {
-      "id": "ntf_4e88a9be38a44dcf9208",
+      "id": "ntf_8197e925c043440c9de4",
       "category": "results",
       "title": "Notifications are on",
       "body": "You'll hear from us about your results, the reminders you set and the moments you're preparing for.",
       "deep_link": "comlogue://settings/notifications",
-      "created_at": "2026-10-27T09:34:29Z",
+      "created_at": "2026-10-27T09:43:02Z",
       "read": false
     },
     {
-      "id": "ntf_65f2f05feb5a4d7f960d",
+      "id": "ntf_e2c712284a5f428193d9",
+      "category": "results",
+      "title": "Feedback on today's rep is ready",
+      "body": "Where the target showed up, what worked, and one change for next time.",
+      "deep_link": "comlogue://daily/2026-10-27",
+      "created_at": "2026-10-27T09:43:00Z",
+      "read": false
+    },
+    {
+      "id": "ntf_557d2aa17fc14629b7ef",
+      "category": "results",
+      "title": "Feedback on “Make your point land” is ready",
+      "body": "Where the target showed up, what worked, and one change for next time.",
+      "deep_link": "comlogue://mission/business.m1.learn",
+      "created_at": "2026-10-27T09:42:56Z",
+      "read": false
+    },
+    {
+      "id": "ntf_c7b7cbb69d4541d4a732",
+      "category": "results",
+      "title": "Feedback on “Make your point land” is ready",
+      "body": "Where the target showed up, what worked, and one change for next time.",
+      "deep_link": "comlogue://mission/business.m1.learn",
+      "created_at": "2026-10-27T09:42:54Z",
+      "read": false
+    },
+    {
+      "id": "ntf_92d18d1a2f7a42848435",
       "category": "results",
       "title": "Your feedback on “Team sync” is ready",
       "body": "See what worked, with the moments that show it, and one thing to try next.",
-      "deep_link": "comlogue://recording/rec_c0ccb4d19cfb4f39bd14",
-      "created_at": "2026-10-27T09:34:16Z",
+      "deep_link": "comlogue://recording/rec_3320e9bf52254e2bb921",
+      "created_at": "2026-10-27T09:42:52Z",
       "read": false
     },
     {
-      "id": "ntf_0778325bab7942fba247",
+      "id": "ntf_2ad0192ddc79490ab4c5",
       "category": "results",
       "title": "Which voice is yours?",
       "body": "We separated the voices in “Team sync”. Confirm yours to see your feedback.",
-      "deep_link": "comlogue://recording/rec_c0ccb4d19cfb4f39bd14",
-      "created_at": "2026-10-27T09:34:16Z",
+      "deep_link": "comlogue://recording/rec_3320e9bf52254e2bb921",
+      "created_at": "2026-10-27T09:42:51Z",
       "read": false
     },
     {
-      "id": "ntf_c86e0da573e843ba82cc",
+      "id": "ntf_703028178c744d6caa8e",
       "category": "results",
       "title": "Your communication profile is ready",
       "body": "See what we could assess, the moments behind it, and your first small change.",
-      "deep_link": "comlogue://assessment/asm_9c353c70497349c081d0",
-      "created_at": "2026-10-27T09:34:13Z",
+      "deep_link": "comlogue://assessment/asm_a8ced10cf12d47518c83",
+      "created_at": "2026-10-27T09:42:49Z",
       "read": true
     }
   ],
-  "unread_count": 3
+  "unread_count": 6
 }
