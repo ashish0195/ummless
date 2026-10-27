@@ -92,6 +92,8 @@ final class AppModel {
     /// A milestone earned since the person last looked, celebrated once.
     var celebration: Milestone?
     var activeFlow: AppFlow?
+    /// Set by the live-recording screen while it holds audio that isn't uploaded yet.
+    var holdsUnsavedRecording = false
     var selectedTab: AppTab = .today
     var toast: String?
     /// Bumped whenever results change so screens can reload.
@@ -141,6 +143,8 @@ final class AppModel {
             return
         }
         #endif
+        // Before signing in, so no transaction update is missed; anything the server can't take yet stays unfinished.
+        store.startListening()
         do {
             if api.token == nil {
                 guard await authenticate() else { throw APIError.network("Could not sign in") }
@@ -159,8 +163,8 @@ final class AppModel {
             } else {
                 phase = .onboarding
             }
-            store.startListening()
             await syncDevice()
+            await store.retryUnfinished()
         } catch {
             phase = .failed(error.userMessage)
         }
@@ -353,6 +357,7 @@ final class AppModel {
     }
 
     func open(_ link: DeepLink) {
+        guard !refuseWhileRecording() else { return }
         switch link {
         case .today:
             selectedTab = .today
@@ -403,6 +408,7 @@ final class AppModel {
     // MARK: Flows
 
     func present(_ flow: AppFlow) {
+        guard !refuseWhileRecording() else { return }
         player.stop()
         speech.stop()
         if activeFlow != nil || celebration != nil {
@@ -418,9 +424,18 @@ final class AppModel {
         }
     }
 
+    /// Notifications, widgets, links and shortcuts must not replace a live recording that isn't uploaded yet: the
+    /// screen would close and the recording would be lost. The person finishes or discards it first.
+    private func refuseWhileRecording() -> Bool {
+        guard holdsUnsavedRecording else { return false }
+        showToast("You're recording. Finish or discard it first.")
+        return true
+    }
+
     func dismissFlow(refresh: Bool = true) {
         player.stop()
         speech.stop()
+        holdsUnsavedRecording = false
         activeFlow = nil
         if refresh { Task { await refreshAll() } }
     }

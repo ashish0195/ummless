@@ -191,17 +191,23 @@ struct ConnectionProblemView: View {
             VoiceOrb(level: 0.05, colors: [Theme.inkTertiary, Theme.stroke, Theme.inkSecondary]).frame(width: 110, height: 110)
             Text("We can't reach Comlogue").font(.titleRounded).foregroundStyle(Theme.ink)
             Text(message).font(.body).foregroundStyle(Theme.inkSecondary).multilineTextAlignment(.center)
+            #if DEBUG
             Text("Server: \(AppConfig.baseURL.absoluteString)").font(.caption).foregroundStyle(Theme.inkTertiary)
+            #endif
             Spacer()
             Button("Try again") { Task { await app.bootstrap() } }.buttonStyle(.primaryPill)
+            #if DEBUG
             Button("Change server") { showServerSheet = true }.buttonStyle(.ghostPill)
+            #endif
         }
         .padding(Theme.gutter)
         .screenBackground()
+        #if DEBUG
         .sheet(isPresented: $showServerSheet) {
             ServerSettingsSheet()
                 .environment(app)
         }
+        #endif
     }
 }
 

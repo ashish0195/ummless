@@ -77,11 +77,13 @@ struct PaywallView: View {
                 if let message {
                     Text(message).font(.footnote).foregroundStyle(.white).multilineTextAlignment(.center)
                 }
+                #if DEBUG
                 if store.products.isEmpty && !store.isLoading {
                     Button("Unlock Pro for testing") { Task { await devUnlock() } }
                         .font(.caption)
                         .foregroundStyle(.white.opacity(0.7))
                 }
+                #endif
             }
             .padding(.horizontal, Theme.gutter)
             .padding(.bottom, 12)
@@ -212,6 +214,7 @@ struct PaywallView: View {
         }
     }
 
+    #if DEBUG
     private func devUnlock() async {
         if await app.devGrantPro() {
             app.showToast("Pro unlocked (testing)")
@@ -220,4 +223,5 @@ struct PaywallView: View {
             message = "Test unlocks are disabled on this server."
         }
     }
+    #endif
 }

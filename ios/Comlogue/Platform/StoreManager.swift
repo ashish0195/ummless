@@ -63,12 +63,21 @@ final class StoreManager {
         }
     }
 
+    /// Start at launch: StoreKit delivers renewals, Ask to Buy approvals and transactions left unfinished last time
+    /// through `Transaction.updates`, once, right after the app starts.
     func startListening() {
         guard updatesTask == nil else { return }
         updatesTask = Task { [weak self] in
             for await update in Transaction.updates {
                 _ = await self?.handle(update)
             }
+        }
+    }
+
+    /// Hands the server any purchase it hasn't accepted yet (it was offline, or we weren't signed in).
+    func retryUnfinished() async {
+        for await transaction in Transaction.unfinished {
+            _ = await handle(transaction)
         }
     }
 
@@ -81,9 +90,19 @@ final class StoreManager {
     private func handle(_ verification: VerificationResult<Transaction>) async -> Bool {
         switch verification {
         case .verified(let transaction):
-            let accepted = await forwardTransaction?(verification.jwsRepresentation) ?? false
+            if transaction.revocationDate != nil {
+                // Refunded or revoked: nothing to unlock.
+                await transaction.finish()
+                return false
+            }
+            // Finish only once the server has unlocked Pro. An unfinished transaction stays with StoreKit, which
+            // offers it again (`Transaction.updates`, `retryUnfinished`), so a dropped connection never loses a purchase.
+            guard await forwardTransaction?(verification.jwsRepresentation) ?? false else {
+                lastError = "Your purchase went through, but we couldn't unlock Pro yet. We'll keep trying, or tap Restore purchases."
+                return false
+            }
             await transaction.finish()
-            return accepted
+            return true
         case .unverified:
             lastError = "We couldn't verify that purchase with the App Store."
             return false

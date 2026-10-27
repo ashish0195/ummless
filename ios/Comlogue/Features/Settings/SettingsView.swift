@@ -115,6 +115,8 @@ struct SettingsView: View {
                     LabeledContent("Version", value: AppConfig.appVersion)
                 }
 
+                #if DEBUG
+                // Never in a Release build: App Review (and anyone else) must not see test unlocks or a server switch.
                 Section("Developer") {
                     NavigationLink("Server") { ServerSettingsSheet(embedded: true) }
                     if app.isDemo {
@@ -132,6 +134,7 @@ struct SettingsView: View {
                         }
                     }
                 }
+                #endif
             }
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.inline)

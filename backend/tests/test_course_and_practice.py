@@ -211,6 +211,8 @@ def test_progress_and_billing(client, audio_dir):
     progress = client.get("/v1/progress", headers=headers).json()
     assert progress["practice"]["total_sessions"] == 0 and progress["practice"]["this_week"]["target"] == 3
 
+    # Outside production, Xcode's local StoreKit transactions are accepted unverified (tests/test_app_store.py covers
+    # verification).
     payload = {"productId": "comlogue.pro.monthly", "bundleId": "com.comlogue.app", "transactionId": "1",
                "originalTransactionId": "1", "expiresDate": 4102444800000, "environment": "Sandbox"}
     jws = "e30." + base64.urlsafe_b64encode(json.dumps(payload).encode()).decode().rstrip("=") + ".sig"
@@ -220,4 +222,8 @@ def test_progress_and_billing(client, audio_dir):
     bad = dict(payload, productId="something.else")
     bad_jws = "e30." + base64.urlsafe_b64encode(json.dumps(bad).encode()).decode().rstrip("=") + ".sig"
     assert client.post("/v1/billing/app-store", json={"signed_transaction": bad_jws},
+                       headers=headers).status_code == 422
+    no_expiry = {k: v for k, v in payload.items() if k != "expiresDate"}
+    no_expiry_jws = "e30." + base64.urlsafe_b64encode(json.dumps(no_expiry).encode()).decode().rstrip("=") + ".sig"
+    assert client.post("/v1/billing/app-store", json={"signed_transaction": no_expiry_jws},
                        headers=headers).status_code == 422

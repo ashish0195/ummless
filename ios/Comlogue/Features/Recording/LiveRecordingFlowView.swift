@@ -66,10 +66,15 @@ struct LiveRecordingFlowView: View {
             }
             Button("Keep it", role: .cancel) {}
         }
+        .onChange(of: holdsUnsavedAudio, initial: true) { _, holds in app.holdsUnsavedRecording = holds }
         .onDisappear {
+            app.holdsUnsavedRecording = false
             if recorder.isActive { _ = recorder.stop() }
         }
     }
+
+    /// Recording, paused, or recorded and not uploaded yet.
+    private var holdsUnsavedAudio: Bool { recorder.isActive || recordedURL != nil }
 
     private var readyView: some View {
         VStack(spacing: 0) {

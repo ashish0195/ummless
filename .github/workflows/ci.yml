@@ -49,9 +49,16 @@ jobs:
           if docker run --rm comlogue-api python -c "from app.config import get_settings; get_settings()"; then
             echo "Started with the placeholder secret"; exit 1
           fi
+      - name: Refuses to start in production without an OpenAI key
+        run: |
+          if docker run --rm -e SECRET_KEY="$(openssl rand -hex 32)" comlogue-api \
+              python -c "from app.config import get_settings; get_settings()"; then
+            echo "Started without OPENAI_API_KEY"; exit 1
+          fi
       - name: Starts and answers the health check
         run: |
-          docker run -d --name api -p 8000:8000 -e SECRET_KEY="$(openssl rand -hex 32)" comlogue-api
+          # An explicit demo: production otherwise needs OPENAI_API_KEY. Purchase verification uses the bundled root.
+          docker run -d --name api -p 8000:8000 -e SECRET_KEY="$(openssl rand -hex 32)" -e AI_PROVIDER=mock comlogue-api
           for _ in $(seq 1 30); do
             if curl -fsS http://127.0.0.1:8000/v1/health; then exit 0; fi
             sleep 2

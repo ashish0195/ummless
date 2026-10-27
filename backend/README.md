@@ -171,14 +171,18 @@ The habit loop adds three engagement measures, never mixed with learning:
 **Docker:** `docker build -t comlogue-api . && docker run -p 8000:8000 --env-file .env -v comlogue:/data comlogue-api`
 (SQLite and media under `/data`). `docker compose up --build` runs the API with Postgres.
 
-**Render / Fly.io / Railway:** deploy the Dockerfile, set `OPENAI_API_KEY`, `SECRET_KEY` (32+ random characters; production refuses placeholders), `ENVIRONMENT=production`,
-attach a persistent volume at `/data` (or set `DATABASE_URL` to managed Postgres:
+**Render / Fly.io / Railway:** deploy the Dockerfile, set `OPENAI_API_KEY`, `SECRET_KEY` (32+ random characters; production refuses placeholders), `ENVIRONMENT=production`.
+In production the server also refuses to start without `OPENAI_API_KEY` (set `AI_PROVIDER=mock` for a deliberate, labelled demo),
+and App Store purchases count only when their signature chains to Apple's root certificate (bundled in `app/certs/`).
+Attach a persistent volume at `/data` (or set `DATABASE_URL` to managed Postgres:
 `postgresql+psycopg://…`). Health check: `GET /v1/health`. Point the iOS app's `API_BASE_URL` at the service.
 
 ## Before launch (known gaps)
 
-- **App Store purchases are not cryptographically verified yet** (`services/billing.py`): implement Apple JWS
-  verification (app-store-server-library), then set `APP_STORE_REQUIRE_VERIFICATION=true`.
+- **App Store verification is offline only** (`services/app_store.py`): the signature chain, Apple's certificate
+  markers and validity dates are checked, but not certificate revocation (OCSP), and the App Store Server API isn't
+  called. Refunds reach the server only when the app re-sends a revoked transaction; add App Store Server
+  Notifications V2 to catch them server-side.
 - Schema migrations: tables are created with `create_all`, and `migrations.py` adds new nullable columns at startup.
   Add Alembic before any other schema change in production.
 - Single-process pieces: background jobs (thread pool, restart-safe via DB state) and the rate limiter are

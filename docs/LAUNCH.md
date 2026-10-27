@@ -6,9 +6,10 @@ What's needed to take Comlogue from this repository to the App Store, and what s
 
 - [ ] Deploy `backend/` (Docker image; see `backend/README.md`) behind HTTPS, e.g. Render, Fly.io or Railway.
 - [ ] Use Postgres (`DATABASE_URL`) and S3-compatible storage for media. SQLite and local disk are for development only.
-- [ ] Set `ENVIRONMENT=production`, `OPENAI_API_KEY`, a long random `SECRET_KEY` (`openssl rand -hex 32`), and `ALLOW_DEV_ENTITLEMENTS=false`. In production the server refuses to start with a short or placeholder key.
+- [ ] Set `ENVIRONMENT=production`, `OPENAI_API_KEY`, a long random `SECRET_KEY` (`openssl rand -hex 32`), and `ALLOW_DEV_ENTITLEMENTS=false`. In production the server refuses to start with a short or placeholder key, or without `OPENAI_API_KEY` (unless `AI_PROVIDER=mock` asks for a labelled demo).
 - [ ] Confirm which OpenAI models your account can use and set `ASSESSMENT_MODELS`, `CONVERSATION_MODELS`, `TRANSCRIPTION_MODELS`, `DIARIZATION_MODELS` and `TTS_MODELS`. The backend falls back automatically, but the first choice should be the model you want.
-- [ ] Turn on App Store transaction verification (`APP_STORE_REQUIRE_VERIFICATION=true` once Apple root-certificate checks are wired in). See the billing section in `backend/README.md`.
+- [x] App Store transaction verification is on in production: a purchase counts only if its signature chains to Apple Root CA - G3 (`backend/app/certs/`). Xcode's local StoreKit testing is accepted unverified only outside production.
+- [ ] Consider App Store Server Notifications V2 so refunds and expiries reach the server without the app (see "Before launch" in `backend/README.md`).
 - [ ] Point the Release build at it: the `API_BASE_URL` build setting (currently the placeholder `https://api.comlogue.app`).
 - [ ] Push notifications (APNs): in the Apple Developer portal create a key with *Apple Push Notifications service* and keep the `.p8` file safe (it can be downloaded only once). Set `APNS_KEY_ID`, `APNS_TEAM_ID`, `APNS_PRIVATE_KEY_PATH` (or `APNS_PRIVATE_KEY`) and `APNS_BUNDLE_ID` as secrets — never in the repository. Without them the server is inbox-only and the app falls back to local reminders. Check with `POST /v1/notifications/test`. Steps in `backend/README.md` → "Setting up APNs".
 - [ ] The notification scheduler runs inside the API (`NOTIFICATIONS_TICK_SECONDS`, default 5 minutes). Keep at least one instance running at all times; scaling to more is safe.

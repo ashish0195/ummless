@@ -35,6 +35,7 @@ struct AttemptFeedbackView: View {
 /// Feedback on one attempt, simplest first: did the target show up, the one change for next time, what worked, and
 /// the moment that shows it. Shared by missions and the daily practice.
 struct AttemptFeedbackContent: View {
+    @Environment(AppModel.self) private var app
     let attempt: MissionAttempt
     let color: Color
 
@@ -42,7 +43,11 @@ struct AttemptFeedbackContent: View {
         VStack(alignment: .leading, spacing: 22) {
             if let feedback = attempt.feedback {
                 VStack(alignment: .leading, spacing: 12) {
-                    TargetMetBadge(targetMet: feedback.targetMet, assessable: feedback.assessable)
+                    HStack(spacing: 8) {
+                        TargetMetBadge(targetMet: feedback.targetMet, assessable: feedback.assessable)
+                        // Demo feedback quotes canned lines, so it must never read as an analysis of this answer.
+                        if app.isDemo { DemoBadge() }
+                    }
                     Text(feedback.headline).font(.display).foregroundStyle(Theme.ink).fixedSize(horizontal: false, vertical: true)
                 }
                 if feedback.assessable == .no {

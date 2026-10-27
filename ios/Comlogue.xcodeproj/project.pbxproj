@@ -415,7 +415,6 @@
 				INFOPLIST_FILE = Config/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Comlogue;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
-				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Comlogue connects to a development server on your local network.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Comlogue listens to your practice conversations and the recordings you choose to add, so it can give you feedback on how you communicate.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;

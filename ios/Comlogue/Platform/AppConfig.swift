@@ -2,7 +2,8 @@ import Foundation
 import Security
 
 /// Where the backend lives. Defaults to the build setting `API_BASE_URL` (Info.plist `ComlogueAPIBaseURL`);
-/// a developer override can be set in Settings → Developer (handy for testing on a device against a laptop).
+/// in Debug builds a developer override can be set in Settings → Developer (handy for testing on a device against a
+/// laptop). Release builds always use the build setting.
 enum AppConfig {
     private static let overrideKey = "comlogue.apiBaseURLOverride"
 
@@ -15,9 +16,11 @@ enum AppConfig {
     }
 
     static var baseURL: URL {
+        #if DEBUG
         if let raw = UserDefaults.standard.string(forKey: overrideKey), let url = URL(string: raw), url.scheme != nil {
             return url
         }
+        #endif
         return defaultBaseURL
     }
 

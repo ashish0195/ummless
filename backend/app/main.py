@@ -18,6 +18,7 @@ from .jobs import JobRunner
 from .migrations import add_missing_columns
 from .models import Assessment, DailyAttempt, MissionAttempt, Recording, SparReport
 from .push import build_sender
+from .request_guard import RequestGuard
 from .routers import core as core_router
 from .routers import growth as growth_router
 from .routers import habit as habit_router
@@ -96,6 +97,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         lifespan=lifespan,
     )
     app.state.services = services
+    app.add_middleware(RequestGuard, secret_key=settings.secret_key, max_upload_bytes=settings.max_upload_bytes)
     if settings.cors_origins:
         app.add_middleware(CORSMiddleware, allow_origins=settings.cors_origins, allow_methods=["*"],
                            allow_headers=["*"])

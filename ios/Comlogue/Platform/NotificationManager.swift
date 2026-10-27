@@ -32,8 +32,10 @@ final class NotificationManager: NSObject {
     static let shared = NotificationManager()
 
     private(set) var status: UNAuthorizationStatus = .notDetermined
-    /// Hex APNs token, once iOS hands it over.
-    private(set) var deviceToken: String?
+    /// Hex APNs token. Remembered across launches: the server replaces its copy with whatever the app reports, and
+    /// iOS only hands the token over again a moment after `registerForRemoteNotifications()`.
+    private(set) var deviceToken: String? = UserDefaults.standard.string(forKey: NotificationManager.tokenKey)
+    private static let tokenKey = "comlogue.apnsToken"
     /// Called when a new APNs token arrives so the app can register it with the server.
     var onTokenChange: (() -> Void)?
     /// The person's quiet hours, kept for "Remind me later" (set whenever reminders are rescheduled).
@@ -96,10 +98,18 @@ final class NotificationManager: NSObject {
         UIApplication.shared.registerForRemoteNotifications()
     }
 
+    /// Apple asks apps to register at every launch because the token can change. Never prompts: it only registers
+    /// once the person has allowed notifications.
+    func registerIfAllowed() async {
+        await refreshStatus()
+        if canDeliver { registerForRemote() }
+    }
+
     func didRegister(token: Data) {
         let hex = token.map { String(format: "%02x", $0) }.joined()
         guard hex != deviceToken else { return }
         deviceToken = hex
+        UserDefaults.standard.set(hex, forKey: Self.tokenKey)
         onTokenChange?()
     }
 
@@ -202,6 +212,7 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
                      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
         UNUserNotificationCenter.current().delegate = NotificationManager.shared
         NotificationManager.shared.registerCategories()
+        Task { await NotificationManager.shared.registerIfAllowed() }
         return true
     }
 

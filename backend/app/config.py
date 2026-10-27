@@ -31,7 +31,9 @@ def _split_list(value: Any) -> Any:
 
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
+    # hide_input_in_errors: a startup error would otherwise print the settings it was given, SECRET_KEY included.
+    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore",
+                                      hide_input_in_errors=True)
 
     # --- service ---
     app_name: str = "Comlogue API"
@@ -44,7 +46,8 @@ class Settings(BaseSettings):
     cors_origins: StrList = []
 
     # --- AI provider ---
-    # "auto" uses OpenAI when OPENAI_API_KEY is set, otherwise the offline demo provider.
+    # "auto" uses OpenAI when OPENAI_API_KEY is set, otherwise the offline demo provider. Production refuses to
+    # start without a key unless AI_PROVIDER=mock asks for a (clearly labelled) demo on purpose.
     ai_provider: Literal["auto", "openai", "mock"] = "auto"
     openai_api_key: str | None = None
     openai_base_url: str | None = None
@@ -76,9 +79,11 @@ class Settings(BaseSettings):
     allow_dev_entitlements: bool | None = None  # None ⇒ allowed outside production
     app_store_bundle_id: str | None = "com.comlogue.app"
     app_store_product_ids: StrList = ["comlogue.pro.monthly", "comlogue.pro.yearly"]
-    # TODO(launch): verify App Store JWS signatures against Apple's root certificates
-    # (app-store-server-library). Until then, purchases are recorded as unverified.
-    app_store_require_verification: bool = False
+    # Purchases count only if their JWS chains to Apple's root. None ⇒ required in production only, so Xcode's
+    # local StoreKit testing (signed by a local certificate) still works in development.
+    app_store_require_verification: bool | None = None
+    # Trusted roots (DER or PEM paths). Empty ⇒ the certificates bundled in app/certs/ (Apple Root CA - G3).
+    app_store_root_certificates: StrList = []
 
     # --- product limits ---
     max_upload_mb: int = 100
@@ -123,6 +128,7 @@ class Settings(BaseSettings):
         "diarization_models",
         "tts_models",
         "app_store_product_ids",
+        "app_store_root_certificates",
         mode="before",
     )
     @classmethod
@@ -136,10 +142,32 @@ class Settings(BaseSettings):
             raise ValueError("SECRET_KEY must be a long random string in production, e.g. `openssl rand -hex 32`.")
         return self
 
+    @model_validator(mode="after")
+    def _production_ai(self) -> Settings:
+        # Without a key, "auto" would quietly serve simulated feedback to real users.
+        if self.environment == "production" and self.ai_provider != "mock" and not (self.openai_api_key or "").strip():
+            raise ValueError("OPENAI_API_KEY is required in production. To run a labelled demo on purpose, set "
+                             "AI_PROVIDER=mock.")
+        return self
+
+    @model_validator(mode="after")
+    def _production_billing(self) -> Settings:
+        # Refuse to start rather than reject every purchase later.
+        if self.environment == "production" and self.app_store_verification_required:
+            from .services.app_store import load_root_certificates
+
+            try:
+                roots = load_root_certificates(self.app_store_root_certificates)
+            except (OSError, ValueError) as exc:
+                raise ValueError(f"APP_STORE_ROOT_CERTIFICATES couldn't be loaded: {exc}") from exc
+            if not roots:
+                raise ValueError("No App Store root certificate found (expected app/certs/AppleRootCA-G3.cer).")
+        return self
+
     @property
     def resolved_ai_provider(self) -> Literal["openai", "mock"]:
         if self.ai_provider == "auto":
-            return "openai" if self.openai_api_key else "mock"
+            return "openai" if (self.openai_api_key or "").strip() else "mock"
         return self.ai_provider
 
     @property
@@ -151,6 +179,12 @@ class Settings(BaseSettings):
         if self.allow_dev_entitlements is None:
             return self.environment != "production"
         return self.allow_dev_entitlements
+
+    @property
+    def app_store_verification_required(self) -> bool:
+        if self.app_store_require_verification is None:
+            return self.environment == "production"
+        return self.app_store_require_verification
 
     @property
     def max_upload_bytes(self) -> int:
