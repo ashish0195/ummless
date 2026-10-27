@@ -203,3 +203,16 @@ struct MicrophoneAccessBanner: View {
         .background(Theme.amber.opacity(0.12), in: RoundedRectangle(cornerRadius: Theme.radiusSmall, style: .continuous))
     }
 }
+
+/// SF Symbol names that come from the server may not exist on every iOS version; fall back instead of
+/// rendering nothing.
+enum SymbolName {
+    private static var cache: [String: Bool] = [:]
+
+    static func safe(_ name: String, fallback: String = "person.fill") -> String {
+        if let known = cache[name] { return known ? name : fallback }
+        let exists = UIImage(systemName: name) != nil
+        cache[name] = exists
+        return exists ? name : fallback
+    }
+}

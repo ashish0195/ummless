@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 struct SettingsView: View {
     @Environment(AppModel.self) private var app
@@ -9,6 +10,8 @@ struct SettingsView: View {
     @State private var showPaywall = false
     @State private var error: String?
     @State private var isWorking = false
+    @State private var isExporting = false
+    @State private var exportFile: SharedFile?
 
     var body: some View {
         NavigationStack {
@@ -46,9 +49,20 @@ struct SettingsView: View {
                 }
 
                 Section {
-                    NavigationLink("Weekly target & reminders") { PracticeSettingsView() }
+                    NavigationLink {
+                        PracticePlanView()
+                    } label: {
+                        Label("Practice plan", systemImage: "calendar.badge.clock")
+                    }
+                    NavigationLink {
+                        NotificationSettingsView()
+                    } label: {
+                        Label("Notifications", systemImage: "bell.badge")
+                    }
                 } header: {
                     Text("Practice")
+                } footer: {
+                    Text("Your weekly target, practice days and reminders, and which notifications you get.")
                 }
 
                 Section {
@@ -73,11 +87,30 @@ struct SettingsView: View {
 
                 Section {
                     NavigationLink("Your recordings") { RecordingsManagerView() }
+                    Button {
+                        Task { await exportData() }
+                    } label: {
+                        HStack {
+                            Text("Download my data")
+                            if isExporting { Spacer(); ProgressView() }
+                        }
+                    }
+                    .disabled(isExporting)
+                    if let support = app.meta?.support {
+                        Link(destination: URL(string: "mailto:\(support.grievanceEmail)")!) {
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(app.market == .in ? "Grievance officer" : "Privacy questions")
+                                Text([support.grievanceOfficer, support.grievanceEmail].compactMap { $0 }.joined(separator: " · "))
+                                    .font(.caption)
+                                    .foregroundStyle(Theme.inkSecondary)
+                            }
+                        }
+                    }
                     Button("Delete all my data", role: .destructive) { confirmDeleteAll = true }
                 } header: {
                     Text("Privacy & data")
                 } footer: {
-                    Text("Deleting everything removes your recordings, results, voice sample and account. This can't be undone.")
+                    Text("Download a copy of everything we store about you (audio excluded). Deleting everything removes your recordings, results, voice sample and account. This can't be undone.")
                 }
 
                 Section("About") {
@@ -116,6 +149,7 @@ struct SettingsView: View {
                 .environment(app)
             }
             .sheet(isPresented: $showPaywall) { PaywallView { showPaywall = false }.environment(app) }
+            .sheet(item: $exportFile) { file in ActivityView(items: [file.url]) }
             .confirmationDialog("Delete your voice sample?", isPresented: $confirmDeleteVoice, titleVisibility: .visible) {
                 Button("Delete", role: .destructive) {
                     Task {
@@ -148,6 +182,19 @@ struct SettingsView: View {
         }
     }
 
+    private func exportData() async {
+        isExporting = true
+        defer { isExporting = false }
+        do {
+            let data = try await app.api.exportData()
+            let url = FileManager.default.temporaryDirectory.appendingPathComponent("comlogue-export.json")
+            try data.write(to: url, options: .atomic)
+            exportFile = SharedFile(url: url)
+        } catch {
+            self.error = error.userMessage
+        }
+    }
+
     private var goalBinding: Binding<String> {
         Binding(
             get: { app.course?.track.id ?? app.me?.onboarding.goalTrack ?? "" },
@@ -173,84 +220,6 @@ struct SettingsView: View {
                 }
             }
         )
-    }
-}
-
-struct PracticeSettingsView: View {
-    @Environment(AppModel.self) private var app
-    @State private var weeklyTarget = 3
-    @State private var remindersOn = false
-    @State private var time = Calendar.current.date(bySettingHour: 19, minute: 0, second: 0, of: Date()) ?? Date()
-    @State private var days: Set<Int> = [1, 3, 5]
-    @State private var loaded = false
-    @State private var notice: String?
-
-    private let dayNames = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
-
-    var body: some View {
-        Form {
-            Section {
-                Stepper("\(weeklyTarget) session\(weeklyTarget == 1 ? "" : "s") a week", value: $weeklyTarget, in: 1...7)
-            } header: {
-                Text("Weekly target")
-            } footer: {
-                Text("Pick what fits your life. Missing a week never erases progress.")
-            }
-            Section {
-                Toggle("Remind me", isOn: $remindersOn)
-                if remindersOn {
-                    DatePicker("Time", selection: $time, displayedComponents: .hourAndMinute)
-                    HStack(spacing: 6) {
-                        ForEach(1...7, id: \.self) { day in
-                            let selected = days.contains(day)
-                            Button(dayNames[day - 1]) {
-                                if selected { days.remove(day) } else { days.insert(day) }
-                            }
-                            .font(.caption.weight(.semibold))
-                            .frame(maxWidth: .infinity, minHeight: 34)
-                            .background(selected ? AnyShapeStyle(Theme.aurora) : AnyShapeStyle(Theme.surfaceMuted), in: Capsule())
-                            .foregroundStyle(selected ? Color.white : Theme.ink)
-                            .buttonStyle(.plain)
-                        }
-                    }
-                }
-                if let notice { Text(notice).font(.footnote).foregroundStyle(Theme.amber) }
-            } header: {
-                Text("Reminders")
-            }
-        }
-        .navigationTitle("Practice")
-        .onAppear { load() }
-        .onDisappear { Task { await save() } }
-    }
-
-    private func load() {
-        guard !loaded, let settings = app.me?.practiceSettings else { return }
-        loaded = true
-        weeklyTarget = settings.weeklyTarget
-        if let reminder = settings.reminderTime, !settings.reminderDays.isEmpty {
-            remindersOn = true
-            days = Set(settings.reminderDays)
-            let parts = reminder.split(separator: ":").compactMap { Int($0) }
-            if parts.count == 2 {
-                time = Calendar.current.date(bySettingHour: parts[0], minute: parts[1], second: 0, of: Date()) ?? time
-            }
-        }
-    }
-
-    private func save() async {
-        let components = Calendar.current.dateComponents([.hour, .minute], from: time)
-        let timeString = String(format: "%02d:%02d", components.hour ?? 19, components.minute ?? 0)
-        let selectedDays = remindersOn ? days.sorted() : []
-        var patch = MePatch()
-        patch.practiceSettings = MePatch.PracticePatch(weeklyTarget: weeklyTarget, reminderTime: timeString, reminderDays: selectedDays)
-        try? await app.updateMe(patch)
-        if remindersOn, await ReminderScheduler.requestAuthorization() {
-            await ReminderScheduler.schedule(days: selectedDays, time: timeString)
-        } else {
-            ReminderScheduler.cancelAll()
-        }
-        await app.refreshProgress()
     }
 }
 
@@ -344,4 +313,22 @@ struct ServerSettingsSheet: View {
             status = "Couldn't connect: \(error.userMessage)"
         }
     }
+}
+
+
+/// A file ready to hand to the share sheet.
+struct SharedFile: Identifiable {
+    let url: URL
+    var id: String { url.absoluteString }
+}
+
+/// The system share sheet, for files.
+struct ActivityView: UIViewControllerRepresentable {
+    let items: [Any]
+
+    func makeUIViewController(context: Context) -> UIActivityViewController {
+        UIActivityViewController(activityItems: items, applicationActivities: nil)
+    }
+
+    func updateUIViewController(_ controller: UIActivityViewController, context: Context) {}
 }

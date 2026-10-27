@@ -5,6 +5,28 @@ import Foundation
 /// open a specific screen with seeded demo data. Used by CI to capture real simulator screenshots.
 enum ScreenshotScene: String, CaseIterable {
     case welcome, getStarted, activity, spar, results, recording, debrief, today, course, mission, practice, you, paywall
+    // The habit loop, notifications and group conversations
+    case daily, dailyFeedback, inbox, notifications, plan, group, groupReport
+    // The India market
+    case todayIndia, practiceIndia, paywallIndia, groupIndia, planIndia, consentIndia
+
+    /// Scenes seeded as an Indian account.
+    var market: Market {
+        switch self {
+        case .todayIndia, .practiceIndia, .paywallIndia, .groupIndia, .planIndia, .consentIndia: return .in
+        default: return .us
+        }
+    }
+
+    /// Scenes that show a step of onboarding instead of a seeded account.
+    var onboardingStep: OnboardingModel.Step? {
+        switch self {
+        case .welcome: return .welcome
+        case .planIndia: return .plan
+        case .consentIndia: return .consent
+        default: return nil
+        }
+    }
 
     static var current: ScreenshotScene? {
         UserDefaults.standard.string(forKey: "ComlogueScreenshotScene").flatMap(ScreenshotScene.init(rawValue:))
@@ -18,23 +40,31 @@ extension AppModel {
         LocalFlags.reset()
         api.token = nil
         LocalFlags.hasSeenFirstRun = true
+        // Onboarding reads the device region until the server has one.
+        RegionPreference.stored = scene.market == .in ? "IN" : "US"
         guard await authenticate() else {
             phase = .failed("Screenshot mode couldn't reach the server at \(AppConfig.baseURL.absoluteString).")
             return
         }
         meta = try? await api.meta()
-        if scene == .welcome {
+        if scene.onboardingStep != nil {
             me = try? await api.me()
             phase = .onboarding
             return
         }
-        // The mission and the Brutal sparring partner are Pro content; every other scene shows the free tier.
-        let seed = try? await api.seedDemo(pro: scene == .mission || scene == .spar)
+        // The mission, the Brutal sparring partner and group conversations are Pro content; every other scene shows
+        // the free tier.
+        let pro: Bool
+        switch scene {
+        case .mission, .spar, .group, .groupReport, .groupIndia: pro = true
+        default: pro = false
+        }
+        let seed = try? await api.seedDemo(pro: pro, market: scene.market)
         me = try? await api.me()
         phase = .ready
         await refreshAll()
         switch scene {
-        case .welcome:
+        case .welcome, .planIndia, .consentIndia:
             break
         case .getStarted:
             activeFlow = .getStarted
@@ -49,19 +79,46 @@ extension AppModel {
             if let id = seed?.recordingNeedsConfirmationId { activeFlow = .recordingDetail(id: id) }
         case .debrief:
             if let id = seed?.recordingCompleteId { activeFlow = .recordingDetail(id: id) }
-        case .today:
+        case .today, .todayIndia:
             selectedTab = .today
         case .course:
             selectedTab = .course
         case .mission:
             if let id = seed?.missionId { activeFlow = .mission(id: id, quick: false) }
-        case .practice:
+        case .practice, .practiceIndia:
             selectedTab = .practice
         case .you:
             selectedTab = .you
-        case .paywall:
+        case .paywall, .paywallIndia:
             activeFlow = .paywall
+        case .daily:
+            activeFlow = .daily(date: nil)
+        case .dailyFeedback:
+            activeFlow = .daily(date: seed?.previousDailyDate)
+        case .inbox:
+            activeFlow = .inbox
+        case .notifications:
+            activeFlow = .notificationSettings
+        case .plan:
+            activeFlow = .practicePlan
+        case .group, .groupIndia:
+            if let id = seed?.panelId ?? panels.first?.id { activeFlow = .group(panelId: id) }
+        case .groupReport:
+            if let id = seed?.groupConversationId { activeFlow = .report(conversationId: id, title: "Discussion report") }
         }
+    }
+}
+
+extension OnboardingModel {
+    /// Jumps to the step a screenshot scene shows, with plausible answers filled in.
+    func applyScreenshotScene(market: Market) {
+        guard let scene = ScreenshotScene.current, let step = scene.onboardingStep, step != .welcome else { return }
+        contextsRanked = ["interviews", "meetings"]
+        easeTargets = ["concise"]
+        goalTrack = market == .in ? "interviews" : "business"
+        anchor = PracticeAnchor.presets(for: market).first
+        ageConfirmed = step == .consent
+        self.step = step
     }
 }
 #endif

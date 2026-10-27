@@ -36,6 +36,15 @@ struct Conversation: Codable, Hashable, Sendable, Identifiable {
     let missionId: String?
     let demoMode: Bool
     let createdAt: Date
+    /// Group conversations only (moderator first); empty otherwise.
+    let participants: [Participant]?
+
+    var isGroup: Bool { !(participants ?? []).isEmpty }
+
+    func participant(_ id: String?) -> Participant? {
+        guard let id else { return nil }
+        return participants?.first { $0.id == id }
+    }
 
     var isAwaitingUser: Bool { status == .active && awaiting == "user" }
     var lastPartnerTurn: Turn? { turns.last { $0.speaker == .partner } }
@@ -48,6 +57,13 @@ struct TurnResult: Codable, Sendable {
     let partnerTurn: Turn?
     let retrySuggested: Bool
     let done: Bool
+    /// Every partner line after the user's turn, in order (several in a group conversation).
+    let partnerTurns: [Turn]?
+
+    var allPartnerTurns: [Turn] {
+        if let partnerTurns, !partnerTurns.isEmpty { return partnerTurns }
+        return partnerTurn.map { [$0] } ?? []
+    }
 }
 
 struct FinishResult: Codable, Sendable {
@@ -64,6 +80,8 @@ struct CreateConversationRequest: Codable, Sendable {
     var difficulty: Difficulty?
     var eventId: String?
     var prepId: String?
+    var dailyDate: String?
+    var panelId: String?
 }
 
 /// On-device measurements sent alongside a turn so the server can cross-check its own analysis.

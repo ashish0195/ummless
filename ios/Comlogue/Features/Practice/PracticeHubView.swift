@@ -10,7 +10,13 @@ struct PracticeHubView: View {
     @State private var difficulty: Difficulty = .real
     @State private var customScenario = ""
     @State private var showAddEvent = false
-    @State private var events: [UpcomingEvent] = []
+    @State private var eventPrefill: CalendarSuggestion?
+    @State private var calendarSuggestions: [CalendarSuggestion] = []
+    @State private var calendarConnected = CalendarScanner.isAuthorized
+
+    private var events: [UpcomingEvent] { app.events }
+    /// Group discussions are an Indian placement staple; everyone gets panel interviews.
+    private var panels: [Panel] { app.panels }
 
     var body: some View {
         NavigationStack {
@@ -22,6 +28,7 @@ struct PracticeHubView: View {
                         if app.isDemo { DemoBadge() }
                     }
                     sparSection
+                    if !panels.isEmpty { groupSection }
                     if !sessions.isEmpty { recentSpars }
                     talksSection
                     eventsSection
@@ -41,10 +48,17 @@ struct PracticeHubView: View {
                 EventDetailView(event: event)
             }
             .sheet(isPresented: $showAddEvent) {
-                AddEventSheet { created in
-                    events.append(created)
+                AddEventSheet(prefill: eventPrefill) { _ in
+                    Task {
+                        await app.refreshEvents()
+                        await app.rescheduleNotifications()
+                        refreshCalendar()
+                    }
                 }
                 .environment(app)
+            }
+            .onChange(of: showAddEvent) { _, isShowing in
+                if !isShowing { eventPrefill = nil }
             }
             .task(id: app.dataVersion) { await load() }
             .refreshable { await load() }
@@ -104,6 +118,30 @@ struct PracticeHubView: View {
         }
     }
 
+    // MARK: Groups
+
+    private var groupSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            SectionHeader(panels.contains { $0.isGroupDiscussion } ? "Group discussions & panels" : "Panel interviews",
+                          subtitle: panels.contains { $0.isGroupDiscussion }
+                              ? "Practise the GD round and multi-person interviews with several AI voices."
+                              : "Several interviewers, one candidate: you.")
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 12) {
+                    ForEach(panels) { panel in
+                        Button {
+                            app.present(.group(panelId: panel.id))
+                        } label: {
+                            PanelCard(panel: panel, locked: !panel.isFree && !app.isPro)
+                        }
+                        .buttonStyle(.pressableCard)
+                    }
+                }
+                .padding(.vertical, 4)
+            }
+        }
+    }
+
     private var recentSpars: some View {
         VStack(alignment: .leading, spacing: 10) {
             SectionHeader("Recent spars")
@@ -152,6 +190,7 @@ struct PracticeHubView: View {
         VStack(alignment: .leading, spacing: 12) {
             SectionHeader("Coming up", subtitle: "Add a real moment and rehearse for it.",
                           trailing: AnyView(Button { showAddEvent = true } label: { Image(systemName: "plus.circle.fill").font(.title2) }))
+            calendarCard
             if events.isEmpty {
                 Button { showAddEvent = true } label: {
                     HStack(spacing: 12) {
@@ -170,7 +209,7 @@ struct PracticeHubView: View {
                         HStack {
                             VStack(alignment: .leading, spacing: 2) {
                                 Text(event.title).font(.subheadline.weight(.semibold)).foregroundStyle(Theme.ink)
-                                Text("\(event.date) · \(event.prep.count) rehearsals").font(.caption).foregroundStyle(Theme.inkSecondary)
+                                Text("\(EventFormatting.when(event)) · \(event.prep.count) rehearsals").font(.caption).foregroundStyle(Theme.inkSecondary)
                             }
                             Spacer()
                             Image(systemName: "chevron.right").font(.caption.weight(.bold)).foregroundStyle(Theme.inkTertiary)
@@ -181,6 +220,58 @@ struct PracticeHubView: View {
                 }
             }
         }
+    }
+
+    @ViewBuilder
+    private var calendarCard: some View {
+        if calendarConnected {
+            if !calendarSuggestions.isEmpty {
+                VStack(alignment: .leading, spacing: 10) {
+                    Label("From your calendar", systemImage: "calendar").font(.subheadline.weight(.semibold))
+                        .foregroundStyle(Theme.ink)
+                    ForEach(calendarSuggestions.prefix(3)) { suggestion in
+                        HStack(spacing: 10) {
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(suggestion.title).font(.subheadline.weight(.semibold)).foregroundStyle(Theme.ink).lineLimit(1)
+                                Text(suggestion.start.formatted(date: .abbreviated, time: suggestion.isAllDay ? .omitted : .shortened))
+                                    .font(.caption).foregroundStyle(Theme.inkSecondary)
+                            }
+                            Spacer()
+                            Button("Prep") {
+                                eventPrefill = suggestion
+                                showAddEvent = true
+                            }
+                            .buttonStyle(.pill(.secondary, fullWidth: false))
+                        }
+                    }
+                    Text("Only what you choose to prep for leaves your phone.").font(.caption2).foregroundStyle(Theme.inkTertiary)
+                }
+                .card()
+            }
+        } else if CalendarScanner.canAsk {
+            Button {
+                Task {
+                    calendarConnected = await CalendarScanner.requestAccess()
+                    refreshCalendar()
+                }
+            } label: {
+                HStack(spacing: 12) {
+                    Image(systemName: "calendar.badge.checkmark").font(.title2).foregroundStyle(Theme.indigo)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Find big moments in your calendar").font(.subheadline.weight(.semibold)).foregroundStyle(Theme.ink)
+                        Text("Interviews, pitches, reviews and client calls, spotted on your phone so you can warm up.")
+                            .font(.caption).foregroundStyle(Theme.inkSecondary).multilineTextAlignment(.leading)
+                    }
+                    Spacer(minLength: 0)
+                }
+                .card()
+            }
+            .buttonStyle(.pressableCard)
+        }
+    }
+
+    private func refreshCalendar() {
+        calendarSuggestions = CalendarScanner.suggestions(excluding: app.events)
     }
 
     // MARK: Scenarios & conversations
@@ -239,11 +330,14 @@ struct PracticeHubView: View {
         async let personasRequest = app.api.personas()
         async let sessionsRequest = app.api.sparSessions()
         async let talksRequest = app.api.talks()
-        async let eventsRequest = app.api.events()
+        async let eventsTask: Void = app.refreshEvents()
+        async let panelsTask: Void = app.refreshPanels()
         personas = (try? await personasRequest) ?? personas
         sessions = (try? await sessionsRequest) ?? sessions
         talks = (try? await talksRequest) ?? talks
-        events = (try? await eventsRequest) ?? events
+        _ = await (eventsTask, panelsTask)
+        calendarConnected = CalendarScanner.isAuthorized
+        refreshCalendar()
     }
 }
 
@@ -255,7 +349,7 @@ private struct PersonaCard: View {
         let color = Color(hex: persona.colorHex)
         VStack(alignment: .leading, spacing: 10) {
             HStack {
-                Image(systemName: persona.symbol)
+                Image(systemName: SymbolName.safe(persona.symbol))
                     .font(.headline)
                     .foregroundStyle(.white)
                     .frame(width: 40, height: 40)
@@ -368,6 +462,8 @@ struct SparReportView: View {
     let conversationId: String
     var isRoot: Bool = false
     var onAgain: (() -> Void)?
+    var title = "Spar report"
+    var againTitle = "Spar again"
     @State private var report: SparReport?
     @State private var error: String?
 
@@ -386,7 +482,7 @@ struct SparReportView: View {
             .padding(Theme.gutter)
         }
         .screenBackground()
-        .navigationTitle("Spar report")
+        .navigationTitle(title)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             if isRoot {
@@ -438,7 +534,7 @@ struct SparReportView: View {
         }
         NotQuiteRightButton(target: .sparReport(report.conversationId))
         if let onAgain {
-            Button("Spar again", action: onAgain).buttonStyle(.primaryPill)
+            Button(againTitle, action: onAgain).buttonStyle(.primaryPill)
         }
     }
 

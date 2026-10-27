@@ -158,6 +158,9 @@ enum Formatting {
 
     static func percent(_ value: Double) -> String { "\(Int((value * 100).rounded()))%" }
 
+    /// 14.99 → "$14.99"
+    static func usd(_ value: Double) -> String { String(format: "$%.2f", value) }
+
     static func oneDecimal(_ value: Double) -> String { String(format: "%.1f", value) }
 
     static func shortDate(_ date: Date) -> String {

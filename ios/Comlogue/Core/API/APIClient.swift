@@ -91,6 +91,12 @@ final class APIClient: @unchecked Sendable {
         _ = try await execute(request)
     }
 
+    /// For endpoints that answer `204 No Content`.
+    func postNoContent(_ path: String) async throws {
+        let request = try makeRequest(method: "POST", path: path, query: [:], body: nil, contentType: nil)
+        _ = try await execute(request)
+    }
+
     /// Multipart upload with an `audio` file part plus string fields.
     func upload<T: Decodable>(
         _ path: String,

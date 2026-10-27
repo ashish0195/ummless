@@ -1,19 +1,30 @@
 import SwiftUI
 
-/// Home: one obvious next action, a lighter two-minute option, practice towards a weekly target,
+/// Home: today's 60-second rep as the one obvious action, the week at a glance, this week's mission,
 /// gaps to fill, and anything that needs the person (e.g. confirming their voice in a recording).
 struct TodayView: View {
     @Environment(AppModel.self) private var app
     @State private var activeAssessment: Assessment?
     @State private var pendingRecordings: [Recording] = []
-    @State private var events: [UpcomingEvent] = []
     @State private var isLoading = false
+
+    private var events: [UpcomingEvent] { app.events }
+    private var isOnBreak: Bool {
+        guard let until = app.me?.practiceSettings.pausedUntil else { return false }
+        return HabitMath.dayString(Date(), timeZone: .current) <= until
+    }
 
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 18) {
                     header
+
+                    if let welcome = app.progress?.welcomeBack {
+                        welcomeBackCard(welcome)
+                    } else if isOnBreak {
+                        breakCard
+                    }
 
                     if let assessment = activeAssessment, assessment.status == .inProgress {
                         resumeCard(assessment)
@@ -27,11 +38,15 @@ struct TodayView: View {
                         profileStarterCard
                     }
 
-                    if let today = app.course?.today {
-                        missionCard(today)
+                    if let daily = app.daily {
+                        dailyRepCard(daily)
                     }
 
                     weeklyCard
+
+                    if let today = app.course?.today {
+                        missionCard(today)
+                    }
 
                     if let gaps = app.course?.gapTasks, !gaps.isEmpty {
                         gapCard(gaps)
@@ -65,8 +80,84 @@ struct TodayView: View {
                 Text(Formatting.greeting()).font(.displayLarge).foregroundStyle(Theme.ink)
             }
             Spacer()
-            if app.isDemo { DemoBadge() }
+            HStack(spacing: 10) {
+                if app.isDemo { DemoBadge() }
+                InboxBellButton()
+            }
         }
+    }
+
+    private func dailyRepCard(_ rep: DailyRep) -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Eyebrow(rep.completed ? "Today's rep · done" : "Today's rep · \(rep.suggestedSeconds) sec", color: .white.opacity(0.85))
+                Spacer()
+                Tag(text: DimensionCatalog.title(rep.dimension), color: .white, systemImage: DimensionCatalog.symbol(rep.dimension))
+            }
+            Text(rep.title).font(.titleRounded).foregroundStyle(.white).fixedSize(horizontal: false, vertical: true)
+            Text(rep.prompt).font(.subheadline).foregroundStyle(.white.opacity(0.88)).lineLimit(3)
+            if rep.isProcessing {
+                Label("Feedback on the way…", systemImage: "hourglass").font(.footnote.weight(.semibold)).foregroundStyle(.white)
+            }
+            Button {
+                app.present(.daily(date: nil))
+            } label: {
+                if rep.completed {
+                    Label("See feedback or go again", systemImage: "checkmark.circle.fill")
+                } else {
+                    Label("Start today's rep", systemImage: "mic.fill")
+                }
+            }
+            .buttonStyle(.lightPill)
+            if let anchor = app.me?.practiceSettings.anchor, !rep.completed {
+                Text(PracticeAnchor.secondPerson(anchor) + " is a good moment for it.")
+                    .font(.caption.weight(.medium))
+                    .foregroundStyle(.white.opacity(0.85))
+                    .frame(maxWidth: .infinity)
+            }
+        }
+        .padding(20)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Theme.aurora, in: RoundedRectangle(cornerRadius: Theme.radius, style: .continuous))
+        .shadow(color: Theme.indigo.opacity(0.25), radius: 18, y: 10)
+    }
+
+    private func welcomeBackCard(_ welcome: WelcomeBack) -> some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Label("Welcome back", systemImage: "hand.wave.fill").font(.headlineRounded).foregroundStyle(Theme.ink)
+            Text(welcome.message).font(.subheadline).foregroundStyle(Theme.inkSecondary)
+                .fixedSize(horizontal: false, vertical: true)
+            Button {
+                app.present(.daily(date: nil))
+            } label: {
+                Label("Start with a 60-second rep", systemImage: "mic.fill")
+            }
+            .buttonStyle(.secondaryPill)
+        }
+        .card()
+    }
+
+    private var breakCard: some View {
+        HStack(alignment: .top, spacing: 12) {
+            Image(systemName: "pause.circle.fill").font(.title2).foregroundStyle(Theme.violet)
+            VStack(alignment: .leading, spacing: 4) {
+                Text("On a break until \(PracticePlanView.display(day: app.me?.practiceSettings.pausedUntil ?? ""))")
+                    .font(.subheadline.weight(.semibold)).foregroundStyle(Theme.ink)
+                Text("Reminders are paused and your run is kept. Practise any time — it still counts.")
+                    .font(.footnote).foregroundStyle(Theme.inkSecondary)
+                Button("End break") {
+                    Task {
+                        var patch = MePatch()
+                        patch.practiceSettings = MePatch.PracticePatch(endsBreak: true)
+                        try? await app.updateMe(patch)
+                        await app.refreshProgress()
+                    }
+                }
+                .font(.footnote.weight(.semibold))
+            }
+            Spacer(minLength: 0)
+        }
+        .card()
     }
 
     private func resumeCard(_ assessment: Assessment) -> some View {
@@ -128,20 +219,20 @@ struct TodayView: View {
     }
 
     private func missionCard(_ today: TodayPlan) -> some View {
-        VStack(alignment: .leading, spacing: 14) {
+        VStack(alignment: .leading, spacing: 12) {
             HStack {
-                Eyebrow("Today's mission · \(today.mission.minutes) min", color: .white.opacity(0.85))
+                Eyebrow("Your course · \(today.mission.minutes) min", color: Theme.indigo)
                 Spacer()
-                Image(systemName: MissionCatalog.symbol(today.mission.type)).foregroundStyle(.white.opacity(0.85))
+                Image(systemName: MissionCatalog.symbol(today.mission.type)).foregroundStyle(Theme.indigo)
             }
-            Text(today.mission.title).font(.titleRounded).foregroundStyle(.white).fixedSize(horizontal: false, vertical: true)
-            Text(today.moduleTitle).font(.subheadline).foregroundStyle(.white.opacity(0.85))
+            Text(today.mission.title).font(.title3Rounded).foregroundStyle(Theme.ink).fixedSize(horizontal: false, vertical: true)
+            Text(today.moduleTitle).font(.subheadline).foregroundStyle(Theme.inkSecondary)
             Button {
                 if today.mission.isLocked { app.present(.paywall) } else { app.present(.mission(id: today.mission.id, quick: false)) }
             } label: {
-                Label(today.mission.isLocked ? "Unlock with Pro" : "Start today's mission", systemImage: today.mission.isLocked ? "lock.fill" : "play.fill")
+                Label(today.mission.isLocked ? "Unlock with Pro" : "Start this mission", systemImage: today.mission.isLocked ? "lock.fill" : "play.fill")
             }
-            .buttonStyle(.lightPill)
+            .buttonStyle(.secondaryPill)
             if let quick = today.quick, !today.mission.isLocked {
                 Button {
                     app.present(.mission(id: quick.missionId, quick: true))
@@ -150,20 +241,20 @@ struct TodayView: View {
                         .font(.footnote.weight(.semibold))
                         .frame(maxWidth: .infinity)
                 }
-                .foregroundStyle(.white)
+                .foregroundStyle(Theme.indigo)
             }
         }
-        .padding(20)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Theme.aurora, in: RoundedRectangle(cornerRadius: Theme.radius, style: .continuous))
-        .shadow(color: Theme.indigo.opacity(0.25), radius: 18, y: 10)
+        .card()
     }
 
     private var weeklyCard: some View {
         let week = app.progress?.practice.thisWeek
         let target = max(week?.target ?? app.me?.practiceSettings.weeklyTarget ?? 3, 1)
         let sessions = week?.sessions ?? 0
-        return HStack(spacing: 16) {
+        let run = app.progress?.practice.weeksOnTarget ?? 0
+        let hasPlan = !(app.me?.practiceSettings.reminderDays.isEmpty ?? true)
+        return VStack(alignment: .leading, spacing: 14) {
+        HStack(spacing: 16) {
             ZStack {
                 ProgressRing(value: Double(sessions) / Double(target), lineWidth: 9)
                 VStack(spacing: 0) {
@@ -175,13 +266,29 @@ struct TodayView: View {
             .accessibilityElement(children: .ignore)
             .accessibilityLabel("\(sessions) of \(target) practice sessions this week")
             VStack(alignment: .leading, spacing: 4) {
-                Text("This week").font(.headlineRounded).foregroundStyle(Theme.ink)
+                HStack(spacing: 6) {
+                    Text("This week").font(.headlineRounded).foregroundStyle(Theme.ink)
+                    if run >= 2 {
+                        Tag(text: "\(run) weeks on target", color: Theme.mint, systemImage: "checkmark.seal.fill")
+                    }
+                }
                 Text(weeklyMessage(sessions: sessions, target: target))
                     .font(.footnote)
                     .foregroundStyle(Theme.inkSecondary)
                     .fixedSize(horizontal: false, vertical: true)
             }
             Spacer(minLength: 0)
+        }
+        WeekStrip(days: week?.days ?? [])
+        if !hasPlan {
+            Button {
+                app.present(.practicePlan)
+            } label: {
+                Label("Pick your practice days and a reminder", systemImage: "calendar.badge.clock")
+                    .font(.footnote.weight(.semibold))
+            }
+            .foregroundStyle(Theme.indigo)
+        }
         }
         .card()
     }
@@ -222,7 +329,7 @@ struct TodayView: View {
     private var eventCard: some View {
         if let next = events.sorted(by: { $0.date < $1.date }).first {
             VStack(alignment: .leading, spacing: 10) {
-                Eyebrow("Coming up · \(prettyDate(next.date))", color: Theme.coral)
+                Eyebrow("Coming up · \(EventFormatting.when(next))", color: Theme.coral)
                 Text(next.title).font(.headlineRounded).foregroundStyle(Theme.ink)
                 if let prep = next.prep.first {
                     Button {
@@ -274,11 +381,6 @@ struct TodayView: View {
         .buttonStyle(.pressableCard)
     }
 
-    private func prettyDate(_ day: String) -> String {
-        guard let date = JSONCoding.day(from: day) else { return day }
-        return date.formatted(.dateTime.weekday(.abbreviated).month(.abbreviated).day())
-    }
-
     // MARK: Loading
 
     private func reload() async {
@@ -307,6 +409,5 @@ struct TodayView: View {
             }
         }
         pendingRecordings = pending
-        events = (try? await app.api.events()) ?? []
     }
 }

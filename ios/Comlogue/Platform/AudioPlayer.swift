@@ -146,11 +146,14 @@ final class SpeechFallback {
         }
     }
 
-    func speak(_ text: String, languageCode: String, onFinish: (() -> Void)? = nil) {
+    /// - Parameters:
+    ///   - languageCode: "en", "hi", or a regional code such as "en-IN" to prefer that accent.
+    ///   - variant: picks a different voice for each speaker in a group conversation.
+    func speak(_ text: String, languageCode: String, variant: Int = 0, onFinish: (() -> Void)? = nil) {
         stop()
         try? AudioSessionManager.activate()
         let utterance = AVSpeechUtterance(string: text)
-        utterance.voice = Self.bestVoice(for: languageCode)
+        utterance.voice = Self.voice(for: languageCode, variant: variant)
         utterance.rate = AVSpeechUtteranceDefaultSpeechRate * 0.98
         utterance.pitchMultiplier = 1.02
         currentUtterance = utterance
@@ -176,10 +179,18 @@ final class SpeechFallback {
         finish?()
     }
 
-    static func bestVoice(for languageCode: String) -> AVSpeechSynthesisVoice? {
+    static func bestVoice(for languageCode: String) -> AVSpeechSynthesisVoice? { voice(for: languageCode, variant: 0) }
+
+    /// The best voices for the language (an exact regional match such as en-IN first), varied by `variant`.
+    static func voice(for languageCode: String, variant: Int) -> AVSpeechSynthesisVoice? {
         let prefix = String(languageCode.prefix(2))
-        let candidates = AVSpeechSynthesisVoice.speechVoices().filter { $0.language.hasPrefix(prefix) }
-        return candidates.max { $0.quality.rawValue < $1.quality.rawValue } ?? AVSpeechSynthesisVoice(language: languageCode)
+        let all = AVSpeechSynthesisVoice.speechVoices().filter { $0.language.hasPrefix(prefix) }
+        let regional = all.filter { $0.language.caseInsensitiveCompare(languageCode) == .orderedSame }
+        let pool = (regional.isEmpty ? all : regional).sorted {
+            ($0.quality.rawValue, $0.identifier) > ($1.quality.rawValue, $1.identifier)
+        }
+        guard !pool.isEmpty else { return AVSpeechSynthesisVoice(language: languageCode) }
+        return pool[variant % pool.count]
     }
 }
 

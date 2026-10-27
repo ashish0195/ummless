@@ -412,7 +412,7 @@ private struct ExampleCard: View {
         } else if app.speech.isSpeaking {
             app.speech.stop()
         } else {
-            app.speech.speak(example.text, languageCode: app.language)
+            app.speech.speak(example.text, languageCode: app.speechLanguage)
         }
     }
 }

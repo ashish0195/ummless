@@ -1,6 +1,5 @@
 import Foundation
 import UIKit
-import UserNotifications
 
 enum Haptics {
     static func tap() { UIImpactFeedbackGenerator(style: .light).impactOccurred() }
@@ -8,55 +7,6 @@ enum Haptics {
     static func success() { UINotificationFeedbackGenerator().notificationOccurred(.success) }
     static func warning() { UINotificationFeedbackGenerator().notificationOccurred(.warning) }
     static func selection() { UISelectionFeedbackGenerator().selectionChanged() }
-}
-
-/// Optional, user-chosen practice reminders. Gentle copy; missing a day is fine.
-enum ReminderScheduler {
-    private static let identifierPrefix = "comlogue.reminder."
-
-    static func requestAuthorization() async -> Bool {
-        let center = UNUserNotificationCenter.current()
-        do {
-            return try await center.requestAuthorization(options: [.alert, .sound, .badge])
-        } catch {
-            return false
-        }
-    }
-
-    /// - Parameters:
-    ///   - days: 1 = Monday … 7 = Sunday (API convention).
-    ///   - time: "HH:mm".
-    static func schedule(days: [Int], time: String) async {
-        cancelAll()
-        guard !days.isEmpty else { return }
-        let parts = time.split(separator: ":").compactMap { Int($0) }
-        guard parts.count == 2 else { return }
-        let center = UNUserNotificationCenter.current()
-        let messages = [
-            "Your next mission takes about 6 minutes. Ready when you are.",
-            "One small change today. Want to try it?",
-            "Two minutes of practice still counts. Jump back in?",
-        ]
-        for (offset, day) in days.enumerated() {
-            var components = DateComponents()
-            components.weekday = day == 7 ? 1 : day + 1 // Calendar: 1 = Sunday
-            components.hour = parts[0]
-            components.minute = parts[1]
-            let content = UNMutableNotificationContent()
-            content.title = "Time to practice"
-            content.body = messages[offset % messages.count]
-            content.sound = .default
-            let trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: true)
-            let request = UNNotificationRequest(identifier: identifierPrefix + "\(day)", content: content, trigger: trigger)
-            try? await center.add(request)
-        }
-    }
-
-    static func cancelAll() {
-        let center = UNUserNotificationCenter.current()
-        let ids = (1...7).map { identifierPrefix + "\($0)" }
-        center.removePendingNotificationRequests(withIdentifiers: ids)
-    }
 }
 
 /// Region for recording-rules guidance. Derived from device settings (no location permission needed)
@@ -98,9 +48,22 @@ enum LocalFlags {
         set { defaults.set(newValue, forKey: "comlogue.pendingRecordingIds") }
     }
 
+    /// Milestones already celebrated. `nil` until the first refresh, which records existing ones silently.
+    static var seenMilestones: Set<String>? {
+        get { defaults.stringArray(forKey: "comlogue.seenMilestones").map(Set.init) }
+        set { defaults.set(newValue.map { Array($0).sorted() }, forKey: "comlogue.seenMilestones") }
+    }
+
+    /// The reminder explainer was shown once (we never ask twice unprompted).
+    static var notificationPrimingShown: Bool {
+        get { defaults.bool(forKey: "comlogue.notificationPrimingShown") }
+        set { defaults.set(newValue, forKey: "comlogue.notificationPrimingShown") }
+    }
+
     static func reset() {
         for key in ["comlogue.declinedVoiceReference", "comlogue.hasSeenFirstRun", "comlogue.activeAssessmentId",
-                    "comlogue.pendingRecordingIds", "comlogue.recordingRegion"] {
+                    "comlogue.pendingRecordingIds", "comlogue.recordingRegion", "comlogue.seenMilestones",
+                    "comlogue.notificationPrimingShown"] {
             defaults.removeObject(forKey: key)
         }
     }

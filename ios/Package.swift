@@ -11,6 +11,8 @@ let package = Package(
     ],
     targets: [
         .target(name: "ComlogueCore", path: "Comlogue/Core"),
-        .testTarget(name: "ComlogueCoreTests", dependencies: ["ComlogueCore"], path: "CoreTests"),
+        // Files compiled into both the app and the widget extension.
+        .target(name: "ComlogueShared", path: "Shared"),
+        .testTarget(name: "ComlogueCoreTests", dependencies: ["ComlogueCore", "ComlogueShared"], path: "CoreTests"),
     ]
 )

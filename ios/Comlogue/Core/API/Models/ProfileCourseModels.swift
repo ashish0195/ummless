@@ -332,6 +332,8 @@ struct UpcomingEvent: Codable, Hashable, Sendable, Identifiable {
     let notes: String?
     let prep: [PrepItem]
     let createdAt: Date
+    /// Optional local start time, "HH:MM".
+    let time: String?
 }
 
 struct EventsResponse: Codable, Sendable { let events: [UpcomingEvent] }
@@ -341,6 +343,7 @@ struct CreateEventRequest: Codable, Sendable {
     let kind: String
     let date: String
     let notes: String?
+    var time: String?
 }
 
 // MARK: - Progress & review
@@ -355,6 +358,11 @@ struct Milestone: Codable, Hashable, Sendable, Identifiable {
 struct WeekProgress: Codable, Hashable, Sendable {
     let sessions: Int
     let target: Int
+    /// Weekdays with at least one session (1 = Monday).
+    let days: [Int]?
+    let met: Bool?
+
+    var targetMet: Bool { met ?? (sessions >= target) }
 }
 
 struct PracticeStats: Codable, Hashable, Sendable {
@@ -363,6 +371,16 @@ struct PracticeStats: Codable, Hashable, Sendable {
     let minutes: Int
     let weeksActive: Int
     let thisWeek: WeekProgress
+    // v2
+    let reps: Int?
+    let weeksOnTarget: Int?
+    let bestWeeksOnTarget: Int?
+    let pausedUntil: String?
+}
+
+struct WelcomeBack: Codable, Hashable, Sendable {
+    let daysAway: Int
+    let message: String
 }
 
 struct RecentItem: Codable, Hashable, Sendable {
@@ -375,6 +393,7 @@ struct ProgressSummary: Codable, Sendable {
     let practice: PracticeStats
     let milestones: [Milestone]
     let recent: [RecentItem]
+    let welcomeBack: WelcomeBack?
 }
 
 struct WeeklyPractice: Codable, Hashable, Sendable {

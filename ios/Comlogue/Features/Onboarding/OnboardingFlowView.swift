@@ -4,7 +4,7 @@ import SwiftUI
 @Observable
 final class OnboardingModel {
     enum Step: Int, CaseIterable {
-        case welcome, contexts, ease, goal, language, consent
+        case welcome, contexts, ease, goal, plan, language, consent
     }
 
     var step: Step = .welcome
@@ -14,6 +14,14 @@ final class OnboardingModel {
     var language: String = OnboardingModel.deviceLanguage
     var isSaving = false
     var error: String?
+    // Practice plan
+    var weeklyTarget = 3
+    var days: Set<Int> = [1, 3, 5]
+    var time = PracticeTime.morning.time
+    var anchor: String?
+    var remindersOn = true
+    // Consent
+    var ageConfirmed = false
 
     static var deviceLanguage: String {
         String((Locale.preferredLanguages.first ?? "en").prefix(2))
@@ -62,9 +70,11 @@ final class OnboardingModel {
                 goalTrack: goalTrack,
                 language: language,
                 region: RegionPreference.best,
-                analysisConsentVersion: consentVersion
+                analysisConsentVersion: consentVersion,
+                ageConfirmed: ageConfirmed
             ),
-            practiceSettings: nil
+            practiceSettings: .init(weeklyTarget: weeklyTarget, reminderTime: time,
+                                    reminderDays: remindersOn ? days.sorted() : [], anchor: anchor)
         )
     }
 }
@@ -90,6 +100,7 @@ struct OnboardingFlowView: View {
                 case .contexts: ContextRankStep(model: model)
                 case .ease: EaseStep(model: model)
                 case .goal: GoalStep(model: model)
+                case .plan: PlanStep(model: model)
                 case .language: LanguageStep(model: model)
                 case .consent: AnalysisConsentStep(model: model)
                 }
@@ -100,6 +111,9 @@ struct OnboardingFlowView: View {
         }
         .animation(.spring(response: 0.45, dampingFraction: 0.9), value: model.step)
         .screenBackground()
+        #if DEBUG
+        .onAppear { model.applyScreenshotScene(market: app.market) }
+        #endif
     }
 }
 
@@ -388,6 +402,56 @@ private struct GoalStep: View {
     }
 }
 
+private struct PlanStep: View {
+    @Environment(AppModel.self) private var app
+    @Bindable var model: OnboardingModel
+    @State private var showPriming = false
+
+    var body: some View {
+        StepScaffold(
+            eyebrow: "Step 4 · Your practice plan",
+            title: "Make it a habit",
+            subtitle: "A minute or two on the days you choose. Tying practice to something you already do makes it much easier to keep.",
+            canContinue: !model.remindersOn || !model.days.isEmpty,
+            onContinue: continueTapped
+        ) {
+            VStack(alignment: .leading, spacing: 20) {
+                PracticePlanEditor(weeklyTarget: $model.weeklyTarget, days: $model.days, time: $model.time,
+                                   anchor: $model.anchor, market: app.market)
+                Toggle(isOn: $model.remindersOn) {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Remind me on these days").font(.headlineRounded).foregroundStyle(Theme.ink)
+                        Text("With that day's 60-second prompt. You can change it any time.")
+                            .font(.footnote).foregroundStyle(Theme.inkSecondary)
+                    }
+                }
+                .tint(Theme.indigo)
+            }
+        }
+        .sheet(isPresented: $showPriming, onDismiss: { model.next() }) {
+            NotificationPrimingView(summary: summary) { showPriming = false }
+                .environment(app)
+                .presentationDetents([.large])
+        }
+    }
+
+    private var summary: String {
+        let names = model.days.sorted().map { HabitMath.weekdayShortNames[$0 - 1] }.joined(separator: ", ")
+        return "\(names) at \(PracticePlanEditor.displayTime(model.time))"
+    }
+
+    private func continueTapped() {
+        Task {
+            await app.notifications.refreshStatus()
+            if model.remindersOn && app.notifications.status == .notDetermined {
+                showPriming = true
+            } else {
+                model.next()
+            }
+        }
+    }
+}
+
 private struct LanguageStep: View {
     @Environment(AppModel.self) private var app
     @Bindable var model: OnboardingModel
@@ -396,15 +460,37 @@ private struct LanguageStep: View {
         app.meta?.languages ?? [LanguageOption(code: "en", name: "English")]
     }
 
+    /// The languages most people in this market pick, one tap away.
+    private var quickPicks: [LanguageOption] {
+        let codes = app.market == .in ? ["en", "hinglish", "hi"] : ["en", "es"]
+        return codes.compactMap { code in languages.first { $0.code == code } }
+    }
+
     var body: some View {
         StepScaffold(
-            eyebrow: "Step 4 · Language",
+            eyebrow: "Step 5 · Language",
             title: "Which language would you like to use?",
             subtitle: "Your AI partner will speak it, and your feedback will be written in it. The app's menus stay in English for now.",
             canContinue: true,
             onContinue: { model.next() }
         ) {
             VStack(alignment: .leading, spacing: 14) {
+                if quickPicks.count > 1 {
+                    FlowLayout(spacing: 8) {
+                        ForEach(quickPicks) { language in
+                            SelectableChip(title: language.code == "hinglish" ? "Hinglish" : language.name,
+                                           isSelected: model.language == language.code) {
+                                Haptics.selection()
+                                model.language = language.code
+                            }
+                        }
+                    }
+                    if app.market == .in {
+                        Text("Hinglish: speak the way you do at work — Hindi and English mixed. Feedback comes in the same mix.")
+                            .font(.footnote)
+                            .foregroundStyle(Theme.inkSecondary)
+                    }
+                }
                 Menu {
                     Picker("Language", selection: $model.language) {
                         ForEach(languages) { language in
@@ -437,22 +523,30 @@ private struct LanguageStep: View {
 
 private struct AnalysisConsentStep: View {
     @Environment(AppModel.self) private var app
-    let model: OnboardingModel
+    @Bindable var model: OnboardingModel
     @State private var showFullText = false
     @State private var showDeclineInfo = false
+    @State private var readInHindi = false
 
     private var consent: ConsentText? { app.meta?.consents.analysis }
+    private var text: ConsentTranslation? { consent?.localized(readInHindi ? "hi" : nil) }
+    private var hasHindi: Bool { consent?.translations?["hi"] != nil }
 
     var body: some View {
         VStack(spacing: 0) {
             ScrollView {
                 VStack(alignment: .leading, spacing: 12) {
-                    Eyebrow("Step 5 · Your voice, your call", color: Theme.indigo)
-                    Text(consent?.title ?? "How Comlogue uses your voice")
+                    Eyebrow("Step 6 · Your voice, your call", color: Theme.indigo)
+                    if hasHindi && (app.market == .in || readInHindi) {
+                        Toggle("हिन्दी में पढ़ें · Read in Hindi", isOn: $readInHindi)
+                            .font(.subheadline.weight(.semibold))
+                            .tint(Theme.indigo)
+                    }
+                    Text(text?.title ?? "How Comlogue uses your voice")
                         .font(.display)
                         .foregroundStyle(Theme.ink)
                     VStack(alignment: .leading, spacing: 12) {
-                        ForEach(consent?.bullets ?? defaultBullets, id: \.self) { bullet in
+                        ForEach(text?.bullets ?? defaultBullets, id: \.self) { bullet in
                             HStack(alignment: .top, spacing: 10) {
                                 Image(systemName: "checkmark.shield.fill").foregroundStyle(Theme.mint)
                                 Text(bullet).font(.subheadline).foregroundStyle(Theme.ink)
@@ -461,13 +555,18 @@ private struct AnalysisConsentStep: View {
                     }
                     .card()
                     .padding(.top, 6)
-                    if let fullText = consent?.body {
+                    if let fullText = text?.body {
                         DisclosureGroup("Read the full text", isExpanded: $showFullText) {
                             Text(fullText).font(.footnote).foregroundStyle(Theme.inkSecondary).padding(.top, 6)
                         }
                         .font(.subheadline.weight(.semibold))
                         .tint(Theme.indigo)
                     }
+                    Toggle(isOn: $model.ageConfirmed) {
+                        Text("I'm 18 or older").font(.subheadline.weight(.semibold)).foregroundStyle(Theme.ink)
+                    }
+                    .toggleStyle(CheckboxToggleStyle())
+                    .padding(.top, 4)
                     if let error = model.error { InlineErrorBanner(message: error) }
                 }
                 .padding(.horizontal, Theme.gutter)
@@ -480,7 +579,7 @@ private struct AnalysisConsentStep: View {
                     if model.isSaving { ProgressView().tint(.white) } else { Text("I agree") }
                 }
                 .buttonStyle(.primaryPill)
-                .disabled(model.isSaving || app.meta == nil)
+                .disabled(model.isSaving || app.meta == nil || !model.ageConfirmed)
                 Button("Not now") { showDeclineInfo = true }
                     .buttonStyle(.ghostPill)
             }

@@ -2,6 +2,7 @@ import SwiftUI
 
 @main
 struct ComlogueApp: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     @State private var app = AppModel()
 
     var body: some Scene {
@@ -47,17 +48,35 @@ struct RootView: View {
             FlowHost(flow: flow)
                 .environment(app)
         }
+        .sheet(item: $app.celebration) { milestone in
+            CelebrationView(milestone: milestone)
+                .environment(app)
+                .presentationDetents([.medium])
+        }
         .task {
             if app.phase == .launching { await app.bootstrap() }
+        }
+        .onOpenURL { url in
+            if let link = DeepLink(url: url) { PendingLink.enqueue(link) }
         }
         .onReceive(NotificationCenter.default.publisher(for: IntentRoute.notification)) { _ in
             app.handlePendingIntent()
         }
+        .onReceive(NotificationCenter.default.publisher(for: PendingLink.posted)) { _ in
+            app.handlePendingLinks()
+        }
         .onChange(of: app.phase) { _, newPhase in
-            if newPhase == .ready { app.handlePendingIntent() }
+            if newPhase == .ready {
+                app.handlePendingIntent()
+                app.handlePendingLinks()
+            }
         }
         .onChange(of: scenePhase) { _, newPhase in
-            if newPhase == .active { app.handlePendingIntent() }
+            if newPhase == .active {
+                app.handlePendingIntent()
+                app.handlePendingLinks()
+                Task { await app.becameActive() }
+            }
         }
     }
 }
@@ -121,6 +140,30 @@ struct FlowHost: View {
         case .weeklyReview:
             NavigationStack {
                 WeeklyReviewView(isRoot: true)
+            }
+        case .daily(let date):
+            DailyRepFlowView(date: date)
+        case .group(let panelId):
+            GroupFlowView(panelId: panelId)
+        case .inbox:
+            NavigationStack {
+                InboxView(isRoot: true)
+            }
+        case .event(let id):
+            NavigationStack {
+                EventLinkView(eventId: id)
+            }
+        case .notificationSettings:
+            NavigationStack {
+                NotificationSettingsView(isRoot: true)
+            }
+        case .practicePlan:
+            NavigationStack {
+                PracticePlanView(isRoot: true)
+            }
+        case .report(let conversationId, let title):
+            NavigationStack {
+                SparReportView(conversationId: conversationId, isRoot: true, title: title)
             }
         }
     }

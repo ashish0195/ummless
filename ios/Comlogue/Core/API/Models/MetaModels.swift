@@ -60,10 +60,34 @@ struct Pricing: Codable, Hashable, Sendable {
     let monthlyProductId: String
     let yearlyProductId: String
     let note: String
+    // v2: the price in the market's own currency (₹ in India). Absent from older servers.
+    let currency: String?
+    let monthlyPrice: Double?
+    let yearlyPrice: Double?
+    let monthlyDisplay: String?
+    let yearlyDisplay: String?
+
+    /// Monthly and yearly prices in the market currency, falling back to USD.
+    var prices: (monthly: Double, yearly: Double) { (monthlyPrice ?? monthlyUsd, yearlyPrice ?? yearlyUsd) }
+    var monthlyLabel: String { monthlyDisplay ?? Formatting.usd(monthlyUsd) }
+    var yearlyLabel: String { yearlyDisplay ?? Formatting.usd(yearlyUsd) }
 }
 
 struct ConsentText: Codable, Hashable, Sendable {
     let version: String
+    let title: String
+    let body: String
+    let bullets: [String]
+    /// v2: e.g. `hi` drafts for India, keyed by language code.
+    let translations: [String: ConsentTranslation]?
+
+    func localized(_ language: String?) -> ConsentTranslation {
+        if let language, let translation = translations?[language] { return translation }
+        return ConsentTranslation(title: title, body: body, bullets: bullets)
+    }
+}
+
+struct ConsentTranslation: Codable, Hashable, Sendable {
     let title: String
     let body: String
     let bullets: [String]
@@ -96,10 +120,29 @@ struct Meta: Codable, Sendable {
     let pricing: Pricing
     let consents: Consents
     let limits: Limits
+    // v2
+    let pricingByMarket: [String: Pricing]?
+    let eventKinds: [EventKindOption]?
+    let support: SupportContacts?
+
+    func pricing(for market: Market) -> Pricing { pricingByMarket?[market.rawValue] ?? pricing }
 
     func dimension(_ id: DimensionId) -> DimensionMeta? { dimensions.first { $0.id == id } }
     func activity(_ id: ActivityId) -> ActivityMeta? { activities.first { $0.id == id } }
     func track(_ id: TrackId?) -> Track? { tracks.first { $0.id == id } }
+}
+
+struct EventKindOption: Codable, Hashable, Sendable, Identifiable {
+    let id: String
+    let title: String
+    let symbol: String
+    let markets: [String]
+}
+
+struct SupportContacts: Codable, Hashable, Sendable {
+    let email: String
+    let grievanceEmail: String
+    let grievanceOfficer: String?
 }
 
 struct RegionOption: Codable, Hashable, Sendable, Identifiable {

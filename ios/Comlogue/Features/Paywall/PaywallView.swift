@@ -11,7 +11,8 @@ struct PaywallView: View {
     @State private var isPurchasing = false
     @State private var message: String?
 
-    private var pricing: Pricing? { app.meta?.pricing }
+    /// The caller's market price (₹ in India, $ in the US), used until the App Store's own prices load.
+    private var pricing: Pricing? { app.pricing }
     private var store: StoreManager { app.store }
 
     var body: some View {
@@ -31,10 +32,15 @@ struct PaywallView: View {
                     VStack(alignment: .leading, spacing: 12) {
                         feature("map.fill", "The full course for your goal", "Every mission, remix and real-life challenge")
                         feature("bubble.left.and.exclamationmark.bubble.right.fill", "Unlimited AI sparring", "Personas, custom scenarios, Brutal mode")
+                        feature("person.3.sequence.fill", app.market == .in ? "Group discussions and panels" : "Panel interviews and group talks",
+                                app.market == .in ? "GD rounds, HR and technical panels, client calls" : "Several voices, real interruptions, one debrief")
                         feature("calendar.badge.clock", "Event prep", "Rehearse your interview, pitch or hard talk")
                         feature("quote.bubble.fill", "Every talk to shadow", "Steal the style of great speakers")
                         feature("gift.fill", "Weekly reveal", "Before-and-after moments and your next focus")
                     }
+                    Label("Your daily 60-second rep stays free, always.", systemImage: "bolt.heart.fill")
+                        .font(.footnote.weight(.semibold))
+                        .foregroundStyle(.white.opacity(0.9))
                 }
                 .padding(Theme.gutter)
                 .padding(.bottom, 24)
@@ -101,14 +107,14 @@ struct PaywallView: View {
             planRow(
                 selected: yearlySelected,
                 title: "Yearly",
-                price: store.yearly?.displayPrice ?? pricing.map { "$\(String(format: "%.2f", $0.yearlyUsd))" } ?? "",
+                price: store.yearly?.displayPrice ?? pricing?.yearlyLabel ?? "",
                 detail: "\(pricing?.trialDays ?? 7)-day free trial · best value",
                 badge: yearlySavingPercent.map { "Save \($0)%" }
             ) { yearlySelected = true }
             planRow(
                 selected: !yearlySelected,
                 title: "Monthly",
-                price: store.monthly?.displayPrice ?? pricing.map { "$\(String(format: "%.2f", $0.monthlyUsd))" } ?? "",
+                price: store.monthly?.displayPrice ?? pricing?.monthlyLabel ?? "",
                 detail: "Cancel anytime",
                 badge: nil
             ) { yearlySelected = false }
@@ -117,15 +123,12 @@ struct PaywallView: View {
 
     /// Yearly against twelve months of monthly, from the App Store prices when loaded, else the server's pricing.
     private var yearlySavingPercent: Int? {
-        var monthlyPrice = pricing?.monthlyUsd
-        var yearlyPrice = pricing?.yearlyUsd
         if let monthlyProduct = store.monthly, let yearlyProduct = store.yearly {
-            monthlyPrice = NSDecimalNumber(decimal: monthlyProduct.price).doubleValue
-            yearlyPrice = NSDecimalNumber(decimal: yearlyProduct.price).doubleValue
+            return HabitMath.yearlySavingPercent(monthly: NSDecimalNumber(decimal: monthlyProduct.price).doubleValue,
+                                                 yearly: NSDecimalNumber(decimal: yearlyProduct.price).doubleValue)
         }
-        guard let monthly = monthlyPrice, let yearly = yearlyPrice, monthly > 0 else { return nil }
-        let percent = Int(((1 - yearly / (monthly * 12)) * 100).rounded(.down))
-        return percent > 0 ? percent : nil
+        guard let prices = pricing?.prices else { return nil }
+        return HabitMath.yearlySavingPercent(monthly: prices.monthly, yearly: prices.yearly)
     }
 
     private func planRow(selected: Bool, title: String, price: String, detail: String, badge: String?, action: @escaping () -> Void) -> some View {
@@ -170,8 +173,8 @@ struct PaywallView: View {
     }
 
     private var terms: String {
-        let yearly = store.yearly?.displayPrice ?? pricing.map { "$\(String(format: "%.2f", $0.yearlyUsd))" } ?? "the yearly price"
-        let monthly = store.monthly?.displayPrice ?? pricing.map { "$\(String(format: "%.2f", $0.monthlyUsd))" } ?? "the monthly price"
+        let yearly = store.yearly?.displayPrice ?? pricing?.yearlyLabel ?? "the yearly price"
+        let monthly = store.monthly?.displayPrice ?? pricing?.monthlyLabel ?? "the monthly price"
         if yearlySelected {
             return "Free for \(pricing?.trialDays ?? 7) days, then \(yearly)/year. Renews automatically unless cancelled at least 24 hours before the end of the period. Cancel anytime in Settings."
         }

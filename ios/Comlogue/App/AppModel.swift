@@ -28,6 +28,13 @@ enum AppFlow: Identifiable, Hashable {
     case spar(SparLaunch)
     case paywall
     case weeklyReview
+    case daily(date: String?)
+    case group(panelId: String)
+    case inbox
+    case event(id: String)
+    case notificationSettings
+    case practicePlan
+    case report(conversationId: String, title: String)
 
     var id: String {
         switch self {
@@ -42,6 +49,13 @@ enum AppFlow: Identifiable, Hashable {
         case .spar(let launch): return "spar-\(launch.hashValue)"
         case .paywall: return "paywall"
         case .weeklyReview: return "weeklyReview"
+        case .daily(let date): return "daily-\(date ?? "today")"
+        case .group(let panelId): return "group-\(panelId)"
+        case .inbox: return "inbox"
+        case .event(let id): return "event-\(id)"
+        case .notificationSettings: return "notificationSettings"
+        case .practicePlan: return "practicePlan"
+        case .report(let id, _): return "report-\(id)"
         }
     }
 }
@@ -59,6 +73,7 @@ final class AppModel {
     let player = AudioPlayer()
     let speech = SpeechFallback()
     let store = StoreManager()
+    let notifications = NotificationManager.shared
 
     var phase: Phase = .launching
     var meta: Meta?
@@ -66,6 +81,16 @@ final class AppModel {
     var profile: Profile?
     var course: Course?
     var progress: ProgressSummary?
+    var daily: DailyRep?
+    var upcomingReps: [DailyRepPreview] = []
+    var inbox: [InboxNotification] = []
+    var unreadCount = 0
+    var events: [UpcomingEvent] = []
+    var panels: [Panel] = []
+    /// The server pushes event prep, check-ins and nudges, so the device only schedules practice reminders.
+    var serverSendsPush = false
+    /// A milestone earned since the person last looked, celebrated once.
+    var celebration: Milestone?
     var activeFlow: AppFlow?
     var selectedTab: AppTab = .today
     var toast: String?
@@ -75,6 +100,20 @@ final class AppModel {
     var isDemo: Bool { meta?.demoMode ?? me?.demoMode ?? false }
     var isPro: Bool { me?.entitlement.isPro ?? false }
     var language: String { me?.onboarding.language ?? "en" }
+    /// The server's market once a region is set; before that, the device's region is the better guess.
+    var market: Market {
+        guard let region = me?.onboarding.region else { return Market.from(region: RegionPreference.best) }
+        return me?.market ?? Market.from(region: region)
+    }
+    /// On-device voice for spoken fallbacks: Hinglish and English in India read best with an Indian English voice.
+    var speechLanguage: String {
+        if language == "hinglish" { return "en-IN" }
+        if language == "en" && market == .in { return "en-IN" }
+        return language
+    }
+    var pricing: Pricing? { meta?.pricing(for: market) }
+    private var lastDeviceRegistration: DeviceRegistration?
+    private var lastActiveRefresh: Date?
 
     init() {
         api = APIClient(baseURL: AppConfig.baseURL, token: DeviceIdentity.token)
@@ -85,6 +124,9 @@ final class AppModel {
         store.forwardTransaction = { [weak self] jws in
             guard let self else { return false }
             return await self.submitTransaction(jws)
+        }
+        notifications.onTokenChange = { [weak self] in
+            Task { await self?.syncDevice() }
         }
     }
 
@@ -118,6 +160,7 @@ final class AppModel {
                 phase = .onboarding
             }
             store.startListening()
+            await syncDevice()
         } catch {
             phase = .failed(error.userMessage)
         }
@@ -150,8 +193,43 @@ final class AppModel {
         async let profileTask: Void = refreshProfile()
         async let courseTask: Void = refreshCourse()
         async let progressTask: Void = refreshProgress()
-        _ = await (meTask, profileTask, courseTask, progressTask)
+        async let dailyTask: Void = refreshDaily()
+        async let inboxTask: Void = refreshInbox()
+        async let eventsTask: Void = refreshEvents()
+        async let panelsTask: Void = refreshPanels()
+        _ = await (meTask, profileTask, courseTask, progressTask, dailyTask, inboxTask, eventsTask, panelsTask)
         dataVersion += 1
+        afterRefresh()
+    }
+
+    /// Everything that depends on fresh data: widgets, scheduled reminders and celebrations.
+    private func afterRefresh() {
+        WidgetBridge.update(daily: daily, progress: progress, me: me)
+        Task { await rescheduleNotifications() }
+        checkForCelebration()
+    }
+
+    func refreshDaily() async {
+        async let todayRequest = try? api.dailyRep()
+        async let upcomingRequest = try? api.upcomingReps(days: 9)
+        let (today, upcoming) = await (todayRequest, upcomingRequest)
+        if let today { daily = today }
+        if let upcoming { upcomingReps = upcoming }
+    }
+
+    func refreshInbox() async {
+        guard let response = try? await api.notifications() else { return }
+        inbox = response.items
+        unreadCount = response.unreadCount
+        notifications.setBadge(response.unreadCount)
+    }
+
+    func refreshEvents() async {
+        if let updated = try? await api.events() { events = updated }
+    }
+
+    func refreshPanels() async {
+        if let updated = try? await api.panels() { panels = updated }
     }
 
     func refreshMe() async {
@@ -172,6 +250,152 @@ final class AppModel {
 
     func updateMe(_ patch: MePatch) async throws {
         me = try await api.updateMe(patch)
+        WidgetBridge.update(daily: daily, progress: progress, me: me)
+        await rescheduleNotifications()
+    }
+
+    /// Back in the foreground: the day may have rolled over, the timezone changed, or new results arrived.
+    func becameActive() async {
+        guard phase == .ready else { return }
+        if let last = lastActiveRefresh, Date().timeIntervalSince(last) < 120 { return }
+        lastActiveRefresh = Date()
+        await syncDevice()
+        async let dailyTask: Void = refreshDaily()
+        async let inboxTask: Void = refreshInbox()
+        async let progressTask: Void = refreshProgress()
+        _ = await (dailyTask, inboxTask, progressTask)
+        afterRefresh()
+    }
+
+    // MARK: Notifications
+
+    /// Tells the server about this install: APNs token, permission, timezone and locale.
+    func syncDevice() async {
+        guard api.token != nil else { return }
+        await notifications.refreshStatus()
+        let registration = DeviceRegistration(
+            apnsToken: notifications.deviceToken,
+            pushEnvironment: notifications.deviceToken == nil ? nil : AppConfig.pushEnvironment,
+            authorization: notifications.authorizationName,
+            timezone: TimeZone.current.identifier,
+            locale: Locale.current.identifier(.bcp47),
+            appVersion: AppConfig.appVersion)
+        guard registration != lastDeviceRegistration else { return }
+        if let device = try? await api.registerDevice(registration) {
+            lastDeviceRegistration = registration
+            serverSendsPush = device.pushEnabled
+            await rescheduleNotifications()
+        }
+    }
+
+    /// Plans this week's on-device reminders from the person's plan, prompts and events.
+    func rescheduleNotifications() async {
+        guard let me, phase == .ready else { return }
+        await notifications.refreshStatus()
+        guard notifications.canDeliver else {
+            await notifications.removeAllLocal()
+            return
+        }
+        let zone = TimeZone.current
+        let now = Date()
+        let practice = me.practiceSettings
+        let practicedToday = daily?.completed == true
+            || (progress?.practice.thisWeek.days ?? []).contains(HabitMath.weekday(now, timeZone: zone))
+        var input = NotificationPlanInput(now: now, timeZone: zone)
+        input.settings = me.resolvedNotificationSettings
+        input.practiceDays = practice.reminderDays
+        input.reminderTime = practice.reminderTime
+        input.anchor = practice.anchor
+        input.pausedUntil = practice.pausedUntil
+        input.weeklyTarget = practice.weeklyTarget
+        input.practicedToday = practicedToday
+        input.upcomingReps = upcomingReps
+        input.events = events.map { PlannedEvent(id: $0.id, title: $0.title, date: $0.date, time: $0.time) }
+        input.serverSendsPush = serverSendsPush
+        await notifications.apply(NotificationPlanner.plan(input))
+    }
+
+    func markRead(_ notification: InboxNotification) async {
+        guard !notification.read else { return }
+        if let count = try? await api.markNotificationsRead(ids: [notification.id]) {
+            unreadCount = count
+            notifications.setBadge(count)
+        }
+        inbox = inbox.map { item in
+            guard item.id == notification.id else { return item }
+            return InboxNotification(id: item.id, category: item.category, title: item.title, body: item.body,
+                                     deepLink: item.deepLink, createdAt: item.createdAt, read: true)
+        }
+    }
+
+    func markAllRead() async {
+        if let count = try? await api.markAllNotificationsRead() {
+            unreadCount = count
+            notifications.setBadge(count)
+            await refreshInbox()
+        }
+    }
+
+    // MARK: Deep links
+
+    /// Opens whatever a notification, widget or link asked for, once the app is ready.
+    func handlePendingLinks() {
+        guard phase == .ready, let pending = PendingLink.dequeue() else { return }
+        if let id = pending.notificationId {
+            Task {
+                try? await api.notificationOpened(id)
+                await refreshInbox()
+            }
+        }
+        open(pending.link)
+    }
+
+    func open(_ link: DeepLink) {
+        switch link {
+        case .today:
+            selectedTab = .today
+            if activeFlow != nil { dismissFlow(refresh: false) }
+        case .daily(let date):
+            present(.daily(date: date))
+        case .mission(let id), .reflect(let id):
+            present(.mission(id: id, quick: false))
+        case .recording(let id):
+            present(.recordingDetail(id: id))
+        case .assessment(let id):
+            present(.guidedAssessment(resumeId: id))
+        case .event(let id):
+            present(.event(id: id))
+        case .weeklyReview:
+            present(.weeklyReview)
+        case .inbox:
+            present(.inbox)
+        case .practice:
+            selectedTab = .practice
+            if activeFlow != nil { dismissFlow(refresh: false) }
+        case .group(let panelId):
+            present(.group(panelId: panelId))
+        case .paywall:
+            present(.paywall)
+        case .notificationSettings:
+            present(.notificationSettings)
+        }
+    }
+
+    // MARK: Celebrations
+
+    /// Shows the newest milestone the person hasn't seen yet. The first launch just records what exists.
+    private func checkForCelebration() {
+        guard let milestones = progress?.milestones, phase == .ready else { return }
+        var seen = LocalFlags.seenMilestones
+        if seen == nil {
+            LocalFlags.seenMilestones = Set(milestones.map(\.id))
+            return
+        }
+        let fresh = milestones.filter { !(seen?.contains($0.id) ?? false) }.sorted { $0.achievedAt > $1.achievedAt }
+        guard let newest = fresh.first else { return }
+        seen?.formUnion(fresh.map(\.id))
+        LocalFlags.seenMilestones = seen
+        if activeFlow == nil { celebration = newest }
     }
 
     // MARK: Flows
@@ -236,12 +460,20 @@ final class AppModel {
         try await api.deleteAccount()
         DeviceIdentity.reset()
         LocalFlags.reset()
-        ReminderScheduler.cancelAll()
+        await notifications.removeAllLocal()
+        notifications.setBadge(0)
+        WidgetBridge.clear()
         api.token = nil
+        lastDeviceRegistration = nil
         me = nil
         profile = nil
         course = nil
         progress = nil
+        daily = nil
+        upcomingReps = []
+        inbox = []
+        unreadCount = 0
+        events = []
         activeFlow = nil
         selectedTab = .today
         await bootstrap()

@@ -27,16 +27,26 @@ final class ConversationModel {
     private let app: AppModel
     private var pendingUpload: (url: URL, elapsed: Double, metrics: ClientAudioMetrics?)?
     private var hasBegun = false
+    /// Partner lines still to play (several in a row in a group conversation).
+    private var speakQueue: [Turn] = []
+    /// The line being spoken, or the last one spoken.
+    private(set) var speakingTurn: Turn?
 
     init(conversation: Conversation, app: AppModel) {
         self.conversation = conversation
         self.app = app
     }
 
-    var partnerLine: Turn? { conversation.lastPartnerTurn }
+    var partnerLine: Turn? { speakingTurn ?? conversation.lastPartnerTurn }
+
+    /// Who's talking now in a group conversation (the moderator before anyone has spoken).
+    var currentSpeaker: Participant? {
+        guard conversation.isGroup else { return nil }
+        return conversation.participant(partnerLine?.speakerId) ?? conversation.participants?.first
+    }
     var suggestedSeconds: Double { Double(conversation.setup.suggestedSeconds) }
     var userTurnCount: Int { conversation.turns.filter { $0.speaker == .user && !$0.excluded }.count }
-    var canEndEarly: Bool { userTurnCount > 0 || conversation.kind == "spar" }
+    var canEndEarly: Bool { userTurnCount > 0 || conversation.kind == "spar" || conversation.kind == "group" }
     var isSpar: Bool { conversation.kind == "spar" }
 
     var partnerLevel: Double {
@@ -55,10 +65,12 @@ final class ConversationModel {
     func begin() {
         guard !hasBegun else { return }
         hasBegun = true
+        // Everything the partners said since the person last spoke: the opening, or a few voices in a group.
+        let trailing = Array(conversation.turns.reversed().prefix { $0.speaker == .partner }.reversed())
         if conversation.status == .finished {
             phase = .finished
-        } else if let last = conversation.turns.last, last.speaker == .partner {
-            speak(last)
+        } else if !trailing.isEmpty {
+            speak(trailing)
         } else {
             phase = .ready
         }
@@ -72,17 +84,32 @@ final class ConversationModel {
 
     // MARK: Partner
 
-    func speak(_ turn: Turn) {
+    func speak(_ turn: Turn) { speak([turn]) }
+
+    /// Plays partner lines one after another, then hands the floor back.
+    func speak(_ turns: [Turn]) {
+        speakQueue = turns
+        playNext()
+    }
+
+    private func playNext() {
+        guard !speakQueue.isEmpty else {
+            if phase == .partnerSpeaking { phase = conversation.status == .finished ? .finished : .ready }
+            return
+        }
+        let turn = speakQueue.removeFirst()
+        speakingTurn = turn
         phase = .partnerSpeaking
         let done: () -> Void = { [weak self] in
             guard let self, self.phase == .partnerSpeaking else { return }
-            self.phase = self.conversation.status == .finished ? .finished : .ready
+            self.playNext()
         }
         if let url = turn.audioUrl {
             let key = "turn-\(conversation.id)-\(turn.index)"
             Task { await app.player.play(path: url, api: app.api, key: key, onFinish: done) }
         } else {
-            app.speech.speak(turn.text, languageCode: app.language, onFinish: done)
+            let voiceIndex = conversation.participants?.firstIndex { $0.id == turn.speakerId } ?? 0
+            app.speech.speak(turn.text, languageCode: app.speechLanguage, variant: voiceIndex, onFinish: done)
         }
     }
 
@@ -92,6 +119,7 @@ final class ConversationModel {
     }
 
     func skipPartner() {
+        speakQueue = []
         app.player.stop()
         app.speech.stop()
         phase = conversation.status == .finished ? .finished : .ready
@@ -158,8 +186,8 @@ final class ConversationModel {
             if result.retrySuggested {
                 phase = .retry(issues: result.userTurn.quality?.issues ?? [], local: [])
                 Haptics.warning()
-            } else if let partner = result.partnerTurn {
-                speak(partner)
+            } else if !result.allPartnerTurns.isEmpty {
+                speak(result.allPartnerTurns)
             } else if result.done || conversation.status == .finished {
                 phase = .finished
                 Haptics.success()

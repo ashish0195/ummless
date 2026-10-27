@@ -27,7 +27,10 @@ struct ConversationScreen: View {
         self.onExit = onExit
     }
 
-    private var partnerColor: Color { Color(hex: model.conversation.partner.colorHex) }
+    private var partnerColor: Color { Color(hex: model.currentSpeaker?.colorHex ?? model.conversation.partner.colorHex) }
+    private var speakerName: String { model.currentSpeaker?.name ?? model.conversation.partner.name }
+    private var speakerRole: String { model.currentSpeaker?.role ?? model.conversation.partner.role }
+    private var speakerSymbol: String { model.currentSpeaker?.symbol ?? model.conversation.partner.symbol }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -108,17 +111,22 @@ struct ConversationScreen: View {
                     .multilineTextAlignment(.center)
                     .padding(.top, 4)
             }
+            if let participants = model.conversation.participants, participants.count > 1 {
+                ParticipantStrip(participants: participants, speakingId: model.currentSpeaker?.id,
+                                 isSpeaking: model.phase == .partnerSpeaking)
+            }
             ZStack {
                 VoiceOrb.tinted(partnerColor, level: model.partnerLevel, isActive: model.phase == .partnerSpeaking || model.phase == .sending)
-                    .frame(width: 170, height: 170)
-                Image(systemName: model.conversation.partner.symbol)
+                    .frame(width: model.conversation.isGroup ? 140 : 170, height: model.conversation.isGroup ? 140 : 170)
+                Image(systemName: SymbolName.safe(speakerSymbol))
                     .font(.system(size: 34, weight: .semibold))
                     .foregroundStyle(.white.opacity(0.92))
             }
             .padding(.top, 8)
+            .animation(.easeInOut(duration: 0.3), value: speakerName)
             VStack(spacing: 2) {
-                Text(model.conversation.partner.name).font(.headlineRounded).foregroundStyle(Theme.ink)
-                Text(model.conversation.partner.role).font(.caption).foregroundStyle(Theme.inkSecondary)
+                Text(speakerName).font(.headlineRounded).foregroundStyle(Theme.ink)
+                Text(speakerRole).font(.caption).foregroundStyle(Theme.inkSecondary)
             }
             if let line = model.partnerLine {
                 VStack(alignment: .leading, spacing: 10) {
@@ -332,7 +340,7 @@ struct TranscriptSheet: View {
                         HStack {
                             if turn.speaker == .user { Spacer(minLength: 40) }
                             VStack(alignment: turn.speaker == .user ? .trailing : .leading, spacing: 4) {
-                                Text(turn.speaker == .user ? "You" : conversation.partner.name)
+                                Text(turn.speaker == .user ? "You" : (conversation.participant(turn.speakerId)?.name ?? conversation.partner.name))
                                     .font(.caption.weight(.bold))
                                     .foregroundStyle(Theme.inkSecondary)
                                 Text(turn.text.isEmpty ? "…" : turn.text)
@@ -362,5 +370,47 @@ struct TranscriptSheet: View {
                 ToolbarItem(placement: .topBarTrailing) { Button("Done") { dismiss() } }
             }
         }
+    }
+}
+
+
+/// Everyone in a group conversation; the person speaking is lifted and ringed in their colour.
+private struct ParticipantStrip: View {
+    let participants: [Participant]
+    let speakingId: String?
+    let isSpeaking: Bool
+
+    var body: some View {
+        HStack(spacing: 14) {
+            ForEach(participants) { participant in
+                let active = participant.id == speakingId
+                VStack(spacing: 4) {
+                    Image(systemName: SymbolName.safe(participant.symbol))
+                        .font(.system(size: 15, weight: .semibold))
+                        .foregroundStyle(.white)
+                        .frame(width: 40, height: 40)
+                        .background(Color(hex: participant.colorHex).opacity(active ? 1 : 0.55), in: Circle())
+                        .overlay(Circle().strokeBorder(Color(hex: participant.colorHex), lineWidth: active && isSpeaking ? 3 : 0)
+                            .padding(-4))
+                        .scaleEffect(active ? 1.08 : 1)
+                    Text(participant.name)
+                        .font(.caption2.weight(active ? .bold : .medium))
+                        .foregroundStyle(active ? Theme.ink : Theme.inkSecondary)
+                        .lineLimit(1)
+                }
+                .accessibilityElement(children: .combine)
+                .accessibilityLabel("\(participant.name), \(participant.role)\(active && isSpeaking ? ", speaking" : "")")
+            }
+            VStack(spacing: 4) {
+                Image(systemName: "person.fill")
+                    .font(.system(size: 15, weight: .semibold))
+                    .foregroundStyle(Theme.indigo)
+                    .frame(width: 40, height: 40)
+                    .background(Theme.indigo.opacity(0.12), in: Circle())
+                Text("You").font(.caption2.weight(.medium)).foregroundStyle(Theme.inkSecondary)
+            }
+        }
+        .animation(.spring(response: 0.35, dampingFraction: 0.8), value: speakingId)
+        .padding(.top, 4)
     }
 }

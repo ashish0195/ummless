@@ -3,7 +3,7 @@ import Foundation
 
 /// Where an App Intent (Siri, Shortcuts, Spotlight, Action button) should take the person.
 enum IntentRoute: String {
-    case todaysMission, quickPractice, recordConversation, spar
+    case dailyRep, todaysMission, quickPractice, recordConversation, spar
 
     private static let key = "comlogue.pendingIntentRoute"
     static let notification = Notification.Name("comlogue.pendingIntentRoute")
@@ -17,6 +17,17 @@ enum IntentRoute: String {
         guard let raw = UserDefaults.standard.string(forKey: key) else { return nil }
         UserDefaults.standard.removeObject(forKey: key)
         return IntentRoute(rawValue: raw)
+    }
+}
+
+struct StartDailyRepIntent: AppIntent {
+    static var title: LocalizedStringResource = "Start today's rep"
+    static var description = IntentDescription("Opens Comlogue on today's 60-second speaking rep.")
+    static var openAppWhenRun: Bool = true
+
+    func perform() async throws -> some IntentResult {
+        IntentRoute.dailyRep.enqueue()
+        return .result()
     }
 }
 
@@ -56,6 +67,12 @@ struct RecordConversationIntent: AppIntent {
 struct ComlogueShortcuts: AppShortcutsProvider {
     static var appShortcuts: [AppShortcut] {
         AppShortcut(
+            intent: StartDailyRepIntent(),
+            phrases: ["Start today's rep in \(.applicationName)", "Do my daily rep with \(.applicationName)"],
+            shortTitle: "Today's rep",
+            systemImageName: "bolt.circle.fill"
+        )
+        AppShortcut(
             intent: StartTodaysMissionIntent(),
             phrases: ["Start today's mission in \(.applicationName)", "Practice with \(.applicationName)"],
             shortTitle: "Today's mission",
@@ -81,6 +98,8 @@ extension AppModel {
     func handlePendingIntent() {
         guard phase == .ready, let route = IntentRoute.dequeue() else { return }
         switch route {
+        case .dailyRep:
+            present(.daily(date: nil))
         case .todaysMission:
             if let today = course?.today, !today.mission.isLocked {
                 present(.mission(id: today.mission.id, quick: false))

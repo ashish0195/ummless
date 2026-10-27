@@ -94,6 +94,16 @@ struct Partner: Codable, Hashable, Sendable {
     let colorHex: String
 }
 
+/// One AI voice in a group conversation (a group discussion or a panel interview). The moderator comes first.
+struct Participant: Codable, Hashable, Sendable, Identifiable {
+    let id: String
+    let name: String
+    let role: String
+    let voice: String
+    let symbol: String
+    let colorHex: String
+}
+
 enum TurnSpeaker: String, Codable, Hashable, Sendable {
     case partner, user
 
@@ -119,6 +129,8 @@ struct Turn: Codable, Hashable, Sendable, Identifiable {
     let quality: TurnQuality?
     let coachWhisper: String?
     let excluded: Bool
+    /// The participant who spoke, on partner turns of a group conversation.
+    let speakerId: String?
 
     var id: Int { index }
 }

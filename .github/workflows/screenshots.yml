@@ -15,7 +15,7 @@ jobs:
   screenshots:
     if: github.event_name == 'workflow_dispatch' || startsWith(github.event.head_commit.message, '[screenshots]')
     runs-on: macos-15
-    timeout-minutes: 50
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v5
         with:
@@ -79,11 +79,16 @@ jobs:
             xcrun simctl io "$DEVICE" screenshot "docs/screenshots/$2.png"
           }
           xcrun simctl ui "$DEVICE" appearance light
-          for scene in welcome getStarted activity spar results recording debrief today course mission practice you paywall; do
+          for scene in welcome getStarted activity spar results recording debrief today course mission practice you paywall \
+                       daily dailyFeedback inbox notifications plan group groupReport; do
+            capture "$scene" "$scene"
+          done
+          # The same app as an Indian account: ₹ pricing, placement interviews, group discussions, Hindi notices.
+          for scene in todayIndia practiceIndia paywallIndia groupIndia planIndia consentIndia; do
             capture "$scene" "$scene"
           done
           xcrun simctl ui "$DEVICE" appearance dark
-          for scene in today results you; do
+          for scene in today results you daily; do
             capture "$scene" "dark-$scene"
           done
 
