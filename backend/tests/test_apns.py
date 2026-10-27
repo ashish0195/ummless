@@ -32,7 +32,7 @@ def _settings(pem: str, **overrides) -> Settings:
 
 
 def _message(**overrides) -> PushMessage:
-    fields = {"token": "ab" * 32, "environment": "production", "title": "Your 60-second rep is ready",
+    fields = {"token": "ab" * 32, "environment": "production", "title": "Your 1-minute practice is ready",
               "body": "Today: Explain your job to a 10-year-old.", "badge": 2, "thread_id": "nudge",
               "collapse_id": "nudge:2026-11-01:1", "interruption_level": "active", "deep_link": "comlogue://daily",
               "notification_id": "ntf_1", "expires_at": 1_800_000_000}
@@ -78,7 +78,7 @@ def test_request_headers_payload_and_signed_provider_token(keys):
     claims = jwt.decode(token, public, algorithms=["ES256"])
     assert claims["iss"] == "TEAM123456" and isinstance(claims["iat"], int)
     assert json.loads(request.content) == {
-        "aps": {"alert": {"title": "Your 60-second rep is ready", "body": "Today: Explain your job to a 10-year-old."},
+        "aps": {"alert": {"title": "Your 1-minute practice is ready", "body": "Today: Explain your job to a 10-year-old."},
                 "sound": "default", "badge": 2, "thread-id": "nudge", "interruption-level": "active"},
         "deep_link": "comlogue://daily", "notification_id": "ntf_1",
     }

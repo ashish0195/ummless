@@ -1,103 +1,147 @@
 import SwiftUI
 import UIKit
 
-/// The person's practice plan: how often, which days, when, and the routine it hangs on. Used in onboarding and
-/// in Settings. Plans anchored to an existing routine ("after my morning chai") are far easier to keep.
+/// The practice plan in the same words as the first-run walkthrough: a moment you already have ("with my morning
+/// chai") and how often. Exact days, time and cue sit one tap away under "Days and time".
 struct PracticePlanEditor: View {
     @Binding var weeklyTarget: Int
     @Binding var days: Set<Int>
     @Binding var time: String
     @Binding var anchor: String?
+    @Binding var isCustomising: Bool
     let market: Market
 
-    @State private var customTime = false
-
-    private let targets = [2, 3, 4, 5, 7]
+    private var routines: [PracticeRoutine] { PracticeRoutine.options(for: market) }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 22) {
-            VStack(alignment: .leading, spacing: 10) {
-                Text("How many days a week?").font(.headlineRounded).foregroundStyle(Theme.ink)
-                FlowLayout(spacing: 8) {
-                    ForEach(targets, id: \.self) { value in
-                        SelectableChip(title: value == 7 ? "Every day" : "\(value) days", isSelected: weeklyTarget == value) {
-                            weeklyTarget = value
-                            days = Set(HabitMath.defaultDays(forTarget: value))
-                        }
-                    }
-                }
-                Text("Pick what fits your life. A missed week never erases progress.")
-                    .font(.footnote).foregroundStyle(Theme.inkSecondary)
-            }
-
-            VStack(alignment: .leading, spacing: 10) {
-                Text("Which days?").font(.headlineRounded).foregroundStyle(Theme.ink)
-                HStack(spacing: 6) {
-                    ForEach(1...7, id: \.self) { day in
-                        let selected = days.contains(day)
-                        Button {
-                            if selected { days.remove(day) } else { days.insert(day) }
-                            Haptics.selection()
-                        } label: {
-                            Text(HabitMath.weekdayShortNames[day - 1])
-                                .font(.caption.weight(.semibold))
-                                .frame(maxWidth: .infinity, minHeight: 38)
-                                .background(selected ? AnyShapeStyle(Theme.aurora) : AnyShapeStyle(Theme.surfaceMuted), in: Capsule())
-                                .foregroundStyle(selected ? Color.white : Theme.ink)
-                        }
-                        .buttonStyle(.plain)
-                        .accessibilityAddTraits(selected ? .isSelected : [])
-                    }
+        VStack(alignment: .leading, spacing: 10) {
+            ForEach(routines) { routine in
+                let selected = Self.routine(anchor: anchor, time: time, market: market) == routine
+                PlanRoutineRow(routine: routine, time: Self.displayTime(selected ? time : routine.time), selected: selected) {
+                    Haptics.selection()
+                    time = routine.time
+                    anchor = routine.anchor
                 }
             }
-
-            VStack(alignment: .leading, spacing: 10) {
-                Text("Right after…").font(.headlineRounded).foregroundStyle(Theme.ink)
-                Text("Tie practice to something you already do every day.")
-                    .font(.footnote).foregroundStyle(Theme.inkSecondary)
-                FlowLayout(spacing: 8) {
-                    ForEach(PracticeAnchor.presets(for: market), id: \.self) { preset in
-                        SelectableChip(title: preset, isSelected: anchor == preset) {
-                            anchor = anchor == preset ? nil : preset
-                        }
-                    }
+            Picker("How often", selection: targetBinding) {
+                ForEach(targetOptions, id: \.self) { value in
+                    Text(label(forTarget: value)).tag(value)
                 }
             }
-
-            VStack(alignment: .leading, spacing: 10) {
-                Text("What time?").font(.headlineRounded).foregroundStyle(Theme.ink)
-                FlowLayout(spacing: 8) {
-                    ForEach(PracticeTime.allCases) { preset in
-                        SelectableChip(title: "\(preset.title) · \(Self.displayTime(preset.time))",
-                                       isSelected: !customTime && time == preset.time) {
-                            customTime = false
-                            time = preset.time
-                        }
-                    }
-                    SelectableChip(title: "Other", isSelected: customTime || PracticeTime.matching(time) == nil) {
-                        customTime = true
-                    }
-                }
-                if customTime || PracticeTime.matching(time) == nil {
-                    DatePicker("Time", selection: timeBinding, displayedComponents: .hourAndMinute)
-                        .datePickerStyle(.compact)
-                }
-            }
-
-            if !days.isEmpty {
-                Label(summary, systemImage: "calendar.badge.clock")
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(Theme.indigo)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
+            .pickerStyle(.segmented)
+            .padding(.vertical, 14)
+            customCard
         }
     }
 
+    /// Exact days, time and cue, folded away until someone wants them.
+    private var customCard: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Button {
+                withAnimation(.spring(response: 0.3, dampingFraction: 0.9)) { isCustomising.toggle() }
+            } label: {
+                HStack(spacing: 14) {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Days and time").font(.headlineRounded).foregroundStyle(Theme.ink)
+                        Text(summary).font(.subheadline).foregroundStyle(Theme.inkSecondary)
+                    }
+                    Spacer(minLength: 8)
+                    Image(systemName: "chevron.down")
+                        .font(.footnote.weight(.bold))
+                        .foregroundStyle(Theme.inkTertiary)
+                        .rotationEffect(.degrees(isCustomising ? 180 : 0))
+                }
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .accessibilityHint(isCustomising ? "Hides the days, time and cue" : "Shows the days, time and cue")
+
+            if isCustomising {
+                VStack(alignment: .leading, spacing: 20) {
+                    HStack(spacing: 6) {
+                        ForEach(1...7, id: \.self) { day in
+                            let selected = days.contains(day)
+                            Button {
+                                if selected { days.remove(day) } else { days.insert(day) }
+                                Haptics.selection()
+                            } label: {
+                                Text(HabitMath.weekdayShortNames[day - 1])
+                                    .font(.caption.weight(.semibold))
+                                    .frame(maxWidth: .infinity, minHeight: 38)
+                                    .background(selected ? AnyShapeStyle(Theme.aurora) : AnyShapeStyle(Theme.surfaceMuted), in: Capsule())
+                                    .foregroundStyle(selected ? Color.white : Theme.ink)
+                            }
+                            .buttonStyle(.plain)
+                            .accessibilityAddTraits(selected ? .isSelected : [])
+                        }
+                    }
+                    DatePicker("Time", selection: timeBinding, displayedComponents: .hourAndMinute)
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(Theme.ink)
+                    VStack(alignment: .leading, spacing: 10) {
+                        Text("Right after…").font(.subheadline.weight(.semibold)).foregroundStyle(Theme.ink)
+                        FlowLayout(spacing: 8) {
+                            ForEach(PracticeAnchor.presets(for: market), id: \.self) { preset in
+                                SelectableChip(title: preset, isSelected: anchor == preset) {
+                                    anchor = anchor == preset ? nil : preset
+                                }
+                            }
+                        }
+                    }
+                }
+                .padding(.top, 18)
+            }
+        }
+        .padding(16)
+        .background(Theme.surface, in: RoundedRectangle(cornerRadius: Theme.radius, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: Theme.radius, style: .continuous)
+                .strokeBorder(Theme.stroke, lineWidth: 1)
+        )
+    }
+
+    /// The three choices from the walkthrough, plus an older plan's own target so it still shows as chosen.
+    private var targetOptions: [Int] {
+        var options = [3, 5, 7]
+        if !options.contains(weeklyTarget) { options.append(weeklyTarget) }
+        return options.sorted()
+    }
+
+    private func label(forTarget value: Int) -> String {
+        if value >= 7 { return "Every day" }
+        let count = value == 1 ? "1 day" : "\(value) days"
+        return value == targetOptions.first ? "\(count) a week" : count
+    }
+
+    /// Choosing how often also spreads the practice days through the week; a saved plan's own days are kept
+    /// until then.
+    private var targetBinding: Binding<Int> {
+        Binding(
+            get: { weeklyTarget },
+            set: { value in
+                guard value != weeklyTarget else { return }
+                weeklyTarget = value
+                days = Set(HabitMath.defaultDays(forTarget: value))
+            }
+        )
+    }
+
+    /// "Weekdays · 8:30 AM"
     private var summary: String {
-        let names = days.sorted().map { HabitMath.weekdayShortNames[$0 - 1] }
-        let dayText = days.count == 7 ? "Every day" : names.joined(separator: ", ")
-        let cue = anchor.map { " — \(PracticeAnchor.secondPerson($0).lowercasedFirst)" } ?? ""
-        return "\(dayText) at \(Self.displayTime(time))\(cue)."
+        let sorted = days.sorted()
+        let dayText: String
+        if sorted.isEmpty {
+            dayText = "No days picked"
+        } else if sorted.count == 7 {
+            dayText = "Every day"
+        } else if sorted == [1, 2, 3, 4, 5] {
+            dayText = "Weekdays"
+        } else if sorted == [6, 7] {
+            dayText = "Weekends"
+        } else {
+            dayText = sorted.map { HabitMath.weekdayShortNames[$0 - 1] }.joined(separator: ", ")
+        }
+        return "\(dayText) · \(Self.displayTime(time))"
     }
 
     private var timeBinding: Binding<Date> {
@@ -113,6 +157,13 @@ struct PracticePlanEditor: View {
         )
     }
 
+    /// The routine a plan follows: by its cue, or by its time when it has no cue.
+    static func routine(anchor: String?, time: String, market: Market) -> PracticeRoutine? {
+        let options = PracticeRoutine.options(for: market)
+        if let anchor { return options.first { $0.anchor == anchor } }
+        return options.first { $0.time == time }
+    }
+
     /// "19:00" → "7:00 PM" in the person's locale.
     static func displayTime(_ value: String) -> String {
         guard let parts = HabitMath.parseTime(value),
@@ -122,10 +173,38 @@ struct PracticePlanEditor: View {
     }
 }
 
-private extension String {
-    var lowercasedFirst: String {
-        guard let first else { return self }
-        return first.lowercased() + dropFirst()
+/// One routine, as a large single-choice row (the same look as the walkthrough's choices).
+private struct PlanRoutineRow: View {
+    let routine: PracticeRoutine
+    let time: String
+    let selected: Bool
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 16) {
+                Image(systemName: routine.symbol)
+                    .font(.title3)
+                    .foregroundStyle(selected ? Color.white : Theme.indigo)
+                    .frame(width: 46, height: 46)
+                    .background(selected ? AnyShapeStyle(Theme.aurora) : AnyShapeStyle(Theme.indigo.opacity(0.1)), in: Circle())
+                Text(routine.title).font(.headlineRounded).foregroundStyle(Theme.ink).multilineTextAlignment(.leading)
+                Spacer(minLength: 8)
+                Text(time).font(.subheadline).foregroundStyle(Theme.inkSecondary)
+                if selected {
+                    Image(systemName: "checkmark.circle.fill").font(.title3).foregroundStyle(Theme.indigo)
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+            .background(Theme.surface, in: RoundedRectangle(cornerRadius: Theme.radius, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: Theme.radius, style: .continuous)
+                    .strokeBorder(selected ? Theme.indigo : Theme.stroke, lineWidth: selected ? 2 : 1)
+            )
+        }
+        .buttonStyle(.pressableCard)
+        .accessibilityAddTraits(selected ? .isSelected : [])
     }
 }
 
@@ -139,12 +218,14 @@ struct PracticePlanView: View {
     @State private var days: Set<Int> = [1, 3, 5]
     @State private var time = "08:00"
     @State private var anchor: String?
+    @State private var isCustomising = false
     @State private var remindersOn = true
     @State private var loaded = false
     @State private var isSaving = false
     @State private var showPriming = false
-    @State private var breakUntil = Date().addingTimeInterval(7 * 86_400)
+    @State private var showBreakOptions = false
     @State private var showBreakPicker = false
+    @State private var breakUntil = Date().addingTimeInterval(7 * 86_400)
     @State private var error: String?
 
     private var pausedUntil: String? { app.me?.practiceSettings.pausedUntil }
@@ -155,28 +236,20 @@ struct PracticePlanView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 24) {
+            VStack(alignment: .leading, spacing: 16) {
                 if let error { InlineErrorBanner(message: error) { self.error = nil } }
 
-                PracticePlanEditor(weeklyTarget: $weeklyTarget, days: $days, time: $time, anchor: $anchor, market: app.market)
-                    .card()
+                Text("When will you practise?")
+                    .font(.display)
+                    .foregroundStyle(Theme.ink)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .padding(.bottom, 4)
 
-                VStack(alignment: .leading, spacing: 10) {
-                    Toggle(isOn: $remindersOn) {
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text("Remind me").font(.headlineRounded).foregroundStyle(Theme.ink)
-                            Text("A reminder on your practice days, with that day's prompt in it.")
-                                .font(.footnote).foregroundStyle(Theme.inkSecondary)
-                        }
-                    }
-                    .tint(Theme.indigo)
-                    if app.notifications.isDenied && remindersOn {
-                        NotificationsOffBanner()
-                    }
-                }
-                .card()
+                PracticePlanEditor(weeklyTarget: $weeklyTarget, days: $days, time: $time, anchor: $anchor,
+                                   isCustomising: $isCustomising, market: app.market)
 
-                breakCard
+                remindersCard
+                breakRow
             }
             .padding(Theme.gutter)
         }
@@ -207,33 +280,96 @@ struct PracticePlanView: View {
                 .environment(app)
                 .presentationDetents([.medium, .large])
         }
+        .confirmationDialog("Take a break", isPresented: $showBreakOptions, titleVisibility: .visible) {
+            Button("1 week") { Task { await startBreak(days: 7) } }
+            Button("2 weeks") { Task { await startBreak(days: 14) } }
+            Button("Pick a date") { showBreakPicker = true }
+        } message: {
+            Text("Reminders pause. Your progress and weekly run are kept.")
+        }
+        .sheet(isPresented: $showBreakPicker) { breakDateSheet }
         .onAppear(perform: load)
     }
 
-    private var breakCard: some View {
+    private var remindersCard: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("Taking a break?").font(.headlineRounded).foregroundStyle(Theme.ink)
-            if isOnBreak, let pausedUntil {
-                Text("You're on a break until \(Self.display(day: pausedUntil)). Reminders and nudges are paused, and your weekly run is kept.")
-                    .font(.footnote).foregroundStyle(Theme.inkSecondary)
-                Button("End my break now") { Task { await endBreak() } }
-                    .buttonStyle(.secondaryPill)
-            } else {
-                Text("Exams, travel, a festival week — pause reminders without losing your run.")
-                    .font(.footnote).foregroundStyle(Theme.inkSecondary)
-                HStack(spacing: 8) {
-                    Button("1 week") { Task { await startBreak(days: 7) } }.buttonStyle(.pill(.secondary, fullWidth: false))
-                    Button("2 weeks") { Task { await startBreak(days: 14) } }.buttonStyle(.pill(.secondary, fullWidth: false))
-                    Button("Pick a date") { showBreakPicker.toggle() }.buttonStyle(.pill(.ghost, fullWidth: false))
+            Toggle(isOn: $remindersOn) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Remind me").font(.headlineRounded).foregroundStyle(Theme.ink)
+                    Text("With that day's prompt").font(.subheadline).foregroundStyle(Theme.inkSecondary)
                 }
-                if showBreakPicker {
-                    DatePicker("Back on", selection: $breakUntil, in: Date()..., displayedComponents: .date)
-                    Button("Start my break") { Task { await startBreak(until: breakUntil) } }
-                        .buttonStyle(.secondaryPill)
+            }
+            .tint(Theme.indigo)
+            if app.notifications.isDenied && remindersOn {
+                NotificationsOffBanner()
+            }
+        }
+        .card(padding: 16)
+    }
+
+    @ViewBuilder
+    private var breakRow: some View {
+        if isOnBreak, let pausedUntil {
+            HStack(spacing: 14) {
+                breakIcon
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("On a break").font(.headlineRounded).foregroundStyle(Theme.ink)
+                    Text("Until \(Self.display(day: pausedUntil))").font(.subheadline).foregroundStyle(Theme.inkSecondary)
+                }
+                Spacer(minLength: 8)
+                Button("End break") { Task { await endBreak() } }
+                    .buttonStyle(.pill(.secondary, fullWidth: false))
+            }
+            .card(padding: 16)
+        } else {
+            Button {
+                showBreakOptions = true
+            } label: {
+                HStack(spacing: 14) {
+                    breakIcon
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Take a break").font(.headlineRounded).foregroundStyle(Theme.ink)
+                        Text("Exams, travel, a busy week").font(.subheadline).foregroundStyle(Theme.inkSecondary)
+                    }
+                    Spacer(minLength: 8)
+                    Image(systemName: "chevron.right").font(.footnote.weight(.bold)).foregroundStyle(Theme.inkTertiary)
+                }
+                .card(padding: 16)
+            }
+            .buttonStyle(.pressableCard)
+        }
+    }
+
+    private var breakIcon: some View {
+        Image(systemName: "pause.fill")
+            .font(.headline)
+            .foregroundStyle(Theme.violet)
+            .frame(width: 44, height: 44)
+            .background(Theme.violet.opacity(0.12), in: Circle())
+    }
+
+    private var breakDateSheet: some View {
+        NavigationStack {
+            VStack(spacing: 16) {
+                DatePicker("Pause until", selection: $breakUntil, in: Date()..., displayedComponents: .date)
+                    .datePickerStyle(.graphical)
+                    .tint(Theme.indigo)
+                Spacer(minLength: 0)
+                Button("Start my break") { Task { await startBreak(until: breakUntil) } }
+                    .buttonStyle(.primaryPill)
+            }
+            .padding(Theme.gutter)
+            .screenBackground()
+            .navigationTitle("Pause until")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Cancel") { showBreakPicker = false }
                 }
             }
         }
-        .card()
+        .environment(app)
+        .presentationDetents([.large])
     }
 
     private var primingSummary: String {
@@ -254,6 +390,8 @@ struct PracticePlanView: View {
             remindersOn = true
             days = Set(settings.reminderDays)
         }
+        // A plan that matches none of the routines opens with its own days, time and cue on show.
+        isCustomising = PracticePlanEditor.routine(anchor: anchor, time: time, market: app.market) == nil
     }
 
     private func save() async {
@@ -291,6 +429,7 @@ struct PracticePlanView: View {
             showBreakPicker = false
             app.showToast("Enjoy your break")
         } catch {
+            showBreakPicker = false
             self.error = error.userMessage
         }
     }

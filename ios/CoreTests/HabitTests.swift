@@ -50,6 +50,30 @@ final class HabitMathTests: XCTestCase {
         XCTAssertTrue(PracticeAnchor.presets(for: .us).contains("After my morning coffee"))
     }
 
+    func testRoutinesPairACueWithATime() {
+        let india = PracticeRoutine.options(for: .in)
+        XCTAssertEqual(india.first?.title, "With my morning chai")
+        XCTAssertEqual(india.first?.anchor, "After my morning chai")
+        XCTAssertEqual(PracticeRoutine.options(for: .us).first?.title, "With my morning coffee")
+        XCTAssertEqual(india.map(\.time), ["08:00", "13:00", "19:00", "21:30"])
+        XCTAssertEqual(PracticeRoutine.matching(time: "21:30", market: .us)?.id, "night")
+        XCTAssertNil(PracticeRoutine.matching(time: "06:15", market: .us))
+    }
+
+    func testOneGoalAnswersTheOnboardingQuestions() {
+        XCTAssertEqual(GoalChoice.ordered(for: .in, available: []).first?.id, "interviews")
+        XCTAssertEqual(GoalChoice.ordered(for: .us, available: []).first?.id, "business")
+        XCTAssertEqual(GoalChoice.ordered(for: .us, available: ["business", "negotiation"]).map(\.id), ["business", "negotiation"])
+        let interviews = GoalChoice.answers(for: "interviews")
+        XCTAssertEqual(interviews.contexts.first, "interviews")
+        XCTAssertEqual(Set(interviews.contexts), ["interviews", "meetings", "networking", "social"])
+        // Every goal maps back to itself through the existing suggestion rules' inputs.
+        for goal in ["business", "interviews", "negotiation", "conversational", "storytelling", "public_speaking"] {
+            XCTAssertEqual(GoalChoice.answers(for: goal).contexts.count, 4, goal)
+            XCTAssertFalse(GoalChoice.answers(for: goal).ease.isEmpty, goal)
+        }
+    }
+
     func testMarketFromRegion() {
         XCTAssertEqual(Market.from(region: "IN"), .in)
         XCTAssertEqual(Market.from(region: "in-mh"), .in)

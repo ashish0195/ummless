@@ -122,7 +122,7 @@ extension View {
     }
 }
 
-/// Small uppercase label used above titles ("WEEK 2 · STRUCTURE").
+/// Small label used above titles ("Week 2 · Structure"). Sentence case: capitals shout, and a calm screen reads faster.
 struct Eyebrow: View {
     let text: String
     var color: Color = Theme.inkSecondary
@@ -133,9 +133,8 @@ struct Eyebrow: View {
     }
 
     var body: some View {
-        Text(text.uppercased())
-            .font(.eyebrow)
-            .tracking(1.1)
+        Text(text)
+            .font(.subheadline.weight(.semibold))
             .foregroundStyle(color)
     }
 }

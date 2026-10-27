@@ -531,10 +531,10 @@ def _nudges(svc: AppServices, db: Session, user: User, now: datetime, local_now:
             from . import daily  # local import: daily imports notifications
 
             rep = daily.preview(svc, db, user, local_now.date())
-            title, body = "Your 60-second rep is ready", f"Today: {rep.title}. One minute is plenty — whenever suits you."
+            title, body = "Your 1-minute practice is ready", f"Today: {rep.title}. One minute is plenty — whenever suits you."
         else:
             title = "Pick up where you left off"
-            body = "Your progress is saved. Start again with one 60-second rep — no catching up needed."
+            body = "Your progress is saved. Start again with a 1-minute practice — no catching up needed."
         notify(db, user, category="nudge", title=title, body=body, deep_link="comlogue://daily", dedupe_key=key,
                now=now, expires_at=local_datetime(local_now.date() + timedelta(days=1), time(0, 0), tz))
         return  # at most one nudge per tick

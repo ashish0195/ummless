@@ -4,7 +4,7 @@ import Foundation
 /// Debug-only: launch with `-ComlogueScreenshotScene <scene>` against a backend that allows dev tools to
 /// open a specific screen with seeded demo data. Used by CI to capture real simulator screenshots.
 enum ScreenshotScene: String, CaseIterable {
-    case welcome, getStarted, activity, spar, results, recording, debrief, today, course, mission, practice, you, paywall
+    case welcome, goal, getStarted, activity, spar, results, recording, debrief, today, course, mission, practice, you, paywall
     // The habit loop, notifications and group conversations
     case daily, dailyFeedback, inbox, notifications, plan, group, groupReport
     // The India market
@@ -22,7 +22,8 @@ enum ScreenshotScene: String, CaseIterable {
     var onboardingStep: OnboardingModel.Step? {
         switch self {
         case .welcome: return .welcome
-        case .planIndia: return .plan
+        case .goal: return .goal
+        case .planIndia: return .reminder
         case .consentIndia: return .consent
         default: return nil
         }
@@ -64,7 +65,7 @@ extension AppModel {
         phase = .ready
         await refreshAll()
         switch scene {
-        case .welcome, .planIndia, .consentIndia:
+        case .welcome, .goal, .planIndia, .consentIndia:
             break
         case .getStarted:
             activeFlow = .getStarted
@@ -116,10 +117,8 @@ extension OnboardingModel {
     /// Jumps to the step a screenshot scene shows, with plausible answers filled in.
     func applyScreenshotScene(market: Market) {
         guard let scene = ScreenshotScene.current, let step = scene.onboardingStep, step != .welcome else { return }
-        contextsRanked = ["interviews", "meetings"]
-        easeTargets = ["concise"]
         goalTrack = market == .in ? "interviews" : "business"
-        anchor = PracticeAnchor.presets(for: market).first
+        routineId = "morning"
         ageConfirmed = step == .consent
         self.step = step
     }

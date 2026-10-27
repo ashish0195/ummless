@@ -137,7 +137,7 @@ own.** Recording status, pause and stop are always visible. When the user stops,
 - **Practice completion is separate from skill.** The communication web only updates from assessable
   recordings or assessments. Reflections inform goals but are not skill evidence.
 - Weekly target (user-chosen, default 3 sessions), optional reminders, and an easy return after a missed
-  week. No streak resets, leaderboards or XP. The daily rep (section 15) is the smallest unit of practice; the
+  week. No streak resets, leaderboards or XP. The daily practice (section 15) is the smallest unit of practice; the
   course stays the main path.
 
 ## 10. Extra practice (beyond the spec, from the earlier concepts)
@@ -158,7 +158,7 @@ whispers in live meetings (needs reliable live diarization).
 ## 11. Access and pricing
 
 - **Free:** baseline (all routes), gap-fill tasks, recovery and retries (never paywalled), one practice
-  mission, the full course preview, one spar per week, one talk, **the daily rep (always, with unlimited
+  mission, the full course preview, one spar per week, one talk, **the daily practice (always, with unlimited
   retries)**, one group discussion and one panel interview.
 - **Pro:** full course, unlimited spar, all talks, every group discussion and panel, event prep, and weekly
   reveal insights.
@@ -205,12 +205,12 @@ First-task completion, voluntary retries, return for the next mission, real-life
 on a fresh scenario, and the coverage funnel (what share of sessions reach each check). Engagement and
 learning are reported separately.
 
-## 15. The habit loop: one 60-second rep a day
+## 15. The habit loop: one 1-minute practice a day
 
 The user asked for an app people come back to every day. We used what behaviour-change research says makes a
 habit stick, and avoided the patterns that make people feel guilty and leave.
 
-- **A tiny daily action.** The *daily rep* is one spoken answer to a short prompt (30–90 seconds), with one
+- **A tiny daily action.** The *daily practice* (`daily_rep` in the API) is one spoken answer to a short prompt (30–90 seconds), with one
   target behaviour, feedback on that target and an unlimited "try again with that change". It's free for
   everyone and counts as a practice session. Prompts are picked per user and day: weighted towards the course
   focus, the goal and the market, lighter at weekends, seasonal in season (Diwali, Thanksgiving, appraisal
@@ -225,15 +225,15 @@ habit stick, and avoided the patterns that make people feel guilty and leave.
 - **Planned breaks.** Exams, travel, a wedding in the family: a break of 1 or 2 weeks (or until a date) pauses
   reminders and nudges, and a week overlapping a break neither counts nor breaks the run.
 - **Welcome back, no guilt.** After 7 or more quiet days, Today opens with "Welcome back — your progress is
-  saved. Start with a 60-second rep." instead of what was missed.
+  saved. Start with a 1-minute practice." instead of what was missed.
 - **Close the loop on real conversations.** The day after an interview, pitch or hard talk the user added, a
   check-in asks "How did it go?" (Today shows the same prompt). A tap and a sentence get a coach reply tied to the
   current course focus, and the reflection counts as real-life practice. Transfer to real life is what the course
   is for, and the spec's pilot metric for it now includes these reflections.
-- **Celebrate real progress.** Milestones such as the first rep, 10 and 30 reps, and 2, 4, 8 and 12 weeks on
+- **Celebrate real progress.** Milestones such as the first practice, 10 and 30 practices, and 2, 4, 8 and 12 weeks on
   target get a one-time celebration with a share option. There's still no XP, no leaderboard and no league.
-- **The rep is everywhere the user already is:** the Today screen's first card, home and lock screen widgets
-  (today's prompt and the week), Siri and Shortcuts ("Start today's rep"), and tomorrow's actual prompt in
+- **The daily practice is everywhere the user already is:** the Today screen's first card, home and lock screen widgets
+  (today's prompt and the week), Siri and Shortcuts ("Start today's practice"), and tomorrow's actual prompt in
   tomorrow's reminder.
 
 ## 16. Notifications that bring people back (and stop when they don't)
@@ -301,3 +301,26 @@ changes content, formats and price, not the product's rules.
     existing deletion controls.
   - The DPDP Rules were notified on 13 Nov 2025, and most notice and consent duties apply from about
     13 May 2027. See [LAUNCH.md](LAUNCH.md).
+
+## 18. Minimal by default
+
+The first full set of screenshots looked busy, and the user asked for a minimal design for the mass market in
+India and the US. Every screen now follows the same rules:
+
+- **One job per screen.** Each screen has one clear purpose and one primary button. Today shows today's
+  practice, the week and at most two things up next, nothing else.
+- **Plain words.** *Practice*, not *rep*. *Rehearse a hard conversation*, not *spar*. *Tough* or *friendly*,
+  not BRUTAL or KIND. Labels are in sentence case, because capitals shout. Internal names (`daily_rep`, `spar`)
+  stay in the API.
+- **One line under a title.** Methodology, evidence and "why this works" stay one tap away behind *How we
+  measure*, *See the moments* or a disclosure. Nothing was removed, only moved.
+- **Big rows instead of grids and chip clouds.** Lists use a 44-point icon, a title, one short line and a
+  chevron. Choices that used to be a cloud of chips (reminder time, anchor, days) are now four routine rows
+  and a 3 / 5 / every-day switch, with *Customise* for the rest.
+- **The first-run walkthrough happens once.** It has four screens: welcome (language at the top), *What do you
+  want to get better at?* (one tap, six goals, interviews first in India), *When should we remind you?*
+  (routine plus frequency) and the consent with the 18+ confirmation. Contexts, ease and reminder days are
+  derived from those answers instead of asked. After that, *How do you want to start?* offers two choices.
+  None of it shows again; the same settings live in *You → Settings*.
+- **Screenshots show the product, not the scaffolding.** The demo badge is hidden in screenshot mode, because
+  the README and store listing already say the data is a demo.

@@ -69,6 +69,15 @@ struct DemoBadge: View {
     var compact = false
 
     var body: some View {
+        #if DEBUG
+        // Screenshots (README, App Store, marketing) say they use demo data; the badge would only get in the way.
+        if ScreenshotScene.current == nil { badge }
+        #else
+        badge
+        #endif
+    }
+
+    private var badge: some View {
         Group {
             if compact {
                 Image(systemName: "theatermasks.fill")

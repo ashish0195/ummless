@@ -45,7 +45,7 @@ struct SettingsView: View {
                 } header: {
                     Text("Goal & language")
                 } footer: {
-                    Text("Changing your goal re-orders your course. Your results stay.")
+                    Text("Your results stay if you change your goal.")
                 }
 
                 Section {
@@ -61,8 +61,6 @@ struct SettingsView: View {
                     }
                 } header: {
                     Text("Practice")
-                } footer: {
-                    Text("Your weekly target, practice days and reminders, and which notifications you get.")
                 }
 
                 Section {
@@ -74,15 +72,12 @@ struct SettingsView: View {
                         Button("Record a new sample") { showVoiceSetup = true }
                         Button("Delete voice sample", role: .destructive) { confirmDeleteVoice = true }
                     } else {
-                        Text("No voice sample. You'll pick your voice by hand in each recording.")
-                            .font(.footnote)
-                            .foregroundStyle(Theme.inkSecondary)
                         Button("Set up voice matching") { showVoiceSetup = true }
                     }
                 } header: {
                     Text("Voice matching")
                 } footer: {
-                    Text("Used only to find your turns in recordings. Deleting it stops automatic matching; your recordings and results are managed separately.")
+                    Text("Used only to find your voice in recordings.")
                 }
 
                 Section {
@@ -110,7 +105,7 @@ struct SettingsView: View {
                 } header: {
                     Text("Privacy & data")
                 } footer: {
-                    Text("Download a copy of everything we store about you (audio excluded). Deleting everything removes your recordings, results, voice sample and account. This can't be undone.")
+                    Text("The download has everything we store about you, except audio.")
                 }
 
                 Section("About") {

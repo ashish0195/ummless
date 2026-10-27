@@ -511,8 +511,8 @@ in-app inbox only.
   - at most one per 72 hours;
   - after 2 unopened nudges, none until the user returns.
   - "Quiet" counts from the last practice session or tapped notification (or sign-up). Nudges go out at the user's
-    `reminder_time` (18:00 if none), only after onboarding, never during a break. The first names today's rep
-    ("Your 60-second rep is ready" / "Today: {title}. One minute is plenty — whenever suits you."); the second says
+    `reminder_time` (18:00 if none), only after onboarding, never during a break. The first names today's prompt
+    ("Your 1-minute practice is ready" / "Today: {title}. One minute is plenty — whenever suits you."); the second says
     "Pick up where you left off". No streak-loss language anywhere.
 - `weekly_reveal`: Sunday 18:00 local when the user practised that week ("{n} sessions and {m} min of practice this
   week…").
@@ -594,7 +594,7 @@ Progress += { welcome_back: { days_away: int, message: string }? }
 - `weeks_on_target`: consecutive completed weeks that met `weekly_target`, ending with last week, plus 1 if this week
   is already met. A week overlapping a planned break neither counts nor breaks the run.
 - `welcome_back` is present when the user's previous session was ≥ 7 days before today. It's warm, with no guilt:
-  "Welcome back — your progress is saved. Start with a 60-second rep." It disappears once they practise today.
+  "Welcome back — your progress is saved. Start with a 1-minute practice." It disappears once they practise today.
 - `this_week.met` is `sessions >= target`. A planned break is set with `practice_settings.paused_until`; ending it
   early (`null`) keeps the days already on break as break days.
 - New milestones:

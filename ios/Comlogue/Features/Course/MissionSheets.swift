@@ -32,84 +32,68 @@ struct AttemptFeedbackView: View {
     }
 }
 
-/// Feedback on one attempt against its target: where it showed up, what worked, one change, and how it compares
-/// with the previous try. Shared by missions and the daily rep.
+/// Feedback on one attempt, simplest first: did the target show up, the one change for next time, what worked, and
+/// the moment that shows it. Shared by missions and the daily practice.
 struct AttemptFeedbackContent: View {
     let attempt: MissionAttempt
     let color: Color
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
+        VStack(alignment: .leading, spacing: 22) {
             if let feedback = attempt.feedback {
-                HStack {
-                    Eyebrow("Attempt #\(attempt.attemptNumber)", color: color)
-                    Spacer()
+                VStack(alignment: .leading, spacing: 12) {
                     TargetMetBadge(targetMet: feedback.targetMet, assessable: feedback.assessable)
+                    Text(feedback.headline).font(.display).foregroundStyle(Theme.ink).fixedSize(horizontal: false, vertical: true)
                 }
-                Text(feedback.headline).font(.display).foregroundStyle(Theme.ink).fixedSize(horizontal: false, vertical: true)
-
                 if feedback.assessable == .no {
-                    Text("We couldn't assess this attempt, so there's no judgement here — just what got in the way.")
-                        .font(.subheadline)
+                    Text("We couldn't assess this one, so there's no judgement here — just what got in the way.")
+                        .font(.body)
                         .foregroundStyle(Theme.inkSecondary)
+                        .fixedSize(horizontal: false, vertical: true)
                     if !feedback.issues.isEmpty { IssueCard(issues: feedback.issues) }
                 } else {
-                    if let moment = feedback.where {
-                        VStack(alignment: .leading, spacing: 8) {
-                            Eyebrow("Where it showed up", color: color)
-                            EvidenceMomentRow(moment: moment, tint: color)
-                        }
-                        .card()
-                    }
-                    if !feedback.whatWorked.isEmpty {
-                        VStack(alignment: .leading, spacing: 8) {
-                            Eyebrow("What worked", color: Theme.mint)
-                            ForEach(feedback.whatWorked, id: \.self) { item in
-                                Label(item, systemImage: "checkmark").font(.subheadline).foregroundStyle(Theme.ink)
-                            }
-                        }
-                        .card()
-                    }
                     if let change = feedback.oneChange {
-                        VStack(alignment: .leading, spacing: 6) {
-                            Eyebrow("One change for next time", color: .white.opacity(0.85))
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Next time").font(.subheadline.weight(.semibold)).foregroundStyle(.white.opacity(0.85))
                             Text(change).font(.title3Rounded).foregroundStyle(.white).fixedSize(horizontal: false, vertical: true)
                         }
-                        .padding(18)
+                        .padding(20)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .background(Theme.aurora, in: RoundedRectangle(cornerRadius: Theme.radius, style: .continuous))
                     }
-                    if let missing = feedback.missingEvidence {
-                        Label(missing, systemImage: "info.circle")
-                            .font(.footnote)
-                            .foregroundStyle(Theme.inkSecondary)
-                    }
-                }
-
-                NotQuiteRightButton(target: .attempt(attempt.id))
-
-                if let comparison = feedback.comparison {
-                    VStack(alignment: .leading, spacing: 8) {
-                        Eyebrow("Compared with your last attempt", color: Theme.violet)
-                        Text(comparison.summary).font(.subheadline).foregroundStyle(Theme.ink)
-                        ForEach(comparison.changes, id: \.self) { change in
-                            Label(change, systemImage: "arrow.left.arrow.right").font(.footnote).foregroundStyle(Theme.ink)
+                    if !feedback.whatWorked.isEmpty {
+                        VStack(alignment: .leading, spacing: 12) {
+                            Text("What worked").font(.title3Rounded).foregroundStyle(Theme.ink)
+                            ForEach(Array(feedback.whatWorked.prefix(2)), id: \.self) { item in
+                                HStack(alignment: .top, spacing: 10) {
+                                    Image(systemName: "checkmark.circle.fill").foregroundStyle(Theme.mint)
+                                    Text(item).font(.body).foregroundStyle(Theme.ink).fixedSize(horizontal: false, vertical: true)
+                                }
+                            }
                         }
-                        Text(comparison.note).font(.caption).foregroundStyle(Theme.inkTertiary)
                     }
-                    .card()
+                    if let moment = feedback.where {
+                        EvidenceMomentRow(moment: moment, tint: color)
+                    }
+                    if let missing = feedback.missingEvidence {
+                        Text(missing).font(.footnote).foregroundStyle(Theme.inkSecondary)
+                    }
                 }
-            } else if attempt.isFailed {
-                VStack(alignment: .leading, spacing: 8) {
-                    Label("We couldn't write feedback for this one", systemImage: "exclamationmark.bubble.fill")
-                        .font(.headlineRounded)
-                        .foregroundStyle(Theme.ink)
-                    Text("Something went wrong on our side, not yours. Give it another go when you're ready.")
+                if let comparison = feedback.comparison {
+                    Label(comparison.summary, systemImage: "arrow.left.arrow.right")
                         .font(.subheadline)
                         .foregroundStyle(Theme.inkSecondary)
                         .fixedSize(horizontal: false, vertical: true)
                 }
-                .card()
+                NotQuiteRightButton(target: .attempt(attempt.id))
+            } else if attempt.isFailed {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("We couldn't write feedback for this one").font(.title3Rounded).foregroundStyle(Theme.ink)
+                    Text("Something went wrong on our side, not yours. Give it another go when you're ready.")
+                        .font(.body)
+                        .foregroundStyle(Theme.inkSecondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
             } else {
                 LoadingStateView(title: "Feedback on the way…")
             }

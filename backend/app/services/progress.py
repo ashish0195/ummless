@@ -20,7 +20,7 @@ from . import users
 SESSION_TYPES = ("assessment", "recording", "mission_attempt", "spar_session", "real_life", "daily_rep",
                  "group_session")
 WELCOME_BACK_DAYS = 7
-WELCOME_BACK_MESSAGE = "Welcome back — your progress is saved. Start with a 60-second rep."
+WELCOME_BACK_MESSAGE = "Welcome back — your progress is saved. Start with a 1-minute practice."
 
 MILESTONES: dict[str, tuple[str, str]] = {
     "first_conversation": ("First conversation", "You finished your first AI conversation."),
@@ -32,9 +32,9 @@ MILESTONES: dict[str, tuple[str, str]] = {
     "new_scenario": ("Skill transferred", "You hit the target in a new scenario, not just a memorized one."),
     "first_spar": ("First spar", "You held your ground with an AI sparring partner."),
     "weekly_target": ("Weekly target met", "You hit your practice target this week."),
-    "first_rep": ("First daily rep", "One prompt, one minute — that's how the habit starts."),
-    "reps_10": ("10 daily reps", "Ten short reps. Small and steady is how speaking gets easier."),
-    "reps_30": ("30 daily reps", "Thirty reps. Speaking practice is part of your routine now."),
+    "first_rep": ("First practice", "One prompt, one minute — that's how the habit starts."),
+    "reps_10": ("10 practices", "Ten done. Small and steady is how speaking gets easier."),
+    "reps_30": ("30 practices", "Thirty done. Speaking practice is part of your routine now."),
     "weeks_on_target_2": ("2 weeks on target", "Two weeks in a row at the practice target you chose."),
     "weeks_on_target_4": ("4 weeks on target", "A month of meeting your own target."),
     "weeks_on_target_8": ("8 weeks on target", "Two months of steady practice."),

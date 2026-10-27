@@ -100,7 +100,7 @@ def build(svc: AppServices, db: Session, user: User) -> WeeklyReview:
         facts.append("New evidence for: " + ", ".join(DIMENSIONS[s.dimension].title for s in skill_updates) + ".")
     reps = sum(1 for e in sessions if e.type == "daily_rep")
     if reps:  # last: the facts are in order of importance, and only three become highlights
-        facts.append(f"{reps} daily rep(s) — short speaking practice, not a skill measure.")
+        facts.append(f"{reps} one-minute daily practice(s) — habit-building, not a skill measure.")
     signature = hashlib.sha256("|".join(facts + [focus_title]).encode()).hexdigest()[:40]
     cached = db.scalar(select(WeeklyReviewCache).where(WeeklyReviewCache.user_id == user.id,
                                                        WeeklyReviewCache.week_start == week_start(start, users.timezone(user)).isoformat()))

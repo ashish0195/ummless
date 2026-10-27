@@ -2,7 +2,7 @@
 
 **An AI communication coach.** Talk with an AI partner, upload real conversations, or record one. Comlogue
 checks the audio, makes sure it's assessing *your* voice, and gives feedback on seven communication skills
-only where there's real evidence. Then it coaches you one small change at a time, with a 60-second speaking rep
+only where there's real evidence. Then it coaches you one small change at a time, with a 1-minute speaking practice
 each day that turns practice into a habit. Built for the US and India.
 
 <p align="center"><img src="ios/Comlogue/Resources/Assets.xcassets/AppIcon.appiconset/AppIcon-1024.png" width="120" alt="Comlogue app icon"></p>
@@ -55,7 +55,7 @@ whose message starts with `[screenshots]` to refresh them.
 
 ## What's inside
 
-- **A daily 60-second rep:**
+- **A daily 1-minute practice:**
   - one short speaking prompt a day, picked for the user's goal, focus skill and market;
   - feedback on one target behaviour, with unlimited retries;
   - free for everyone.
@@ -95,7 +95,7 @@ whose message starts with `[screenshots]` to refresh them.
   - Get a debrief of a recorded meeting.
 - **Privacy built in:** just-in-time recording consent with regional rules, and deletion of each recording,
   the voice sample, or everything.
-- **Siri and Shortcuts:** "Start today's rep", "Start today's mission", "Quick practice" and "Record a
+- **Siri and Shortcuts:** "Start today's practice", "Start today's mission", "Quick practice" and "Record a
   conversation".
 - **Honest when things go wrong:** unclear audio, an uncertain speaker or a server-side failure leads to a
   specific next step ("Try again", "Choose another speaker", a short gap-filling scenario), never a low score.

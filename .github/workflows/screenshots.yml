@@ -85,7 +85,7 @@ jobs:
             fi
           }
           xcrun simctl ui "$DEVICE" appearance light
-          for scene in welcome getStarted activity spar results recording debrief today course mission practice you paywall \
+          for scene in welcome goal getStarted activity spar results recording debrief today course mission practice you paywall \
                        daily dailyFeedback inbox notifications plan group groupReport; do
             capture "$scene" "$scene"
           done

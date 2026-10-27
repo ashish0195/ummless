@@ -97,7 +97,7 @@ def test_welcome_back_after_a_week_away(client):
     _sessions(client, user_id, [NOW - timedelta(days=9)])
     welcome = _build(client, user_id).welcome_back
     assert welcome is not None and welcome.days_away == 9
-    assert welcome.message == "Welcome back — your progress is saved. Start with a 60-second rep."
+    assert welcome.message == "Welcome back — your progress is saved. Start with a 1-minute practice."
     assert _build(client, user_id, NOW - timedelta(days=4)).welcome_back is None  # only 5 days away then
     _sessions(client, user_id, [NOW - timedelta(minutes=30)])
     assert _build(client, user_id).welcome_back is None  # practised today

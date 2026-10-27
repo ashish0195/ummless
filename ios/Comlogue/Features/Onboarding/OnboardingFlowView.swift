@@ -1,24 +1,23 @@
 import SwiftUI
 
+/// The first-run walkthrough, shown once: welcome → goal → practice time → privacy. One question per screen.
+/// The spec's onboarding answers (ranked contexts, what should feel easier) are derived from the goal, and the
+/// language is a small control on the welcome screen, so newcomers face as few decisions as possible.
 @MainActor
 @Observable
 final class OnboardingModel {
     enum Step: Int, CaseIterable {
-        case welcome, contexts, ease, goal, plan, language, consent
+        case welcome, goal, reminder, consent
     }
 
     var step: Step = .welcome
-    var contextsRanked: [String] = []
-    var easeTargets: Set<String> = []
     var goalTrack: String?
     var language: String = OnboardingModel.deviceLanguage
     var isSaving = false
     var error: String?
     // Practice plan
     var weeklyTarget = 3
-    var days: Set<Int> = [1, 3, 5]
-    var time = PracticeTime.morning.time
-    var anchor: String?
+    var routineId = "morning"
     var remindersOn = true
     // Consent
     var ageConfirmed = false
@@ -41,40 +40,29 @@ final class OnboardingModel {
         step = previous
     }
 
-    func toggleRank(_ id: String) {
-        Haptics.selection()
-        if let index = contextsRanked.firstIndex(of: id) {
-            contextsRanked.remove(at: index)
-        } else {
-            contextsRanked.append(id)
-        }
+    func routine(for market: Market) -> PracticeRoutine {
+        let options = PracticeRoutine.options(for: market)
+        return options.first { $0.id == routineId } ?? options[0]
     }
 
-    func toggleEase(_ id: String) {
-        Haptics.selection()
-        if easeTargets.contains(id) { easeTargets.remove(id) } else { easeTargets.insert(id) }
-    }
-
-    /// Suggests a goal area from the ranked contexts and ease targets. The person can always pick another.
-    func suggestedTrack(available: [Track]) -> String? {
-        GoalSuggestion.suggest(contextsRanked: contextsRanked, easeTargets: easeTargets, available: available.map(\.id))
-    }
-
-    func patch(consentVersion: String, allContexts: [String]) -> MePatch {
-        let ranked = contextsRanked + allContexts.filter { !contextsRanked.contains($0) }
+    func patch(consentVersion: String, market: Market) -> MePatch {
+        let goal = goalTrack ?? "business"
+        let answers = GoalChoice.answers(for: goal)
+        let routine = routine(for: market)
         return MePatch(
             onboarding: .init(
                 completed: true,
-                contextsRanked: ranked,
-                easeTargets: Array(easeTargets).sorted(),
-                goalTrack: goalTrack,
+                contextsRanked: answers.contexts,
+                easeTargets: answers.ease,
+                goalTrack: goal,
                 language: language,
                 region: RegionPreference.best,
                 analysisConsentVersion: consentVersion,
                 ageConfirmed: ageConfirmed
             ),
-            practiceSettings: .init(weeklyTarget: weeklyTarget, reminderTime: time,
-                                    reminderDays: remindersOn ? days.sorted() : [], anchor: anchor)
+            practiceSettings: .init(weeklyTarget: weeklyTarget, reminderTime: routine.time,
+                                    reminderDays: remindersOn ? HabitMath.defaultDays(forTarget: weeklyTarget) : [],
+                                    anchor: routine.anchor)
         )
     }
 }
@@ -86,10 +74,12 @@ struct OnboardingFlowView: View {
     var body: some View {
         VStack(spacing: 0) {
             if model.step != .welcome {
-                HStack(spacing: 14) {
+                HStack(spacing: 16) {
                     CircleIconButton(systemName: "chevron.left") { withAnimation { model.back() } }
-                    StepProgressBar(current: model.progressIndex, total: model.progressTotal)
-                    if app.isDemo { DemoBadge() }
+                    ProgressDots(current: model.progressIndex, total: model.progressTotal)
+                    Spacer()
+                    // Balances the back button so the dots sit in the middle.
+                    Color.clear.frame(width: 40, height: 40)
                 }
                 .padding(.horizontal, Theme.gutter)
                 .padding(.top, 8)
@@ -97,11 +87,8 @@ struct OnboardingFlowView: View {
             Group {
                 switch model.step {
                 case .welcome: WelcomeStep(model: model)
-                case .contexts: ContextRankStep(model: model)
-                case .ease: EaseStep(model: model)
                 case .goal: GoalStep(model: model)
-                case .plan: PlanStep(model: model)
-                case .language: LanguageStep(model: model)
+                case .reminder: ReminderStep(model: model)
                 case .consent: AnalysisConsentStep(model: model)
                 }
             }
@@ -117,226 +104,155 @@ struct OnboardingFlowView: View {
     }
 }
 
-// MARK: - Steps
-
-private struct WelcomeStep: View {
-    @Environment(AppModel.self) private var app
-    let model: OnboardingModel
+private struct ProgressDots: View {
+    let current: Int
+    let total: Int
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            HStack {
-                Text(Brand.name).font(.headlineRounded).foregroundStyle(Theme.ink)
-                Spacer()
-                if app.isDemo { DemoBadge() }
+        HStack(spacing: 8) {
+            ForEach(0..<total, id: \.self) { index in
+                Capsule()
+                    .fill(index <= current ? AnyShapeStyle(Theme.aurora) : AnyShapeStyle(Theme.stroke))
+                    .frame(width: index == current ? 28 : 8, height: 8)
             }
-            .padding(.top, 12)
-            // The copy below never compresses; the orb is the only flexible piece (up to 220 pt), so on
-            // small phones it shrinks instead of the text getting truncated.
-            VoiceOrb(level: 0.25)
-                .frame(maxWidth: 220, maxHeight: 220)
-                .aspectRatio(1, contentMode: .fit)
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 16)
-            Text("Say what you mean.\nBe understood.")
-                .font(.system(size: 40, weight: .heavy, design: .rounded))
-                .foregroundStyle(Theme.ink)
-                .fixedSize(horizontal: false, vertical: true)
-            Text("An AI coach that listens to how you really talk, shows you what's working — with evidence — and helps you practise one small change at a time.")
-                .font(.body)
-                .foregroundStyle(Theme.inkSecondary)
-                .fixedSize(horizontal: false, vertical: true)
-                .padding(.top, 12)
-            VStack(alignment: .leading, spacing: 12) {
-                welcomeRow("waveform.circle.fill", "Talk with an AI partner, upload a conversation, or record one")
-                welcomeRow("checkmark.seal.fill", "Feedback only where there's real evidence — never a guess")
-                welcomeRow("figure.walk.motion", "Missions that fit the moments you care about")
-            }
-            .padding(.top, 22)
-            Spacer(minLength: 20).layoutPriority(-1)
-            Button("Get started") { model.next() }
-                .buttonStyle(.primaryPill)
-            Text("About 2 minutes of questions first.")
-                .font(.footnote)
-                .foregroundStyle(Theme.inkTertiary)
-                .frame(maxWidth: .infinity)
-                .padding(.top, 10)
         }
-        .padding(.horizontal, Theme.gutter)
-        .padding(.bottom, 12)
-    }
-
-    private func welcomeRow(_ icon: String, _ text: String) -> some View {
-        HStack(alignment: .top, spacing: 12) {
-            Image(systemName: icon).font(.title3).foregroundStyle(Theme.indigo).frame(width: 28)
-            Text(text).font(.subheadline).foregroundStyle(Theme.ink).fixedSize(horizontal: false, vertical: true)
-        }
+        .frame(maxWidth: .infinity)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Step \(current + 1) of \(total)")
     }
 }
 
-private struct StepScaffold<Content: View>: View {
-    let eyebrow: String
+/// Title, optional subtitle, the choices, and the buttons pinned to the bottom.
+private struct OnboardingPage<Content: View, Footer: View>: View {
     let title: String
-    let subtitle: String
-    let canContinue: Bool
-    var continueTitle: String = "Continue"
-    let onContinue: () -> Void
+    var subtitle: String?
     @ViewBuilder let content: Content
+    @ViewBuilder let footer: Footer
 
     var body: some View {
         VStack(spacing: 0) {
             ScrollView {
-                VStack(alignment: .leading, spacing: 10) {
-                    Eyebrow(eyebrow, color: Theme.indigo)
-                    Text(title).font(.display).foregroundStyle(Theme.ink).fixedSize(horizontal: false, vertical: true)
-                    Text(subtitle).font(.body).foregroundStyle(Theme.inkSecondary)
-                    content.padding(.top, 14)
+                VStack(alignment: .leading, spacing: 12) {
+                    Text(title)
+                        .font(.system(size: 34, weight: .bold, design: .rounded))
+                        .foregroundStyle(Theme.ink)
+                        .fixedSize(horizontal: false, vertical: true)
+                    if let subtitle {
+                        Text(subtitle).font(.body).foregroundStyle(Theme.inkSecondary)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                    content.padding(.top, 16)
                 }
                 .padding(.horizontal, Theme.gutter)
-                .padding(.top, 24)
-                .padding(.bottom, 24)
+                .padding(.vertical, 24)
             }
-            Button(continueTitle, action: onContinue)
-                .buttonStyle(.primaryPill)
-                .disabled(!canContinue)
+            VStack(spacing: 8) { footer }
                 .padding(.horizontal, Theme.gutter)
                 .padding(.bottom, 12)
         }
     }
 }
 
-private struct ContextRankStep: View {
-    @Environment(AppModel.self) private var app
-    let model: OnboardingModel
-
-    private var contexts: [ChoiceOption] {
-        app.meta?.contexts ?? [
-            ChoiceOption(id: "social", title: "Friends & social situations"),
-            ChoiceOption(id: "networking", title: "Networking"),
-            ChoiceOption(id: "meetings", title: "Meetings"),
-            ChoiceOption(id: "interviews", title: "Interviews"),
-        ]
-    }
+/// A large, single-choice row.
+private struct ChoiceRow: View {
+    let symbol: String
+    let title: String
+    var detail: String?
+    let selected: Bool
+    let action: () -> Void
 
     var body: some View {
-        StepScaffold(
-            eyebrow: "Step 1 · Where it matters",
-            title: "Where would you most like to communicate better?",
-            subtitle: "Tap them in order of importance. Your top picks shape your missions.",
-            canContinue: !model.contextsRanked.isEmpty,
-            onContinue: { model.next() }
-        ) {
-            VStack(spacing: 10) {
-                ForEach(contexts) { option in
-                    let rank = model.contextsRanked.firstIndex(of: option.id).map { $0 + 1 }
-                    Button { model.toggleRank(option.id) } label: {
-                        HStack(spacing: 14) {
-                            Image(systemName: icon(option.id))
-                                .font(.title3)
-                                .foregroundStyle(rank == nil ? Theme.inkSecondary : Theme.indigo)
-                                .frame(width: 30)
-                            Text(option.title).font(.headlineRounded).foregroundStyle(Theme.ink)
-                            Spacer()
-                            ZStack {
-                                Circle()
-                                    .strokeBorder(rank == nil ? Theme.stroke : Color.clear, lineWidth: 1.5)
-                                    .background(Circle().fill(rank == nil ? AnyShapeStyle(Color.clear) : AnyShapeStyle(Theme.aurora)))
-                                if let rank {
-                                    Text("\(rank)").font(.subheadline.weight(.bold)).foregroundStyle(.white)
-                                }
-                            }
-                            .frame(width: 30, height: 30)
-                        }
-                        .padding(16)
-                        .background(Theme.surface, in: RoundedRectangle(cornerRadius: Theme.radiusSmall, style: .continuous))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: Theme.radiusSmall, style: .continuous)
-                                .strokeBorder(rank == nil ? Theme.stroke : Theme.indigo.opacity(0.5), lineWidth: 1)
-                        )
-                    }
-                    .buttonStyle(.pressableCard)
-                    .accessibilityLabel(rank.map { "\(option.title), ranked \($0)" } ?? option.title)
+        Button(action: action) {
+            HStack(spacing: 16) {
+                Image(systemName: symbol)
+                    .font(.title3)
+                    .foregroundStyle(selected ? Color.white : Theme.indigo)
+                    .frame(width: 46, height: 46)
+                    .background(selected ? AnyShapeStyle(Theme.aurora) : AnyShapeStyle(Theme.indigo.opacity(0.1)), in: Circle())
+                Text(title).font(.headlineRounded).foregroundStyle(Theme.ink).multilineTextAlignment(.leading)
+                Spacer(minLength: 8)
+                if let detail {
+                    Text(detail).font(.subheadline).foregroundStyle(Theme.inkSecondary)
                 }
-                if !model.contextsRanked.isEmpty {
-                    Button("Clear ranking") { model.contextsRanked.removeAll() }
-                        .font(.footnote.weight(.semibold))
-                        .foregroundStyle(Theme.inkSecondary)
-                        .padding(.top, 4)
+                if selected {
+                    Image(systemName: "checkmark.circle.fill").font(.title3).foregroundStyle(Theme.indigo)
                 }
             }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+            .background(Theme.surface, in: RoundedRectangle(cornerRadius: Theme.radius, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: Theme.radius, style: .continuous)
+                    .strokeBorder(selected ? Theme.indigo : Theme.stroke, lineWidth: selected ? 2 : 1)
+            )
         }
-    }
-
-    private func icon(_ id: String) -> String {
-        switch id {
-        case "social": return "person.2.fill"
-        case "networking": return "point.3.connected.trianglepath.dotted"
-        case "meetings": return "person.3.fill"
-        case "interviews": return "briefcase.fill"
-        default: return "bubble.left.fill"
-        }
+        .buttonStyle(.pressableCard)
+        .accessibilityAddTraits(selected ? .isSelected : [])
     }
 }
 
-private struct EaseStep: View {
-    @Environment(AppModel.self) private var app
-    let model: OnboardingModel
+// MARK: - Steps
 
-    private var options: [ChoiceOption] {
-        app.meta?.easeTargets ?? [
-            ChoiceOption(id: "explaining", title: "Explaining myself"),
-            ChoiceOption(id: "contributing", title: "Contributing"),
-            ChoiceOption(id: "connecting", title: "Connecting"),
-            ChoiceOption(id: "persuading", title: "Persuading"),
-            ChoiceOption(id: "concise", title: "Being concise"),
-        ]
+private struct WelcomeStep: View {
+    @Environment(AppModel.self) private var app
+    @Bindable var model: OnboardingModel
+
+    private var languages: [LanguageOption] {
+        app.meta?.languages ?? [LanguageOption(code: "en", name: "English")]
+    }
+
+    private var languageName: String {
+        if model.language == "hinglish" { return "Hinglish" }
+        return languages.first { $0.code == model.language }?.name ?? "English"
     }
 
     var body: some View {
-        StepScaffold(
-            eyebrow: "Step 2 · What should feel easier",
-            title: "What would you like to feel easier?",
-            subtitle: "Tick all that apply.",
-            canContinue: !model.easeTargets.isEmpty,
-            onContinue: { model.next() }
-        ) {
-            VStack(spacing: 10) {
-                ForEach(options) { option in
-                    let selected = model.easeTargets.contains(option.id)
-                    Button { model.toggleEase(option.id) } label: {
-                        HStack(spacing: 14) {
-                            Image(systemName: icon(option.id))
-                                .font(.title3)
-                                .foregroundStyle(selected ? Theme.indigo : Theme.inkSecondary)
-                                .frame(width: 30)
-                            Text(option.title).font(.headlineRounded).foregroundStyle(Theme.ink)
-                            Spacer()
-                            Image(systemName: selected ? "checkmark.circle.fill" : "circle")
-                                .font(.title2)
-                                .foregroundStyle(selected ? Theme.indigo : Theme.stroke)
+        VStack(spacing: 0) {
+            HStack {
+                Spacer()
+                // The practice language: the AI partner speaks it and feedback is written in it.
+                Menu {
+                    Picker("Practice language", selection: $model.language) {
+                        ForEach(languages) { language in
+                            Text(language.name).tag(language.code)
                         }
-                        .padding(16)
-                        .background(Theme.surface, in: RoundedRectangle(cornerRadius: Theme.radiusSmall, style: .continuous))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: Theme.radiusSmall, style: .continuous)
-                                .strokeBorder(selected ? Theme.indigo.opacity(0.5) : Theme.stroke, lineWidth: 1)
-                        )
                     }
-                    .buttonStyle(.pressableCard)
-                    .accessibilityAddTraits(selected ? .isSelected : [])
+                } label: {
+                    Label(languageName, systemImage: "globe")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(Theme.ink)
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 9)
+                        .background(Theme.surface, in: Capsule())
+                        .overlay(Capsule().strokeBorder(Theme.stroke))
                 }
+                .accessibilityLabel("Practice language: \(languageName)")
             }
+            .padding(.top, 12)
+            Spacer(minLength: 12)
+            VoiceOrb(level: 0.25)
+                .frame(maxWidth: 260, maxHeight: 260)
+                .aspectRatio(1, contentMode: .fit)
+            Spacer(minLength: 12)
+            VStack(spacing: 14) {
+                Text("Say what you mean.\nBe understood.")
+                    .font(.system(size: 38, weight: .heavy, design: .rounded))
+                    .foregroundStyle(Theme.ink)
+                    .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
+                Text("A friendly AI coach. One minute a day.")
+                    .font(.title3)
+                    .foregroundStyle(Theme.inkSecondary)
+                    .multilineTextAlignment(.center)
+            }
+            Spacer(minLength: 28)
+            Button("Get started") { model.next() }
+                .buttonStyle(.primaryPill)
         }
-    }
-
-    private func icon(_ id: String) -> String {
-        switch id {
-        case "explaining": return "text.bubble.fill"
-        case "contributing": return "hand.raised.fill"
-        case "connecting": return "heart.text.square.fill"
-        case "persuading": return "megaphone.fill"
-        case "concise": return "scissors"
-        default: return "circle"
+        .padding(.horizontal, Theme.gutter)
+        .padding(.bottom, 12)
+        .onAppear {
+            if !languages.contains(where: { $0.code == model.language }) { model.language = "en" }
         }
     }
 }
@@ -345,88 +261,56 @@ private struct GoalStep: View {
     @Environment(AppModel.self) private var app
     @Bindable var model: OnboardingModel
 
-    private var tracks: [Track] { app.meta?.tracks ?? [] }
-
     var body: some View {
-        let suggestion = model.suggestedTrack(available: tracks)
-        StepScaffold(
-            eyebrow: "Step 3 · Your goal",
-            title: "Pick a goal to start with",
-            subtitle: "Your course follows this goal. You can change it any time.",
-            canContinue: model.goalTrack != nil,
-            onContinue: { model.next() }
-        ) {
+        OnboardingPage(title: "What do you want to get better at?", subtitle: "Pick one to start. You can change it any time.") {
             VStack(spacing: 10) {
-                ForEach(tracks) { track in
-                    let selected = model.goalTrack == track.id
-                    Button {
+                ForEach(GoalChoice.ordered(for: app.market, available: (app.meta?.tracks ?? []).map(\.id))) { choice in
+                    ChoiceRow(symbol: choice.symbol, title: choice.title, selected: model.goalTrack == choice.id) {
                         Haptics.selection()
-                        model.goalTrack = track.id
-                    } label: {
-                        HStack(alignment: .top, spacing: 14) {
-                            Image(systemName: track.symbol)
-                                .font(.title3)
-                                .foregroundStyle(selected ? Color.white : Theme.indigo)
-                                .frame(width: 44, height: 44)
-                                .background(selected ? AnyShapeStyle(Theme.aurora) : AnyShapeStyle(Theme.indigo.opacity(0.1)),
-                                            in: RoundedRectangle(cornerRadius: 12, style: .continuous))
-                            VStack(alignment: .leading, spacing: 4) {
-                                HStack {
-                                    Text(track.title).font(.headlineRounded).foregroundStyle(Theme.ink)
-                                    if track.id == suggestion {
-                                        Tag(text: "Suggested", color: Theme.mint)
-                                    }
-                                }
-                                Text(track.subtitle).font(.footnote).foregroundStyle(Theme.inkSecondary)
-                                    .fixedSize(horizontal: false, vertical: true)
-                            }
-                            Spacer(minLength: 0)
+                        model.goalTrack = choice.id
+                        // One tap is the answer: move on once the selection has registered.
+                        Task {
+                            try? await Task.sleep(nanoseconds: 280_000_000)
+                            if model.step == .goal { model.next() }
                         }
-                        .padding(14)
-                        .background(Theme.surface, in: RoundedRectangle(cornerRadius: Theme.radiusSmall, style: .continuous))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: Theme.radiusSmall, style: .continuous)
-                                .strokeBorder(selected ? Theme.indigo : Theme.stroke, lineWidth: selected ? 2 : 1)
-                        )
                     }
-                    .buttonStyle(.pressableCard)
-                }
-                if tracks.isEmpty {
-                    ProgressView().padding()
                 }
             }
-        }
-        .onAppear {
-            if model.goalTrack == nil { model.goalTrack = suggestion }
+        } footer: {
+            EmptyView()
         }
     }
 }
 
-private struct PlanStep: View {
+private struct ReminderStep: View {
     @Environment(AppModel.self) private var app
     @Bindable var model: OnboardingModel
     @State private var showPriming = false
 
     var body: some View {
-        StepScaffold(
-            eyebrow: "Step 4 · Your practice plan",
-            title: "Make it a habit",
-            subtitle: "A minute or two on the days you choose. Tying practice to something you already do makes it much easier to keep.",
-            canContinue: !model.remindersOn || !model.days.isEmpty,
-            onContinue: continueTapped
-        ) {
-            VStack(alignment: .leading, spacing: 20) {
-                PracticePlanEditor(weeklyTarget: $model.weeklyTarget, days: $model.days, time: $model.time,
-                                   anchor: $model.anchor, market: app.market)
-                Toggle(isOn: $model.remindersOn) {
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("Remind me on these days").font(.headlineRounded).foregroundStyle(Theme.ink)
-                        Text("With that day's 60-second prompt. You can change it any time.")
-                            .font(.footnote).foregroundStyle(Theme.inkSecondary)
+        OnboardingPage(title: "When will you practise?", subtitle: "One minute is enough. We'll send a gentle reminder.") {
+            VStack(spacing: 10) {
+                ForEach(PracticeRoutine.options(for: app.market)) { routine in
+                    ChoiceRow(symbol: routine.symbol, title: routine.title,
+                              detail: PracticePlanEditor.displayTime(routine.time),
+                              selected: model.routineId == routine.id) {
+                        Haptics.selection()
+                        model.routineId = routine.id
                     }
                 }
-                .tint(Theme.indigo)
+                Picker("How often", selection: $model.weeklyTarget) {
+                    Text("3 days a week").tag(3)
+                    Text("5 days").tag(5)
+                    Text("Every day").tag(7)
+                }
+                .pickerStyle(.segmented)
+                .padding(.top, 14)
             }
+        } footer: {
+            Button("Continue") { continueTapped(reminders: true) }
+                .buttonStyle(.primaryPill)
+            Button("No reminders") { continueTapped(reminders: false) }
+                .buttonStyle(.ghostPill)
         }
         .sheet(isPresented: $showPriming, onDismiss: { model.next() }) {
             NotificationPrimingView(summary: summary) { showPriming = false }
@@ -436,87 +320,19 @@ private struct PlanStep: View {
     }
 
     private var summary: String {
-        let names = model.days.sorted().map { HabitMath.weekdayShortNames[$0 - 1] }.joined(separator: ", ")
-        return "\(names) at \(PracticePlanEditor.displayTime(model.time))"
+        let routine = model.routine(for: app.market)
+        return "\(routine.title.lowercased()), \(PracticePlanEditor.displayTime(routine.time))"
     }
 
-    private func continueTapped() {
+    private func continueTapped(reminders: Bool) {
+        model.remindersOn = reminders
         Task {
             await app.notifications.refreshStatus()
-            if model.remindersOn && app.notifications.status == .notDetermined {
+            if reminders && app.notifications.status == .notDetermined {
                 showPriming = true
             } else {
                 model.next()
             }
-        }
-    }
-}
-
-private struct LanguageStep: View {
-    @Environment(AppModel.self) private var app
-    @Bindable var model: OnboardingModel
-
-    private var languages: [LanguageOption] {
-        app.meta?.languages ?? [LanguageOption(code: "en", name: "English")]
-    }
-
-    /// The languages most people in this market pick, one tap away.
-    private var quickPicks: [LanguageOption] {
-        let codes = app.market == .in ? ["en", "hinglish", "hi"] : ["en", "es"]
-        return codes.compactMap { code in languages.first { $0.code == code } }
-    }
-
-    var body: some View {
-        StepScaffold(
-            eyebrow: "Step 5 · Language",
-            title: "Which language would you like to use?",
-            subtitle: "Your AI partner will speak it, and your feedback will be written in it. The app's menus stay in English for now.",
-            canContinue: true,
-            onContinue: { model.next() }
-        ) {
-            VStack(alignment: .leading, spacing: 14) {
-                if quickPicks.count > 1 {
-                    FlowLayout(spacing: 8) {
-                        ForEach(quickPicks) { language in
-                            SelectableChip(title: language.code == "hinglish" ? "Hinglish" : language.name,
-                                           isSelected: model.language == language.code) {
-                                Haptics.selection()
-                                model.language = language.code
-                            }
-                        }
-                    }
-                    if app.market == .in {
-                        Text("Hinglish: speak the way you do at work — Hindi and English mixed. Feedback comes in the same mix.")
-                            .font(.footnote)
-                            .foregroundStyle(Theme.inkSecondary)
-                    }
-                }
-                Menu {
-                    Picker("Language", selection: $model.language) {
-                        ForEach(languages) { language in
-                            Text(language.name).tag(language.code)
-                        }
-                    }
-                } label: {
-                    HStack {
-                        Image(systemName: "globe").foregroundStyle(Theme.indigo)
-                        Text(languages.first { $0.code == model.language }?.name ?? "English")
-                            .font(.headlineRounded)
-                            .foregroundStyle(Theme.ink)
-                        Spacer()
-                        Image(systemName: "chevron.up.chevron.down").foregroundStyle(Theme.inkTertiary)
-                    }
-                    .padding(16)
-                    .background(Theme.surface, in: RoundedRectangle(cornerRadius: Theme.radiusSmall, style: .continuous))
-                    .overlay(RoundedRectangle(cornerRadius: Theme.radiusSmall, style: .continuous).strokeBorder(Theme.stroke))
-                }
-                Label("We never score accent or pronunciation.", systemImage: "hand.thumbsup.fill")
-                    .font(.footnote)
-                    .foregroundStyle(Theme.inkSecondary)
-            }
-        }
-        .onAppear {
-            if !languages.contains(where: { $0.code == model.language }) { model.language = "en" }
         }
     }
 }
@@ -533,58 +349,53 @@ private struct AnalysisConsentStep: View {
     private var hasHindi: Bool { consent?.translations?["hi"] != nil }
 
     var body: some View {
-        VStack(spacing: 0) {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 12) {
-                    Eyebrow("Step 6 · Your voice, your call", color: Theme.indigo)
+        OnboardingPage(title: text?.title ?? "Your voice, your call") {
+            VStack(alignment: .leading, spacing: 16) {
+                ForEach(text?.bullets ?? defaultBullets, id: \.self) { bullet in
+                    HStack(alignment: .top, spacing: 12) {
+                        Image(systemName: "checkmark.shield.fill").foregroundStyle(Theme.mint)
+                        Text(bullet).font(.subheadline).foregroundStyle(Theme.ink)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                }
+                HStack(spacing: 18) {
+                    if text?.body != nil {
+                        Button("Read the full text") { showFullText = true }
+                    }
                     if hasHindi && (app.market == .in || readInHindi) {
-                        Toggle("हिन्दी में पढ़ें · Read in Hindi", isOn: $readInHindi)
-                            .font(.subheadline.weight(.semibold))
-                            .tint(Theme.indigo)
-                    }
-                    Text(text?.title ?? "How Comlogue uses your voice")
-                        .font(.display)
-                        .foregroundStyle(Theme.ink)
-                    VStack(alignment: .leading, spacing: 12) {
-                        ForEach(text?.bullets ?? defaultBullets, id: \.self) { bullet in
-                            HStack(alignment: .top, spacing: 10) {
-                                Image(systemName: "checkmark.shield.fill").foregroundStyle(Theme.mint)
-                                Text(bullet).font(.subheadline).foregroundStyle(Theme.ink)
-                            }
-                        }
-                    }
-                    .card()
-                    .padding(.top, 6)
-                    if let fullText = text?.body {
-                        DisclosureGroup("Read the full text", isExpanded: $showFullText) {
-                            Text(fullText).font(.footnote).foregroundStyle(Theme.inkSecondary).padding(.top, 6)
-                        }
-                        .font(.subheadline.weight(.semibold))
-                        .tint(Theme.indigo)
+                        Button(readInHindi ? "Read in English" : "हिन्दी में पढ़ें") { readInHindi.toggle() }
                     }
                 }
-                .padding(.horizontal, Theme.gutter)
-                .padding(.vertical, 24)
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(Theme.indigo)
+                .padding(.top, 4)
             }
+        } footer: {
             // The age check sits with the button it unlocks, so long (e.g. Hindi) text never hides it.
-            VStack(spacing: 8) {
-                Toggle(isOn: $model.ageConfirmed) {
-                    Text("I'm 18 or older").font(.subheadline.weight(.semibold)).foregroundStyle(Theme.ink)
-                }
-                .toggleStyle(CheckboxToggleStyle())
-                if let error = model.error { InlineErrorBanner(message: error) }
-                Button {
-                    Task { await agree() }
-                } label: {
-                    if model.isSaving { ProgressView().tint(.white) } else { Text("I agree") }
-                }
-                .buttonStyle(.primaryPill)
-                .disabled(model.isSaving || app.meta == nil || !model.ageConfirmed)
-                Button("Not now") { showDeclineInfo = true }
-                    .buttonStyle(.ghostPill)
+            Toggle(isOn: $model.ageConfirmed) {
+                Text("I'm 18 or older").font(.subheadline.weight(.semibold)).foregroundStyle(Theme.ink)
             }
-            .padding(.horizontal, Theme.gutter)
-            .padding(.bottom, 12)
+            .toggleStyle(CheckboxToggleStyle())
+            if let error = model.error { InlineErrorBanner(message: error) }
+            Button {
+                Task { await agree() }
+            } label: {
+                if model.isSaving { ProgressView().tint(.white) } else { Text("Agree and continue") }
+            }
+            .buttonStyle(.primaryPill)
+            .disabled(model.isSaving || app.meta == nil || !model.ageConfirmed)
+            Button("Not now") { showDeclineInfo = true }
+                .buttonStyle(.ghostPill)
+        }
+        .sheet(isPresented: $showFullText) {
+            NavigationStack {
+                ScrollView {
+                    Text(text?.body ?? "").font(.body).foregroundStyle(Theme.ink).padding(Theme.gutter)
+                }
+                .navigationTitle("How Comlogue uses your voice")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar { ToolbarItem(placement: .topBarTrailing) { Button("Done") { showFullText = false } } }
+            }
         }
         .alert("Comlogue needs this to give feedback", isPresented: $showDeclineInfo) {
             Button("OK", role: .cancel) {}
@@ -610,8 +421,7 @@ private struct AnalysisConsentStep: View {
         model.error = nil
         defer { model.isSaving = false }
         do {
-            let allContexts = app.meta?.contexts.map(\.id) ?? []
-            try await app.completeOnboarding(model.patch(consentVersion: consent.version, allContexts: allContexts))
+            try await app.completeOnboarding(model.patch(consentVersion: consent.version, market: app.market))
             Haptics.success()
         } catch {
             model.error = error.userMessage

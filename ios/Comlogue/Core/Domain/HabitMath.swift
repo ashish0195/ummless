@@ -112,29 +112,30 @@ enum PracticeAnchor {
     }
 }
 
-/// Times offered when someone sets a practice time.
-enum PracticeTime: String, CaseIterable, Identifiable, Sendable {
-    case morning, lunch, evening, night
+/// A practice moment tied to something people already do: the cue and the time in one choice.
+struct PracticeRoutine: Hashable, Sendable, Identifiable {
+    let id: String
+    let title: String
+    let symbol: String
+    /// Stored as `practice_settings.anchor`.
+    let anchor: String
+    /// "HH:MM"
+    let time: String
 
-    var id: String { rawValue }
-
-    var title: String {
-        switch self {
-        case .morning: return "Morning"
-        case .lunch: return "Lunch"
-        case .evening: return "Evening"
-        case .night: return "Night"
-        }
+    static func options(for market: Market) -> [PracticeRoutine] {
+        let drink = market == .in ? "chai" : "coffee"
+        return [
+            PracticeRoutine(id: "morning", title: "With my morning \(drink)", symbol: "sunrise.fill",
+                            anchor: "After my morning \(drink)", time: "08:00"),
+            PracticeRoutine(id: "lunch", title: "After lunch", symbol: "sun.max.fill", anchor: "After lunch", time: "13:00"),
+            PracticeRoutine(id: "evening", title: "After work", symbol: "sunset.fill", anchor: "After work", time: "19:00"),
+            PracticeRoutine(id: "night", title: "Before bed", symbol: "moon.stars.fill", anchor: "Before bed", time: "21:30"),
+        ]
     }
 
-    var time: String {
-        switch self {
-        case .morning: return "08:00"
-        case .lunch: return "13:00"
-        case .evening: return "19:00"
-        case .night: return "21:30"
-        }
+    /// The routine a saved plan matches, by its time.
+    static func matching(time: String?, market: Market) -> PracticeRoutine? {
+        options(for: market).first { $0.time == time }
     }
-
-    static func matching(_ time: String?) -> PracticeTime? { allCases.first { $0.time == time } }
 }
+

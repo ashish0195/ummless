@@ -28,14 +28,14 @@ What's needed to take Comlogue from this repository to the App Store, and what s
 
 **Name:** Comlogue: Communication Coach
 **Subtitle:** Speak clearly. Be understood.
-**Promotional text:** One 60-second speaking rep a day, AI partners who push back, and feedback only where there's evidence. Rehearse interviews, GDs, pitches and hard talks.
+**Promotional text:** One 1-minute speaking practice a day, AI partners who push back, and feedback only where there's evidence. Rehearse interviews, GDs, pitches and hard talks.
 
 **Description:**
 > Comlogue is a communication coach that listens to how you actually talk, and helps you get a little better every day.
 >
 > Start with five short conversations with an AI partner, or upload or record a real conversation, with everyone's permission. Comlogue checks the audio, makes sure it's assessing your voice, and gives feedback on clarity, structure, listening, warmth, persuasion, concision and storytelling. It only does this where there's real evidence. Skills it can't assess yet are marked "Not enough evidence yet", never scored low.
 >
-> Then make it a habit. Each day brings one 60-second speaking rep with a single thing to try, feedback on that one thing, and as many retries as you like. Pick the days and time that suit you. There are no streaks to lose: a missed day never erases progress, and you can plan a break for exams or travel.
+> Then make it a habit. Each day brings one 1-minute speaking practice with a single thing to try, feedback on that one thing, and as many retries as you like. Pick the days and time that suit you. There are no streaks to lose: a missed day never erases progress, and you can plan a break for exams or travel.
 >
 > • Missions for your goal: job interviews, business communication, negotiation, conversation, storytelling or public speaking
 > • Group discussions and panel interviews with several AI voices, then a report

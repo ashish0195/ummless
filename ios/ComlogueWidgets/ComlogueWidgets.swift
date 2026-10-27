@@ -59,8 +59,8 @@ struct TodayRepWidget: Widget {
                 .containerBackground(for: .widget) { WidgetStyle.aurora }
                 .widgetURL(WidgetLinks.dailyRep)
         }
-        .configurationDisplayName("Today's rep")
-        .description("Your 60-second speaking rep for today, and how your week is going.")
+        .configurationDisplayName("Today's practice")
+        .description("Your 1-minute speaking practice for today, and how your week is going.")
         .supportedFamilies([.systemSmall, .systemMedium, .accessoryRectangular, .accessoryInline])
     }
 }
@@ -73,9 +73,9 @@ struct TodayRepView: View {
     private var hasTodaysRep: Bool { entry.isPlaceholder || snapshot.isCurrent(at: entry.date) }
     private var title: String {
         if snapshot.isPaused(at: entry.date) { return "Enjoy your break" }
-        if !hasTodaysRep { return "A new rep is ready" }
-        if snapshot.repCompleted { return "Today's rep: done" }
-        return snapshot.repTitle ?? "A new rep is ready"
+        if !hasTodaysRep { return "A new practice is ready" }
+        if snapshot.repCompleted { return "Today's practice: done" }
+        return snapshot.repTitle ?? "A new practice is ready"
     }
 
     var body: some View {
@@ -84,7 +84,7 @@ struct TodayRepView: View {
             Label(title, systemImage: "waveform")
         case .accessoryRectangular:
             VStack(alignment: .leading, spacing: 2) {
-                Label("Today's rep", systemImage: "waveform").font(.caption2.weight(.semibold))
+                Label("Today's practice", systemImage: "waveform").font(.caption2.weight(.semibold))
                 Text(title).font(.headline).lineLimit(2)
             }
         case .systemMedium:
@@ -101,7 +101,7 @@ struct TodayRepView: View {
 
     private var repText: some View {
         VStack(alignment: .leading, spacing: 6) {
-            Label(snapshot.repCompleted && hasTodaysRep ? "Done today" : "Today's rep",
+            Label(snapshot.repCompleted && hasTodaysRep ? "Done today" : "Today's practice",
                   systemImage: snapshot.repCompleted && hasTodaysRep ? "checkmark.circle.fill" : "waveform")
                 .font(.caption.weight(.bold))
                 .foregroundStyle(.white.opacity(0.85))

@@ -125,7 +125,7 @@ final class DailyRepModel {
                 }
                 delay = min(delay + 500_000_000, 3_000_000_000)
             }
-            self?.stage = .failed("Feedback is taking longer than usual. Your rep is saved — check back in a minute.")
+            self?.stage = .failed("Feedback is taking longer than usual. Your recording is saved — check back in a minute.")
         }
     }
 
@@ -142,7 +142,7 @@ struct DailyRepFlowView: View {
             if let model {
                 DailyRepContent(model: model)
             } else {
-                LoadingStateView(title: "Getting today's rep…").screenBackground()
+                LoadingStateView(title: "Getting today's practice…").screenBackground()
             }
         }
         .task {
@@ -162,16 +162,16 @@ private struct DailyRepContent: View {
         Group {
             switch model.stage {
             case .loading:
-                LoadingStateView(title: "Getting today's rep…").screenBackground()
+                LoadingStateView(title: "Getting today's practice…").screenBackground()
             case .intro:
                 if let rep = model.rep { DailyRepIntro(model: model, rep: rep) }
             case .conversation(let conversation):
                 ConversationScreen(
                     conversation: conversation,
                     app: app,
-                    progressLabel: "Today's rep",
+                    progressLabel: "Today's practice",
                     finishTitle: "See my feedback",
-                    endTitle: "Finish this rep",
+                    endTitle: "Finish",
                     onFinished: { _ in model.finished() },
                     onExit: { app.dismissFlow() }
                 )
@@ -180,8 +180,8 @@ private struct DailyRepContent: View {
                 VStack(spacing: 18) {
                     Spacer()
                     VoiceOrb(level: 0.35).frame(width: 150, height: 150)
-                    Text("Listening back to your rep…").font(.title3Rounded).foregroundStyle(Theme.ink)
-                    Text("Checking it against today's target.").font(.subheadline).foregroundStyle(Theme.inkSecondary)
+                    Text("Listening back…").font(.title3Rounded).foregroundStyle(Theme.ink)
+                    Text("Checking it against what you tried.").font(.subheadline).foregroundStyle(Theme.inkSecondary)
                     Spacer()
                 }
                 .frame(maxWidth: .infinity)
@@ -215,95 +215,64 @@ private struct DailyRepIntro: View {
     var body: some View {
         VStack(spacing: 0) {
             HStack {
-                if app.isDemo { DemoBadge() }
+                Text(model.isToday ? "Today's practice" : DailyRepModel.displayDay(rep.date))
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(Theme.inkSecondary)
                 Spacer()
                 CircleIconButton(systemName: "xmark") { app.dismissFlow() }
             }
             .padding(.horizontal, Theme.gutter)
             .padding(.top, 10)
             ScrollView {
-                VStack(alignment: .leading, spacing: 18) {
-                    HStack(spacing: 8) {
-                        Eyebrow(model.isToday ? "Today's rep · about \(rep.suggestedSeconds) sec"
-                                : "Rep for \(DailyRepModel.displayDay(rep.date))", color: color)
-                        Spacer()
-                        DimensionTag(dimension: rep.dimension)
-                    }
+                VStack(alignment: .leading, spacing: 22) {
                     Text(rep.title).font(.display).foregroundStyle(Theme.ink).fixedSize(horizontal: false, vertical: true)
-
-                    VStack(alignment: .leading, spacing: 10) {
-                        Text(rep.prompt)
-                            .font(.title3Rounded)
-                            .foregroundStyle(Theme.ink)
-                            .fixedSize(horizontal: false, vertical: true)
-                        Button {
-                            app.speech.speak(rep.prompt, languageCode: app.speechLanguage)
-                        } label: {
-                            Label("Hear it", systemImage: "speaker.wave.2.fill").font(.caption.weight(.semibold))
-                        }
-                        .foregroundStyle(color)
-                    }
-                    .card()
-
+                    Text(rep.prompt)
+                        .font(.title3)
+                        .foregroundStyle(Theme.ink)
+                        .fixedSize(horizontal: false, vertical: true)
                     VStack(alignment: .leading, spacing: 6) {
-                        Eyebrow("Your target", color: color)
+                        Text("Try this").font(.subheadline.weight(.semibold)).foregroundStyle(color)
                         Text(rep.targetBehavior).font(.headlineRounded).foregroundStyle(Theme.ink)
                             .fixedSize(horizontal: false, vertical: true)
                     }
                     .padding(18)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .background(color.opacity(0.1), in: RoundedRectangle(cornerRadius: Theme.radius, style: .continuous))
-
-                    if !rep.tips.isEmpty {
-                        VStack(alignment: .leading, spacing: 8) {
-                            ForEach(rep.tips, id: \.self) { tip in
-                                Label(tip, systemImage: "lightbulb").font(.subheadline).foregroundStyle(Theme.inkSecondary)
-                            }
-                        }
-                    }
-
                     if let example = rep.example {
-                        DisclosureGroup(isExpanded: $showExample) {
-                            Text("“\(example)”")
-                                .font(.body.italic())
-                                .foregroundStyle(Theme.ink)
-                                .padding(.top, 6)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                        } label: {
-                            Text("See an example").font(.subheadline.weight(.semibold)).foregroundStyle(Theme.indigo)
+                        Button(showExample ? "Hide the example" : "See an example") { withAnimation { showExample.toggle() } }
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(Theme.indigo)
+                        if showExample {
+                            Text("“\(example)”").font(.body.italic()).foregroundStyle(Theme.inkSecondary)
+                                .fixedSize(horizontal: false, vertical: true)
                         }
                     }
-
                     if let attempt = rep.latestAttempt, attempt.feedback != nil {
-                        Button {
-                            model.showFeedback()
-                        } label: {
-                            Label("See feedback on your last try", systemImage: "text.badge.checkmark")
-                                .font(.subheadline.weight(.semibold))
-                        }
-                        .foregroundStyle(Theme.indigo)
+                        Button("See feedback on your last try") { model.showFeedback() }
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(Theme.indigo)
                     }
-
                     if let error = model.error {
                         InlineErrorBanner(message: error) { model.error = nil }
                     }
                 }
-                .padding(Theme.gutter)
+                .padding(.horizontal, Theme.gutter)
+                .padding(.vertical, 20)
             }
-            VStack(spacing: 8) {
+            VStack(spacing: 6) {
                 if model.canPractise {
                     Button {
                         Task { await model.start() }
                     } label: {
-                        Label(rep.attempts.isEmpty ? "I'm ready" : "Try it again", systemImage: "mic.fill")
+                        Label(rep.attempts.isEmpty ? "Start" : "Try again", systemImage: "mic.fill")
                     }
                     .buttonStyle(.primaryPill)
                 } else {
-                    // An old reminder: that day's rep has closed, today's is waiting.
+                    // An old reminder: that day's practice has closed, today's is waiting.
                     Button {
                         app.present(.daily(date: nil))
                     } label: {
-                        Label("Go to today's rep", systemImage: "arrow.right.circle.fill")
+                        Label("Go to today's practice", systemImage: "arrow.right.circle.fill")
                     }
                     .buttonStyle(.primaryPill)
                 }
@@ -311,14 +280,11 @@ private struct DailyRepIntro: View {
                     Button {
                         Task { await model.shuffle() }
                     } label: {
-                        if model.isShuffling { ProgressView() } else { Label("Different prompt", systemImage: "shuffle") }
+                        if model.isShuffling { ProgressView() } else { Text("Different prompt") }
                     }
                     .buttonStyle(.ghostPill)
                     .disabled(model.isShuffling)
                 }
-                Text("Take the time you need. Recording never stops on its own.")
-                    .font(.caption)
-                    .foregroundStyle(Theme.inkTertiary)
             }
             .padding(.horizontal, Theme.gutter)
             .padding(.bottom, 12)
@@ -335,32 +301,27 @@ private struct DailyRepFeedback: View {
     var body: some View {
         VStack(spacing: 0) {
             HStack {
-                Eyebrow(rep.title, color: Theme.color(for: rep.dimension))
                 Spacer()
                 CircleIconButton(systemName: "xmark") { app.dismissFlow() }
             }
             .padding(.horizontal, Theme.gutter)
             .padding(.top, 10)
             ScrollView {
-                VStack(alignment: .leading, spacing: 16) {
-                    if let attempt = rep.latestAttempt {
-                        AttemptFeedbackContent(attempt: attempt, color: Theme.color(for: rep.dimension))
-                    }
-                    if rep.completed, let week = app.progress?.practice.thisWeek {
-                        WeekProgressCard(week: week, weeksOnTarget: app.progress?.practice.weeksOnTarget ?? 0)
-                    }
+                if let attempt = rep.latestAttempt {
+                    AttemptFeedbackContent(attempt: attempt, color: Theme.color(for: rep.dimension))
+                        .padding(.horizontal, Theme.gutter)
+                        .padding(.vertical, 12)
                 }
-                .padding(Theme.gutter)
             }
-            VStack(spacing: 8) {
+            VStack(spacing: 6) {
                 if model.canPractise {
                     Button {
                         Task { await model.start() }
                     } label: {
-                        Label("Try again with that change", systemImage: "arrow.counterclockwise")
+                        Label("Try again", systemImage: "arrow.counterclockwise")
                     }
                     .buttonStyle(.primaryPill)
-                    Button("Done for today") { app.dismissFlow() }
+                    Button("Done") { app.dismissFlow() }
                         .buttonStyle(.ghostPill)
                 } else {
                     Button("Done") { app.dismissFlow() }
@@ -371,33 +332,6 @@ private struct DailyRepFeedback: View {
             .padding(.bottom, 12)
         }
         .screenBackground()
-    }
-}
-
-/// "3 of 3 this week" with the Monday–Sunday strip: the visible payoff of a finished rep.
-struct WeekProgressCard: View {
-    let week: WeekProgress
-    let weeksOnTarget: Int
-
-    private var message: String {
-        if week.targetMet {
-            return weeksOnTarget > 1 ? "Target reached — \(weeksOnTarget) weeks in a row." : "Target reached for this week."
-        }
-        let left = max(0, week.target - week.sessions)
-        return "\(left) more to reach the target you set."
-    }
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Text("This week").font(.headlineRounded).foregroundStyle(Theme.ink)
-                Spacer()
-                Text("\(week.sessions) of \(week.target)").font(.metricSmall).foregroundStyle(Theme.indigo)
-            }
-            WeekStrip(days: week.days ?? [])
-            Text(message).font(.footnote).foregroundStyle(Theme.inkSecondary)
-        }
-        .card()
     }
 }
 

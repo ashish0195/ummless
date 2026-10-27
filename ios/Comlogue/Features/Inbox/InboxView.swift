@@ -13,7 +13,7 @@ struct InboxView: View {
             if app.inbox.isEmpty {
                 EmptyStateView(systemImage: "bell.badge",
                                title: isLoading ? "Checking…" : "Nothing new",
-                               message: "Results, event reminders and your weekly reveal will show up here.")
+                               message: "Feedback and reminders will show up here.")
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
                 List {
@@ -23,7 +23,7 @@ struct InboxView: View {
                         } label: {
                             InboxRow(item: item)
                         }
-                        .listRowBackground(item.read ? Theme.surface : Theme.indigo.opacity(0.06))
+                        .listRowBackground(Theme.surface)
                     }
                 }
                 .listStyle(.insetGrouped)
@@ -70,45 +70,32 @@ struct InboxView: View {
     }
 }
 
+/// Title, one line and when — an unread dot is the only decoration.
 private struct InboxRow: View {
     let item: InboxNotification
 
-    private var style: (symbol: String, color: Color) {
-        switch item.category {
-        case .results: return ("chart.bar.doc.horizontal.fill", Theme.indigo)
-        case .eventPrep: return ("calendar.badge.clock", Theme.coral)
-        case .checkIn: return ("bubble.left.and.text.bubble.right.fill", Theme.violet)
-        case .weeklyReveal: return ("gift.fill", Theme.amber)
-        case .milestone: return ("star.fill", Theme.amber)
-        case .practice, .nudge: return ("waveform", Theme.mint)
-        case .tips, .other: return ("lightbulb.fill", Theme.inkSecondary)
-        }
-    }
-
     var body: some View {
-        HStack(alignment: .top, spacing: 12) {
-            Image(systemName: style.symbol)
-                .font(.subheadline.weight(.semibold))
-                .foregroundStyle(style.color)
-                .frame(width: 36, height: 36)
-                .background(style.color.opacity(0.12), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
-            VStack(alignment: .leading, spacing: 3) {
+        HStack(alignment: .top, spacing: 10) {
+            Circle()
+                .fill(item.read ? Color.clear : Theme.indigo)
+                .frame(width: 8, height: 8)
+                .padding(.top, 7)
+                .accessibilityLabel("Unread")
+                .accessibilityHidden(item.read)
+            VStack(alignment: .leading, spacing: 4) {
                 HStack(alignment: .firstTextBaseline) {
                     Text(item.title)
-                        .font(.subheadline.weight(item.read ? .medium : .bold))
+                        .font(.headlineRounded.weight(item.read ? .medium : .semibold))
                         .foregroundStyle(Theme.ink)
                         .lineLimit(2)
+                        .multilineTextAlignment(.leading)
                     Spacer(minLength: 6)
-                    Text(Formatting.relative(item.createdAt)).font(.caption2).foregroundStyle(Theme.inkTertiary)
+                    Text(Formatting.relative(item.createdAt)).font(.caption).foregroundStyle(Theme.inkTertiary)
                 }
-                Text(item.body).font(.footnote).foregroundStyle(Theme.inkSecondary).lineLimit(3)
-            }
-            if !item.read {
-                Circle().fill(Theme.indigo).frame(width: 8, height: 8).padding(.top, 6)
-                    .accessibilityLabel("Unread")
+                Text(item.body).font(.subheadline).foregroundStyle(Theme.inkSecondary).lineLimit(1)
             }
         }
-        .padding(.vertical, 4)
+        .padding(.vertical, 6)
         .contentShape(Rectangle())
     }
 }

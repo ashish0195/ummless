@@ -384,7 +384,7 @@ def test_nudges_after_3_and_8_quiet_days_then_wait_for_a_return(client):
     assert not _nudges(client, user_id)
     tick_day(3)
     first = _nudges(client, user_id)
-    assert [n.title for n in first] == ["Your 60-second rep is ready"]
+    assert [n.title for n in first] == ["Your 1-minute practice is ready"]
     assert first[0].deep_link == "comlogue://daily" and "Today:" in first[0].body
     for offset in (4, 5, 6, 7):
         tick_day(offset)
@@ -512,7 +512,7 @@ def test_milestones_notify_only_when_the_app_is_not_in_use(client):
         progress.award(db, user_id, "reps_10")
         db.commit()
     milestone = _items(client, user_id, "milestone")[0]
-    assert milestone.title == "Milestone: 10 daily reps" and milestone.interruption_level == "passive"
+    assert milestone.title == "Milestone: 10 practices" and milestone.interruption_level == "passive"
 
 
 def test_recording_states_produce_results_notifications(client):

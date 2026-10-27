@@ -20,29 +20,29 @@ struct PaywallView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 18) {
                     VoiceOrb(level: 0.25, colors: [Color.white, Color(rgb: 0xC9C3FF), Color(rgb: 0xFFB4A8)])
-                        .frame(width: 88, height: 88)
+                        .frame(width: 112, height: 112)
                         .frame(maxWidth: .infinity)
                         .padding(.top, 8)
                     VStack(alignment: .leading, spacing: 8) {
                         Text("Keep the momentum").font(.display).foregroundStyle(.white)
-                        Text("Your profile and first win are yours to keep. Pro turns them into steady, real-world progress.")
+                        Text("Turn your first win into real progress.")
                             .font(.body)
                             .foregroundStyle(.white.opacity(0.88))
                     }
-                    VStack(alignment: .leading, spacing: 12) {
-                        feature("map.fill", "The full course for your goal", "Every mission, remix and real-life challenge")
-                        feature("bubble.left.and.exclamationmark.bubble.right.fill", "Unlimited AI sparring", "Personas, custom scenarios, Brutal mode")
-                        feature("person.3.sequence.fill", app.market == .in ? "Group discussions and panels" : "Panel interviews and group talks",
-                                app.market == .in ? "GD rounds, HR and technical panels, client calls" : "Several voices, real interruptions, one debrief")
-                        feature("calendar.badge.clock", "Event prep", "Rehearse your interview, pitch or hard talk")
-                        feature("quote.bubble.fill", "Every talk to shadow", "Steal the style of great speakers")
-                        feature("gift.fill", "Weekly reveal", "Before-and-after moments and your next focus")
+                    VStack(alignment: .leading, spacing: 14) {
+                        feature("map.fill", "The full course for your goal")
+                        feature("bubble.left.and.bubble.right.fill", "Unlimited AI conversation practice")
+                        feature("person.3.sequence.fill",
+                                app.market == .in ? "Group discussions and interview panels" : "Panel interviews and group discussions")
                     }
-                    Label("Your daily 60-second rep stays free, always.", systemImage: "bolt.heart.fill")
+                    .padding(.top, 6)
+                    Label("Your daily 1-minute practice stays free, always.", systemImage: "heart.fill")
                         .font(.footnote.weight(.semibold))
-                        .foregroundStyle(.white.opacity(0.9))
+                        .foregroundStyle(.white.opacity(0.85))
+                        .padding(.top, 6)
                 }
                 .padding(Theme.gutter)
+                .padding(.top, 16)
                 .padding(.bottom, 24)
             }
             // Features that scroll under the plans fade out instead of being cut off mid-line.
@@ -62,9 +62,10 @@ struct PaywallView: View {
                 }
                 .buttonStyle(.lightPill)
                 .disabled(isPurchasing)
+                // Apple requires the renewal terms next to the button; they stay, just quietly.
                 Text(terms)
                     .font(.caption2)
-                    .foregroundStyle(.white.opacity(0.75))
+                    .foregroundStyle(.white.opacity(0.6))
                     .multilineTextAlignment(.center)
                 HStack(spacing: 18) {
                     Button("Restore purchases") { Task { await restore() } }
@@ -72,7 +73,7 @@ struct PaywallView: View {
                     Link("Privacy", destination: Brand.privacyURL)
                 }
                 .font(.caption.weight(.semibold))
-                .foregroundStyle(.white.opacity(0.9))
+                .foregroundStyle(.white.opacity(0.75))
                 if let message {
                     Text(message).font(.footnote).foregroundStyle(.white).multilineTextAlignment(.center)
                 }
@@ -108,7 +109,7 @@ struct PaywallView: View {
                 selected: yearlySelected,
                 title: "Yearly",
                 price: store.yearly?.displayPrice ?? pricing?.yearlyLabel ?? "",
-                detail: "\(pricing?.trialDays ?? 7)-day free trial · best value",
+                detail: "\(pricing?.trialDays ?? 7)-day free trial",
                 badge: yearlySavingPercent.map { "Save \($0)%" }
             ) { yearlySelected = true }
             planRow(
@@ -158,13 +159,15 @@ struct PaywallView: View {
         .buttonStyle(.plain)
     }
 
-    private func feature(_ icon: String, _ title: String, _ detail: String) -> some View {
-        HStack(alignment: .top, spacing: 12) {
-            Image(systemName: icon).font(.headline).foregroundStyle(.white).frame(width: 28)
-            VStack(alignment: .leading, spacing: 2) {
-                Text(title).font(.subheadline.weight(.semibold)).foregroundStyle(.white)
-                Text(detail).font(.caption).foregroundStyle(.white.opacity(0.78))
-            }
+    private func feature(_ icon: String, _ title: String) -> some View {
+        HStack(spacing: 14) {
+            Image(systemName: icon)
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(.white)
+                .frame(width: 36, height: 36)
+                .background(Color.white.opacity(0.16), in: Circle())
+            Text(title).font(.headlineRounded).foregroundStyle(.white)
+                .fixedSize(horizontal: false, vertical: true)
         }
     }
 

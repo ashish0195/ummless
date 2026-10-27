@@ -21,8 +21,8 @@ enum IntentRoute: String {
 }
 
 struct StartDailyRepIntent: AppIntent {
-    static var title: LocalizedStringResource = "Start today's rep"
-    static var description = IntentDescription("Opens Comlogue on today's 60-second speaking rep.")
+    static var title: LocalizedStringResource = "Start today's practice"
+    static var description = IntentDescription("Opens Comlogue on today's 1-minute speaking practice.")
     static var openAppWhenRun: Bool = true
 
     func perform() async throws -> some IntentResult {
@@ -68,8 +68,8 @@ struct ComlogueShortcuts: AppShortcutsProvider {
     static var appShortcuts: [AppShortcut] {
         AppShortcut(
             intent: StartDailyRepIntent(),
-            phrases: ["Start today's rep in \(.applicationName)", "Do my daily rep with \(.applicationName)"],
-            shortTitle: "Today's rep",
+            phrases: ["Start today's practice in \(.applicationName)", "Practise speaking with \(.applicationName)"],
+            shortTitle: "Today's practice",
             systemImageName: "bolt.circle.fill"
         )
         AppShortcut(

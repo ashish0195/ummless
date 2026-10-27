@@ -126,7 +126,7 @@ enum NotificationPlanner {
                             id: identifierPrefix + "event_day.\(event.id)", kind: .eventPrep,
                             fireDate: fire,
                             title: "Today: \(event.title)",
-                            body: "One quick rep to warm up your voice? Two minutes is enough.",
+                            body: "One quick practice to warm up your voice? A minute is enough.",
                             deepLink: .event(id: event.id)))
                     }
                 }
@@ -171,9 +171,9 @@ enum NotificationPlanner {
                         continue
                     }
                     let rep = input.upcomingReps.first { $0.date == dayString }
-                    let title = isWelcomeBack ? "Welcome back whenever you're ready" : "Your 60-second rep is waiting"
+                    let title = isWelcomeBack ? "Welcome back whenever you're ready" : "Your 1-minute practice is waiting"
                     let body = isWelcomeBack
-                        ? "Your progress is saved. Start with one short rep, with no catching up needed."
+                        ? "Your progress is saved. Start with one short practice. No catching up needed."
                         : (rep.map { "Today's prompt: \($0.title). One minute, one small change." }
                            ?? "One minute, one small change. No catching up needed.")
                     planned.append(LocalNotification(
@@ -234,9 +234,9 @@ enum NotificationPlanner {
         let closers = ["One minute, one small change.", "Sixty seconds counts.", "Quick, and it adds up."]
         let closer = closers[variant % closers.count]
         if let rep {
-            return (rep.title, cue.map { "\($0): today's 60-second rep. \(closer)" } ?? "Today's 60-second rep. \(closer)")
+            return (rep.title, cue.map { "\($0): today's 1-minute practice. \(closer)" } ?? "Today's 1-minute practice. \(closer)")
         }
-        return ("Time for today's rep", cue.map { "\($0): your 60-second rep is ready. \(closer)" }
-            ?? "Your 60-second rep is ready. \(closer)")
+        return ("Time for today's practice", cue.map { "\($0): your 1-minute practice is ready. \(closer)" }
+            ?? "Your 1-minute practice is ready. \(closer)")
     }
 }

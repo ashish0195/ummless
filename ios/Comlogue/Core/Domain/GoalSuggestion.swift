@@ -42,3 +42,40 @@ enum GoalSuggestion {
         return best?.key ?? available.first
     }
 }
+
+/// One-tap goals for the first-run walkthrough, in plain words. The spec's onboarding answers (ranked contexts and
+/// what should feel easier) are derived from the goal, so a newcomer answers one question instead of three.
+struct GoalChoice: Hashable, Sendable, Identifiable {
+    let id: String // track id
+    let title: String
+    let symbol: String
+
+    /// Most common first, per market: placements and interviews lead in India.
+    static func ordered(for market: Market, available: [String]) -> [GoalChoice] {
+        let all: [GoalChoice] = [
+            GoalChoice(id: "business", title: "Meetings at work", symbol: "person.3.fill"),
+            GoalChoice(id: "interviews", title: "Job interviews", symbol: "briefcase.fill"),
+            GoalChoice(id: "conversational", title: "Everyday conversations", symbol: "bubble.left.and.bubble.right.fill"),
+            GoalChoice(id: "public_speaking", title: "Speaking to a group", symbol: "megaphone.fill"),
+            GoalChoice(id: "negotiation", title: "Asking for what I want", symbol: "hand.raised.fill"),
+            GoalChoice(id: "storytelling", title: "Telling better stories", symbol: "book.fill"),
+        ]
+        var ordered = all
+        if market == .in, let index = ordered.firstIndex(where: { $0.id == "interviews" }) {
+            ordered.insert(ordered.remove(at: index), at: 0)
+        }
+        return available.isEmpty ? ordered : ordered.filter { available.contains($0.id) }
+    }
+
+    /// The contexts (most relevant first) and "what should feel easier" answers implied by a goal.
+    static func answers(for goal: String) -> (contexts: [String], ease: [String]) {
+        switch goal {
+        case "interviews": return (["interviews", "meetings", "networking", "social"], ["concise"])
+        case "negotiation": return (["meetings", "networking", "interviews", "social"], ["persuading"])
+        case "conversational": return (["social", "networking", "meetings", "interviews"], ["connecting"])
+        case "storytelling": return (["social", "meetings", "networking", "interviews"], ["explaining"])
+        case "public_speaking": return (["meetings", "networking", "social", "interviews"], ["explaining"])
+        default: return (["meetings", "interviews", "networking", "social"], ["concise", "contributing"])
+        }
+    }
+}

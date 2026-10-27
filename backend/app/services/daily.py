@@ -142,7 +142,7 @@ def parse_day(user: User, value: str, *, allow_past: bool = True) -> date:
     today = users.today(user)
     earliest = today - timedelta(days=PAST_DAYS) if allow_past else today
     if not earliest <= day <= today + timedelta(days=FUTURE_DAYS):
-        raise not_found("Daily rep")
+        raise not_found("Daily practice")
     return day
 
 
@@ -182,7 +182,7 @@ def rep_out(svc: AppServices, db: Session, user: User, day: date) -> DailyRep:
     existing = db.scalar(select(DailyAssignment).where(DailyAssignment.user_id == user.id,
                                                        DailyAssignment.date == day.isoformat()))
     if existing is None and day < users.today(user):
-        raise not_found("Daily rep")  # past days are never assigned retroactively
+        raise not_found("Daily practice")  # past days are never assigned retroactively
     row = existing or assignment(db, user, day)
     prompt = _prompt(row)
     attempts = _attempts(db, user, day)
@@ -214,7 +214,7 @@ def create_conversation(svc: AppServices, db: Session, user: User, daily_date: s
     today = users.today(user)
     day = parse_day(user, daily_date) if daily_date else today
     if not today - timedelta(days=1) <= day <= today:
-        raise conflict("You can practise today's rep (or yesterday's, if it's just past midnight).")
+        raise conflict("You can practise today's prompt (or yesterday's, if it's just past midnight).")
     row = assignment(db, user, day)
     prompt = _prompt(row)
     setup = ConversationSetup(
@@ -266,7 +266,7 @@ def run_feedback_job(svc: AppServices, attempt_id: str) -> None:
         prompt = DAILY_PROMPTS_BY_ID.get(attempt.prompt_id)
         if conv is None or user is None:
             return
-        title = prompt.title if prompt else conv.setup.get("title", "Daily rep")
+        title = prompt.title if prompt else conv.setup.get("title", "Daily practice")
         target = prompt.target_behavior if prompt else (conv.setup.get("target_behavior") or "")
         previous = db.scalar(select(DailyAttempt).where(
             DailyAttempt.user_id == user.id, DailyAttempt.date == attempt.date,
@@ -288,7 +288,7 @@ def run_feedback_job(svc: AppServices, attempt_id: str) -> None:
                                   f"daily:{attempt.date}")
         db.commit()
         notifications.feedback_ready(svc, db, user.id, attempt_id=attempt.id,
-                                     title="Feedback on today's rep is ready",
+                                     title="Feedback on today's practice is ready",
                                      deep_link=f"comlogue://daily/{attempt.date}")
     except Exception:
         db.rollback()
