@@ -36,6 +36,8 @@ final class NotificationManager: NSObject {
     private(set) var deviceToken: String?
     /// Called when a new APNs token arrives so the app can register it with the server.
     var onTokenChange: (() -> Void)?
+    /// The person's quiet hours, kept for "Remind me later" (set whenever reminders are rescheduled).
+    var settings = NotificationSettings.defaults
 
     private let center = UNUserNotificationCenter.current()
 
@@ -103,7 +105,7 @@ final class NotificationManager: NSObject {
 
     func registerCategories() {
         let start = UNNotificationAction(identifier: Action.startRep, title: "Start now", options: [.foreground])
-        let later = UNNotificationAction(identifier: Action.remindLater, title: "Remind me in 2 hours", options: [])
+        let later = UNNotificationAction(identifier: Action.remindLater, title: "Remind me later", options: [])
         let warmUp = UNNotificationAction(identifier: Action.warmUp, title: "Warm up now", options: [.foreground])
         let reflect = UNNotificationAction(identifier: Action.reflect, title: "Reflect now", options: [.foreground])
         center.setNotificationCategories([
@@ -150,10 +152,13 @@ final class NotificationManager: NSObject {
             withIdentifiers: pending.map(\.identifier).filter { $0.hasPrefix(NotificationPlanner.identifierPrefix) })
     }
 
-    /// "Remind me in 2 hours" on a reminder: one more nudge, then it's the person's call.
+    /// "Remind me later" on a reminder: one more nudge in about two hours (outside quiet hours), then it's the
+    /// person's call.
     private func remindLater(_ content: UNNotificationContent) {
         let copy = (content.mutableCopy() as? UNMutableNotificationContent) ?? UNMutableNotificationContent()
-        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 2 * 3600, repeats: false)
+        let now = Date()
+        let fireDate = NotificationPlanner.snoozeDate(now: now, settings: settings, timeZone: .current)
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: max(60, fireDate.timeIntervalSince(now)), repeats: false)
         let request = UNNotificationRequest(identifier: NotificationPlanner.identifierPrefix + "later.\(Int(Date().timeIntervalSince1970))",
                                             content: copy, trigger: trigger)
         center.add(request) { _ in }

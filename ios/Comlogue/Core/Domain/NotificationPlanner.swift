@@ -186,6 +186,22 @@ enum NotificationPlanner {
         return HabitMath.moment(on: endDay, at: end, timeZone: timeZone) ?? date
     }
 
+    /// When "Remind me later" fires: about two hours on, but never inside quiet hours. If quiet hours begin sooner,
+    /// it comes just before they do, or else when they end.
+    static func snoozeDate(now: Date, settings: NotificationSettings, timeZone: TimeZone) -> Date {
+        for hours in [2.0, 1.0] {
+            let candidate = now.addingTimeInterval(hours * 3600)
+            if respectingQuietHours(candidate, settings: settings, timeZone: timeZone) == candidate { return candidate }
+        }
+        let nowIsQuiet = respectingQuietHours(now, settings: settings, timeZone: timeZone) != now
+        if !nowIsQuiet, let start = HabitMath.parseTime(settings.quietStart),
+           let quietStart = HabitMath.moment(on: HabitMath.calendar(timeZone).startOfDay(for: now), at: start, timeZone: timeZone),
+           quietStart.timeIntervalSince(now) >= 20 * 60 {
+            return quietStart.addingTimeInterval(-10 * 60)
+        }
+        return respectingQuietHours(now.addingTimeInterval(2 * 3600), settings: settings, timeZone: timeZone)
+    }
+
     private static func practiceCopy(rep: DailyRepPreview?, anchor: String?, variant: Int) -> (title: String, body: String) {
         let cue = anchor.map { PracticeAnchor.secondPerson($0) }
         let closers = ["One minute, one small change.", "Sixty seconds counts.", "Quick, and it adds up."]

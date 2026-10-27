@@ -312,6 +312,7 @@ final class AppModel {
         input.upcomingReps = upcomingReps
         input.events = events.map { PlannedEvent(id: $0.id, title: $0.title, date: $0.date, time: $0.time) }
         input.serverSendsPush = serverSendsPush
+        notifications.settings = input.settings
         await notifications.apply(NotificationPlanner.plan(input))
     }
 

@@ -137,7 +137,8 @@ own.** Recording status, pause and stop are always visible. When the user stops,
 - **Practice completion is separate from skill.** The communication web only updates from assessable
   recordings or assessments. Reflections inform goals but are not skill evidence.
 - Weekly target (user-chosen, default 3 sessions), optional reminders, and an easy return after a missed
-  week. No streak resets, leaderboards or XP.
+  week. No streak resets, leaderboards or XP. The daily rep (section 15) is the smallest unit of practice; the
+  course stays the main path.
 
 ## 10. Extra practice (beyond the spec, from the earlier concepts)
 
@@ -157,16 +158,25 @@ whispers in live meetings (needs reliable live diarization).
 ## 11. Access and pricing
 
 - **Free:** baseline (all routes), gap-fill tasks, recovery and retries (never paywalled), one practice
-  mission, the full course preview, one spar per week, and one talk.
-- **Pro:** full course, unlimited spar, all talks, event prep, and weekly reveal insights.
-- Pricing hypothesis (configurable, shown before purchase): **$14.99/month** or **$95.99/year** with a 7-day
-  trial. The App Store products are `comlogue.pro.monthly` and `comlogue.pro.yearly`.
+  mission, the full course preview, one spar per week, one talk, **the daily rep (always, with unlimited
+  retries)**, one group discussion and one panel interview.
+- **Pro:** full course, unlimited spar, all talks, every group discussion and panel, event prep, and weekly
+  reveal insights.
+- Pricing hypotheses (configurable, shown before purchase), with a 7-day trial everywhere:
+  - **US and other markets:** **$14.99/month** or **$95.99/year** (46% less than 12 monthly payments).
+  - **India:** **₹399/month** or **₹2,499/year** (47% less). That is about a quarter of the US price, in line
+    with what Indian users pay for other self-improvement subscriptions and with local purchasing power.
+  - The App Store products stay `comlogue.pro.monthly` and `comlogue.pro.yearly`; the India price is set as
+    a territory price in App Store Connect. In the app, StoreKit's localized price always wins; the server's
+    `pricing` for the user's market is only a fallback label.
 
 ## 12. Languages and culture
 
 - UI: English, with all strings localizable. Conversation and feedback languages are English, Spanish,
-  French, German, Portuguese, Italian, Dutch, Hindi, Japanese, Korean, Chinese, and Arabic. The model
-  evaluates in the chosen language.
+  French, German, Portuguese, Italian, Dutch, Hindi, **Hinglish** (Hindi–English code-mixing in Latin
+  script, as many Indians speak at work), Japanese, Korean, Chinese, and Arabic. The model evaluates in the
+  chosen language. Onboarding offers one-tap picks for the market: English, Hinglish and हिन्दी in India;
+  English and Español in the US.
 - Filler and hedge statistics are only computed where we have validated word lists (English for now);
   elsewhere they show as unavailable rather than wrong.
 - **Accent and pronunciation are never scored.** Low transcription confidence leads to abstaining, not a
@@ -194,3 +204,96 @@ worked. `AI_PROVIDER=mock` runs the whole product offline with clearly labeled d
 First-task completion, voluntary retries, return for the next mission, real-life application, improvement
 on a fresh scenario, and the coverage funnel (what share of sessions reach each check). Engagement and
 learning are reported separately.
+
+## 15. The habit loop: one 60-second rep a day
+
+The user asked for an app people come back to every day. We used what behaviour-change research says makes a
+habit stick, and avoided the patterns that make people feel guilty and leave.
+
+- **A tiny daily action.** The *daily rep* is one spoken answer to a short prompt (30–90 seconds), with one
+  target behaviour, feedback on that target and an unlimited "try again with that change". It's free for
+  everyone and counts as a practice session. Prompts are picked per user and day: weighted towards the course
+  focus, the goal and the market, lighter at weekends, seasonal in season (Diwali, Thanksgiving, appraisal
+  season), and never repeated within 30 days. One shuffle per day, before the first attempt.
+- **A plan, not a streak.** Onboarding ends with a practice plan: sessions per week (2–7, default 3), days,
+  a time, and an optional *anchor* ("After my morning chai", "After my morning coffee"). Tying practice to an
+  existing routine is an implementation intention, one of the best-supported habit techniques. Reminders follow
+  the plan.
+- **Weeks on target instead of daily streaks.** Progress is "3 of 3 this week" plus a Monday-to-Sunday dot strip.
+  The run counts consecutive weeks that met the target. A missed day never resets anything, and Monday is a
+  fresh start.
+- **Planned breaks.** Exams, travel, a wedding in the family: a break of 1 or 2 weeks (or until a date) pauses
+  reminders and nudges, and a week overlapping a break neither counts nor breaks the run.
+- **Welcome back, no guilt.** After 7 or more quiet days, Today opens with "Welcome back — your progress is
+  saved. Start with a 60-second rep." instead of what was missed.
+- **Celebrate real progress.** Milestones such as the first rep, 10 and 30 reps, and 2, 4, 8 and 12 weeks on
+  target get a one-time celebration with a share option. There's still no XP, no leaderboard and no league.
+- **The rep is everywhere the user already is:** the Today screen's first card, home and lock screen widgets
+  (today's prompt and the week), Siri and Shortcuts ("Start today's rep"), and tomorrow's actual prompt in
+  tomorrow's reminder.
+
+## 16. Notifications that bring people back (and stop when they don't)
+
+- **What we send** (each one can be turned off, and all go to the in-app inbox too):
+  - practice reminders at the planned time and days;
+  - event prep the evening before and the morning of anything added in Practice;
+  - results when a recording, an assessment or feedback is ready;
+  - a "how did it go?" check-in after an event or a real-life mission;
+  - the weekly reveal on Sunday evening;
+  - milestones;
+  - tips and product news, which are off by default.
+- **When we stay quiet:**
+  - quiet hours (22:00–08:00 by default, in the user's timezone);
+  - at most 2 pushes a day;
+  - nothing but results and event prep during a planned break.
+- **Nudges are rare and they give up:**
+  - after 3 quiet days and again after 8, at most one in 72 hours;
+  - none after two unopened ones until the user comes back;
+  - none at all without a weekly target.
+  - This keeps the app from becoming notification spam, which is the fastest way to lose the permission for
+    good.
+- **Asking for permission:** never at first launch. We ask at a moment of intent, right after the user sets
+  a plan or adds an event, on a priming screen that shows what they'll get. "Not now" is a first-class choice,
+  and the app can deliver quietly (provisional authorization) instead.
+- **Delivery has two paths.**
+  - Practice reminders are scheduled on the device, so they work offline and without a push server.
+  - Server pushes (APNs token auth) carry results, event prep, check-ins and nudges.
+  - When the server can't push to a device, the app schedules the event and check-in reminders locally, so the
+    user still gets them.
+  - The app keeps at most 48 pending local notifications (iOS allows 64).
+- **Every notification opens the right screen** through a `comlogue://` deep link, and actions such as
+  "Start now" or "Remind me later" (about two hours on, never in quiet hours) work from the lock screen. The
+  app badge is the unread inbox count.
+- **Calendar (optional):** with permission, the app reads upcoming event titles on the device and suggests
+  rehearsals ("Final HR round at Zenith on Thursday — rehearse it?"). A title leaves the device only if the
+  user adds the event.
+
+## 17. Built for India and the US
+
+The market comes from the region (`IN` → India, `US` → US, anything else → the US-style global default) and
+changes content, formats and price, not the product's rules.
+
+- **India:**
+  - campus placements, HR and technical rounds, viva voce, appraisal conversations, client calls with US
+    teams, and **group discussions (GDs)**: an AI moderator and 2–3 AI participants, one dominant, one
+    thoughtful and one quiet;
+  - salaries in LPA, rent in Bengaluru or Pune, "₹ lakh and crore" figures;
+  - dates such as "27 Oct", a Hinglish-speaking team lead persona, and an Indian English voice for spoken
+    fallbacks;
+  - consent text in Hindi (drafts pending legal review).
+- **US:** behavioural (STAR) interviews, panel interviews, performance reviews, networking mixers, roommate
+  and neighbour conflicts, and Thanksgiving-season prompts.
+- **Interviews track.** We added a sixth goal track, *Job interviews*: introduce yourself, STAR stories, "Why
+  should we hire you?", and asking good questions and closing strongly. It is a deviation from the spec's five
+  goal areas. Interviews and placements are the most common reason people in India practise speaking, and
+  one of the top reasons in the US. The India version swaps in placement scenarios.
+- **Accent and dialect fairness.** Indian English and code-switching are never scored or "corrected". A
+  rewrite may offer a "global English" version, labelled as an option, only when the context calls for it
+  (e.g. a call with US clients).
+- **India's DPDP Act:**
+  - Comlogue is for adults. Onboarding asks the user to confirm they're 18 or older before analysis consent,
+    because the Act treats under-18s as children who need verifiable parental consent.
+  - The app shows a grievance contact and offers a full data export (JSON, without audio), alongside the
+    existing deletion controls.
+  - The DPDP Rules were notified on 13 Nov 2025, and most notice and consent duties apply from about
+    13 May 2027. See [LAUNCH.md](LAUNCH.md).

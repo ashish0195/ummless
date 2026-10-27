@@ -189,6 +189,23 @@ final class NotificationPlannerTests: XCTestCase {
                        instant("2026-10-27T08:30:00Z"))
     }
 
+    func testRemindMeLaterStaysOutOfQuietHours() {
+        let settings = NotificationSettings.defaults // 22:00–08:00
+        func snooze(_ iso: String) -> Date { NotificationPlanner.snoozeDate(now: instant(iso), settings: settings, timeZone: ist) }
+        // 13:00 IST → 15:00.
+        XCTAssertEqual(snooze("2026-10-27T07:30:00Z"), instant("2026-10-27T09:30:00Z"))
+        // 20:30 IST → 21:30 (two hours would be 22:30).
+        XCTAssertEqual(snooze("2026-10-27T15:00:00Z"), instant("2026-10-27T16:00:00Z"))
+        // 21:15 IST → 21:50, just before quiet hours.
+        XCTAssertEqual(snooze("2026-10-27T15:45:00Z"), instant("2026-10-27T16:20:00Z"))
+        // 21:50 IST → 08:00 the next morning.
+        XCTAssertEqual(snooze("2026-10-27T16:20:00Z"), instant("2026-10-28T02:30:00Z"))
+        // 06:30 IST → 08:30, after quiet hours end.
+        XCTAssertEqual(snooze("2026-10-27T01:00:00Z"), instant("2026-10-27T03:00:00Z"))
+        // 05:00 IST, inside quiet hours → 08:00 when they end.
+        XCTAssertEqual(snooze("2026-10-26T23:30:00Z"), instant("2026-10-27T02:30:00Z"))
+    }
+
     func testAtMostTwoPerDayWithEventPrepFirst() {
         // Wednesday 28 Oct: practice 08:00, and an event on the 29th puts its 19:00 eve reminder on the 28th, plus a
         // check-in for an event on the 27th.
